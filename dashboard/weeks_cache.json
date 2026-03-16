@@ -1,0 +1,834 @@
+[
+  {
+    "number": 1,
+    "start": "Mar 2",
+    "end": "Mar 8",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 27,
+      "vert_m": 400,
+      "long_run_km": 14,
+      "gym": 3,
+      "series": null
+    },
+    "actual": {
+      "distance_km": 26.3,
+      "vert_m": 715,
+      "long_run_km": 14.0,
+      "gym": 5,
+      "series": true
+    },
+    "compliance": 99,
+    "activities": [
+      {
+        "date": "Sun, Mar 8",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 14.01,
+        "pace": "7:31",
+        "hr": 153.0,
+        "elev": 364.0,
+        "cal": 1296.0,
+        "dur": 105,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Sat, Mar 7",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 6.24,
+        "pace": "7:32",
+        "hr": 163.0,
+        "elev": 210.0,
+        "cal": 667.0,
+        "dur": 47,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Sat, Mar 7",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 107.0,
+        "elev": null,
+        "cal": 406.0,
+        "dur": 67,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Thu, Mar 5",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 117.0,
+        "elev": null,
+        "cal": 462.0,
+        "dur": 63,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Thu, Mar 5",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 6.02,
+        "pace": "6:48",
+        "hr": 157.0,
+        "elev": 141.0,
+        "cal": 574.0,
+        "dur": 41,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Wed, Mar 4",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 94.0,
+        "elev": null,
+        "cal": 365.0,
+        "dur": 80,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Tue, Mar 3",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 104.0,
+        "elev": null,
+        "cal": 418.0,
+        "dur": 74,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Mon, Mar 2",
+        "name": "Indoor Cycling",
+        "type": "cycling",
+        "dist": null,
+        "pace": null,
+        "hr": 129.0,
+        "elev": null,
+        "cal": 412.0,
+        "dur": 45,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Mon, Mar 2",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 105.0,
+        "elev": null,
+        "cal": 396.0,
+        "dur": 67,
+        "sets": null,
+        "reps": null
+      }
+    ],
+    "alerts": [
+      {
+        "level": "info",
+        "text": "<strong>Long Run Ratio:</strong> Long run ratio: 14.0km is 53% of weekly 26.3km (threshold: 30%)"
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "start": "Mar 9",
+    "end": "Mar 15",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 30,
+      "vert_m": 480,
+      "long_run_km": 15,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": {
+      "distance_km": 30.1,
+      "vert_m": 763,
+      "long_run_km": 15.0,
+      "gym": 4,
+      "series": true
+    },
+    "compliance": 100,
+    "activities": [
+      {
+        "date": "Sun, Mar 15",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 15.02,
+        "pace": "8:11",
+        "hr": 153.0,
+        "elev": 510.0,
+        "cal": 1400.0,
+        "dur": 123,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Sat, Mar 14",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 5.01,
+        "pace": "6:28",
+        "hr": 160.0,
+        "elev": 113.0,
+        "cal": 473.0,
+        "dur": 32,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Thu, Mar 12",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 98.0,
+        "elev": null,
+        "cal": 354.0,
+        "dur": 71,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Thu, Mar 12",
+        "name": "Trail Running",
+        "type": "trail",
+        "dist": 5.04,
+        "pace": "6:45",
+        "hr": 151.0,
+        "elev": 121.0,
+        "cal": 461.0,
+        "dur": 34,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Wed, Mar 11",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 110.0,
+        "elev": null,
+        "cal": 419.0,
+        "dur": 70,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Wed, Mar 11",
+        "name": "Running",
+        "type": "trail",
+        "dist": 5.01,
+        "pace": "6:00",
+        "hr": 153.0,
+        "elev": 19.0,
+        "cal": 417.0,
+        "dur": 30,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Tue, Mar 10",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 99.0,
+        "elev": null,
+        "cal": 390.0,
+        "dur": 80,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Mon, Mar 9",
+        "name": "Stair Stepper",
+        "type": "cycling",
+        "dist": null,
+        "pace": null,
+        "hr": 145.0,
+        "elev": null,
+        "cal": 189.0,
+        "dur": 16,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Mon, Mar 9",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 113.0,
+        "elev": null,
+        "cal": 499.0,
+        "dur": 76,
+        "sets": null,
+        "reps": null
+      }
+    ],
+    "alerts": [
+      {
+        "level": "warning",
+        "text": "<strong>Volume Spike:</strong> Volume spike: 30.1km vs previous 26.3km (+14%)"
+      },
+      {
+        "level": "info",
+        "text": "<strong>Long Run Ratio:</strong> Long run ratio: 15.0km is 50% of weekly 30.1km (threshold: 30%)"
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "start": "Mar 16",
+    "end": "Mar 22",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 33,
+      "vert_m": 550,
+      "long_run_km": 16,
+      "gym": 3,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 4,
+    "start": "Mar 23",
+    "end": "Mar 29",
+    "year": 2026,
+    "phase": "base",
+    "recovery": true,
+    "plan": {
+      "distance_km": 25,
+      "vert_m": 380,
+      "long_run_km": 12,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 5,
+    "start": "Mar 30",
+    "end": "Apr 5",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 32,
+      "vert_m": 500,
+      "long_run_km": 16,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 6,
+    "start": "Apr 6",
+    "end": "Apr 12",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 35,
+      "vert_m": 550,
+      "long_run_km": 17,
+      "gym": 3,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 7,
+    "start": "Apr 13",
+    "end": "Apr 19",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 38,
+      "vert_m": 600,
+      "long_run_km": 18,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 8,
+    "start": "Apr 20",
+    "end": "Apr 26",
+    "year": 2026,
+    "phase": "base",
+    "recovery": true,
+    "plan": {
+      "distance_km": 28,
+      "vert_m": 430,
+      "long_run_km": 14,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 9,
+    "start": "Apr 27",
+    "end": "May 3",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 40,
+      "vert_m": 650,
+      "long_run_km": 19,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 10,
+    "start": "May 4",
+    "end": "May 10",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 43,
+      "vert_m": 700,
+      "long_run_km": 20,
+      "gym": 3,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 11,
+    "start": "May 11",
+    "end": "May 17",
+    "year": 2026,
+    "phase": "base",
+    "recovery": false,
+    "plan": {
+      "distance_km": 47,
+      "vert_m": 750,
+      "long_run_km": 21,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 12,
+    "start": "May 18",
+    "end": "May 24",
+    "year": 2026,
+    "phase": "base",
+    "recovery": true,
+    "plan": {
+      "distance_km": 35,
+      "vert_m": 550,
+      "long_run_km": 16,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 13,
+    "start": "May 25",
+    "end": "May 31",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 50,
+      "vert_m": 800,
+      "long_run_km": 22,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 14,
+    "start": "Jun 1",
+    "end": "Jun 7",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 53,
+      "vert_m": 900,
+      "long_run_km": 24,
+      "gym": 3,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 15,
+    "start": "Jun 8",
+    "end": "Jun 14",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 55,
+      "vert_m": 1000,
+      "long_run_km": 26,
+      "gym": 3,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 16,
+    "start": "Jun 15",
+    "end": "Jun 21",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": true,
+    "plan": {
+      "distance_km": 42,
+      "vert_m": 750,
+      "long_run_km": 18,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 17,
+    "start": "Jun 22",
+    "end": "Jun 28",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 58,
+      "vert_m": 1200,
+      "long_run_km": 28,
+      "gym": 3,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 18,
+    "start": "Jun 29",
+    "end": "Jul 5",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 60,
+      "vert_m": 1400,
+      "long_run_km": 30,
+      "gym": 2,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 19,
+    "start": "Jul 6",
+    "end": "Jul 12",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 63,
+      "vert_m": 1600,
+      "long_run_km": 32,
+      "gym": 2,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 20,
+    "start": "Jul 13",
+    "end": "Jul 19",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": true,
+    "plan": {
+      "distance_km": 48,
+      "vert_m": 1100,
+      "long_run_km": 22,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 21,
+    "start": "Jul 20",
+    "end": "Jul 26",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 65,
+      "vert_m": 1800,
+      "long_run_km": 35,
+      "gym": 2,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 22,
+    "start": "Jul 27",
+    "end": "Aug 2",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 68,
+      "vert_m": 2000,
+      "long_run_km": 38,
+      "gym": 2,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 23,
+    "start": "Aug 3",
+    "end": "Aug 9",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 70,
+      "vert_m": 2200,
+      "long_run_km": 40,
+      "gym": 2,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 24,
+    "start": "Aug 10",
+    "end": "Aug 16",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": true,
+    "plan": {
+      "distance_km": 52,
+      "vert_m": 1500,
+      "long_run_km": 25,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 25,
+    "start": "Aug 17",
+    "end": "Aug 23",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 73,
+      "vert_m": 2300,
+      "long_run_km": 42,
+      "gym": 2,
+      "series": "hills"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 26,
+    "start": "Aug 24",
+    "end": "Aug 30",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": false,
+    "plan": {
+      "distance_km": 75,
+      "vert_m": 2500,
+      "long_run_km": 42,
+      "gym": 2,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 27,
+    "start": "Aug 31",
+    "end": "Sep 6",
+    "year": 2026,
+    "phase": "specific",
+    "recovery": true,
+    "plan": {
+      "distance_km": 55,
+      "vert_m": 1800,
+      "long_run_km": 25,
+      "gym": 2,
+      "series": null
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 28,
+    "start": "Sep 7",
+    "end": "Sep 13",
+    "year": 2026,
+    "phase": "taper",
+    "recovery": false,
+    "plan": {
+      "distance_km": 55,
+      "vert_m": 1200,
+      "long_run_km": 22,
+      "gym": 2,
+      "series": "tempo"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 29,
+    "start": "Sep 14",
+    "end": "Sep 20",
+    "year": 2026,
+    "phase": "taper",
+    "recovery": false,
+    "plan": {
+      "distance_km": 40,
+      "vert_m": 800,
+      "long_run_km": 16,
+      "gym": 2,
+      "series": "fartlek"
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  },
+  {
+    "number": 30,
+    "start": "Sep 21",
+    "end": "Sep 27",
+    "year": 2026,
+    "phase": "taper",
+    "recovery": false,
+    "plan": {
+      "distance_km": 25,
+      "vert_m": 400,
+      "long_run_km": 10,
+      "gym": 1,
+      "series": null
+    },
+    "actual": null,
+    "compliance": null,
+    "activities": [],
+    "alerts": []
+  }
+]

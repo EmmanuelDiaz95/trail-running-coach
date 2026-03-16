@@ -292,6 +292,12 @@ class DashboardHandler(SimpleHTTPRequestHandler):
     def _handle_weeks(self):
         print("[weeks] Loading all weeks...")
         results = build_all_weeks_json(do_sync=False)
+        # Fallback to static cache if no activity data was found
+        if all(w.get("actual") is None for w in results):
+            cache_path = DASHBOARD_DIR / "weeks_cache.json"
+            if cache_path.exists():
+                print("[weeks] No live data, using static cache")
+                results = json.loads(cache_path.read_text())
         print(f"[weeks] Loaded {len(results)} weeks")
         self._send_json(results)
 
