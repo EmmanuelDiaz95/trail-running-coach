@@ -26,16 +26,38 @@ def _load_env():
         os.environ.setdefault(key.strip(), value.strip())
 
 
+def _seed_tokens_from_env(token_dir: Path):
+    """Write OAuth tokens from env vars to disk (for Railway/cloud deploys)."""
+    import base64
+    oauth1_b64 = os.environ.get("GARMIN_OAUTH1")
+    oauth2_b64 = os.environ.get("GARMIN_OAUTH2")
+    if not oauth1_b64 or not oauth2_b64:
+        return
+    oauth1_path = token_dir / "oauth1_token.json"
+    oauth2_path = token_dir / "oauth2_token.json"
+    if oauth1_path.exists() and oauth2_path.exists():
+        return  # already seeded
+    token_dir.mkdir(parents=True, exist_ok=True)
+    oauth1_path.write_text(base64.b64decode(oauth1_b64).decode())
+    oauth2_path.write_text(base64.b64decode(oauth2_b64).decode())
+    print("[garmin] Seeded tokens from environment")
+
+
 def _get_client() -> Garmin:
     """Authenticate with Garmin Connect. Uses saved tokens, then .env, then prompt."""
     _load_env()
     token_dir = Path(os.environ.get("GARMIN_TOKEN_DIR", Path.home() / ".garminconnect"))
     token_dir.mkdir(exist_ok=True)
 
+    # Seed tokens from env vars if available (Railway deploy)
+    _seed_tokens_from_env(token_dir)
+
     if (token_dir / "oauth1_token.json").exists():
         try:
             client = Garmin()
             client.login(str(token_dir))
+            # Save refreshed tokens back
+            client.garth.dump(str(token_dir))
             return client
         except Exception:
             pass  # tokens expired, fall through to password auth

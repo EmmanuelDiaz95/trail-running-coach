@@ -26,6 +26,17 @@ API_KEY = os.environ.get("API_KEY", "")
 SYNC_COOLDOWN_SECONDS = 60
 _last_sync_time: dict[int, float] = {}
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+LOCATION_WORDS = {
+    "Calimaya", "Metepec", "Cuajimalpa", "Toluca", "Morelos",
+    "Zapopan", "Urique", "de", "la", "el", "los", "las",
+}
+
+
+def sanitize_activity_name(name: str) -> str:
+    """Strip location words from Garmin activity names."""
+    parts = name.split()
+    clean = [p for p in parts if p not in LOCATION_WORDS]
+    return " ".join(clean) if clean else name
 
 
 def format_date_short(d: date) -> str:
@@ -135,7 +146,7 @@ def build_week_json(week_num: int, do_sync: bool = False) -> dict:
 
         entry = {
             "date": format_activity_date(a.date),
-            "name": html_mod.escape(a.name),
+            "name": html_mod.escape(sanitize_activity_name(a.name)),
             "type": dtype,
             "dist": round(a.distance_km, 2) if a.distance_km > 0.1 else None,
             "pace": pace_str(a.duration_seconds, a.distance_km),
@@ -157,6 +168,30 @@ def build_week_json(week_num: int, do_sync: bool = False) -> dict:
     ]
 
     return result
+
+
+def _update_weeks_cache(week_num: int, week_data: dict):
+    """Update the static weeks cache file with fresh data for one week."""
+    cache_path = DASHBOARD_DIR / "weeks_cache.json"
+    try:
+        if cache_path.exists():
+            weeks = json.loads(cache_path.read_text())
+        else:
+            weeks = []
+        # Find and replace the week, or append
+        replaced = False
+        for i, w in enumerate(weeks):
+            if w.get("number") == week_num:
+                weeks[i] = week_data
+                replaced = True
+                break
+        if not replaced:
+            weeks.append(week_data)
+            weeks.sort(key=lambda w: w.get("number", 0))
+        cache_path.write_text(json.dumps(weeks, indent=2))
+        print(f"[cache] Updated week {week_num} in static cache")
+    except Exception as e:
+        print(f"[cache] Failed to update cache: {e}")
 
 
 def build_all_weeks_json(do_sync: bool = False) -> list[dict]:
@@ -287,6 +322,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         else:
             _last_sync_time[week_num] = time.time()
             print(f"[sync] Week {week_num}: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
+            # Update static cache with fresh data
+            _update_weeks_cache(week_num, result)
             self._send_json(result)
 
     def _handle_weeks(self):
