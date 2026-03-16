@@ -221,7 +221,10 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.send_error(403, "Forbidden")
             return
 
-        if parsed.path == '/api/weeks':
+        if parsed.path in ('/', '/index.html'):
+            self.path = '/dashboard.html'
+            super().do_GET()
+        elif parsed.path == '/api/weeks':
             self._handle_weeks()
         else:
             super().do_GET()
