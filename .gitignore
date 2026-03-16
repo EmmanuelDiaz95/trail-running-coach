@@ -5,6 +5,7 @@ venv/
 .venv/
 .DS_Store
 data/activities/
+data/activities_*/
 data/reports/
 Tarahumara_Training_Plan_Complete_Context.md
 *.txt.bak

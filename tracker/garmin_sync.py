@@ -12,6 +12,9 @@ from garminconnect import Garmin
 from .config import ACTIVITIES_DIR, PROJECT_ROOT
 from .models import GarminActivity
 
+# Default profile ID
+DEFAULT_PROFILE = "default"
+
 
 def _load_env():
     """Load credentials from .env file if it exists."""
@@ -26,11 +29,20 @@ def _load_env():
         os.environ.setdefault(key.strip(), value.strip())
 
 
-def _seed_tokens_from_env(token_dir: Path):
+def _profile_env(key: str, profile_id: str) -> str | None:
+    """Get env var for a profile. Tries PROFILE_{ID}_{KEY} first, then {KEY} for default."""
+    if profile_id and profile_id != DEFAULT_PROFILE:
+        val = os.environ.get(f"PROFILE_{profile_id.upper()}_{key}")
+        if val:
+            return val
+    return os.environ.get(key)
+
+
+def _seed_tokens_from_env(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
     """Write OAuth tokens from env vars to disk (for Railway/cloud deploys)."""
     import base64
-    oauth1_b64 = os.environ.get("GARMIN_OAUTH1")
-    oauth2_b64 = os.environ.get("GARMIN_OAUTH2")
+    oauth1_b64 = _profile_env("GARMIN_OAUTH1", profile_id)
+    oauth2_b64 = _profile_env("GARMIN_OAUTH2", profile_id)
     if not oauth1_b64 or not oauth2_b64:
         return
     oauth1_path = token_dir / "oauth1_token.json"
@@ -40,17 +52,25 @@ def _seed_tokens_from_env(token_dir: Path):
     token_dir.mkdir(parents=True, exist_ok=True)
     oauth1_path.write_text(base64.b64decode(oauth1_b64).decode())
     oauth2_path.write_text(base64.b64decode(oauth2_b64).decode())
-    print("[garmin] Seeded tokens from environment")
+    print(f"[garmin] Seeded tokens from environment (profile: {profile_id})")
 
 
-def _get_client() -> Garmin:
-    """Authenticate with Garmin Connect. Uses saved tokens, then .env, then prompt."""
+def _get_token_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
+    """Get token directory for a profile."""
+    base = Path(os.environ.get("GARMIN_TOKEN_DIR", Path.home() / ".garminconnect"))
+    if profile_id and profile_id != DEFAULT_PROFILE:
+        return base.parent / f"{base.name}_{profile_id}"
+    return base
+
+
+def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
+    """Authenticate with Garmin Connect for a specific profile."""
     _load_env()
-    token_dir = Path(os.environ.get("GARMIN_TOKEN_DIR", Path.home() / ".garminconnect"))
-    token_dir.mkdir(exist_ok=True)
+    token_dir = _get_token_dir(profile_id)
+    token_dir.mkdir(parents=True, exist_ok=True)
 
     # Seed tokens from env vars if available (Railway deploy)
-    _seed_tokens_from_env(token_dir)
+    _seed_tokens_from_env(token_dir, profile_id)
 
     if (token_dir / "oauth1_token.json").exists():
         try:
@@ -62,17 +82,24 @@ def _get_client() -> Garmin:
         except Exception:
             pass  # tokens expired, fall through to password auth
 
-    email = os.environ.get("GARMIN_EMAIL")
-    password = os.environ.get("GARMIN_PASSWORD")
+    email = _profile_env("GARMIN_EMAIL", profile_id)
+    password = _profile_env("GARMIN_PASSWORD", profile_id)
     if not email or not password:
         if not sys.stdin.isatty():
-            raise RuntimeError("GARMIN_EMAIL and GARMIN_PASSWORD env vars required in headless mode")
-        email = email or input("Garmin email: ")
-        password = password or getpass("Garmin password: ")
+            raise RuntimeError(f"Garmin credentials required for profile '{profile_id}' in headless mode")
+        email = email or input(f"Garmin email ({profile_id}): ")
+        password = password or getpass(f"Garmin password ({profile_id}): ")
     client = Garmin(email, password)
     client.login()
     client.garth.dump(str(token_dir))
     return client
+
+
+def _get_activities_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
+    """Get activities cache directory for a profile."""
+    if profile_id and profile_id != DEFAULT_PROFILE:
+        return ACTIVITIES_DIR.parent / f"activities_{profile_id}"
+    return ACTIVITIES_DIR
 
 
 def _normalize_activity(raw: dict) -> GarminActivity:
@@ -112,9 +139,9 @@ def _normalize_activity(raw: dict) -> GarminActivity:
     )
 
 
-def sync_activities(start_date: date, end_date: date) -> list[GarminActivity]:
+def sync_activities(start_date: date, end_date: date, profile_id: str = DEFAULT_PROFILE) -> list[GarminActivity]:
     """Pull activities from Garmin Connect for a date range and cache them."""
-    client = _get_client()
+    client = _get_client(profile_id)
 
     raw_activities = client.get_activities_by_date(
         start_date.isoformat(),
@@ -124,17 +151,19 @@ def sync_activities(start_date: date, end_date: date) -> list[GarminActivity]:
     activities = [_normalize_activity(a) for a in raw_activities]
 
     # Cache raw JSON
-    ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
-    cache_file = ACTIVITIES_DIR / f"{start_date.isoformat()}_{end_date.isoformat()}.json"
+    act_dir = _get_activities_dir(profile_id)
+    act_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = act_dir / f"{start_date.isoformat()}_{end_date.isoformat()}.json"
     with open(cache_file, "w") as f:
         json.dump(raw_activities, f, indent=2, default=str)
 
     return activities
 
 
-def load_cached_activities(start_date: date, end_date: date) -> list[GarminActivity] | None:
+def load_cached_activities(start_date: date, end_date: date, profile_id: str = DEFAULT_PROFILE) -> list[GarminActivity] | None:
     """Load activities from cache if available."""
-    cache_file = ACTIVITIES_DIR / f"{start_date.isoformat()}_{end_date.isoformat()}.json"
+    act_dir = _get_activities_dir(profile_id)
+    cache_file = act_dir / f"{start_date.isoformat()}_{end_date.isoformat()}.json"
     if not cache_file.exists():
         return None
 

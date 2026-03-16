@@ -571,6 +571,32 @@
   .alert-card__text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; }
   .alert-card__text strong { color: var(--text-primary); font-weight: 500; }
 
+  /* ── Profile Switcher ── */
+  .profile-switcher {
+    display: none; /* hidden when only 1 profile */
+    align-items: center; gap: 6px;
+    margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+  .profile-switcher--visible { display: flex; }
+  .profile-switcher__label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .profile-switcher__tabs { display: flex; gap: 4px; }
+  .profile-switcher__tab {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.05em; padding: 6px 14px; border-radius: 20px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-secondary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .profile-switcher__tab:hover { border-color: var(--border-accent); color: var(--text-primary); }
+  .profile-switcher__tab--active {
+    background: var(--copper-glow); border-color: rgba(200, 121, 65, 0.3);
+    color: var(--copper-light);
+  }
+
   /* ── Sync Button ── */
   .sync-btn {
     position: fixed; bottom: 28px; right: 28px; z-index: 50;
@@ -665,6 +691,9 @@
     .container { padding: 0 14px 70px; }
     .hero { padding: calc(20px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 18px; }
     .hero__eyebrow { font-size: 0.65rem; margin-bottom: 8px; letter-spacing: 0.15em; }
+    .profile-switcher { margin-bottom: 12px; gap: 4px; flex-wrap: wrap; }
+    .profile-switcher__label { font-size: 0.58rem; }
+    .profile-switcher__tab { font-size: 0.6rem; padding: 5px 10px; }
     .hero__title { font-size: 1.5rem; margin-bottom: 6px; }
     .hero__meta { font-size: 0.78rem; margin-bottom: 16px; }
     .hero__meta .sep { margin: 0 6px; }
@@ -823,6 +852,10 @@
   <!-- ═══════════ HERO (static) ═══════════ -->
   <header class="hero">
     <div class="hero__eyebrow">30-Week Training Program</div>
+    <div class="profile-switcher" id="profileSwitcher">
+      <span class="profile-switcher__label">Athlete:</span>
+      <div class="profile-switcher__tabs" id="profileTabs"></div>
+    </div>
     <h1 class="hero__title">Ultra Trail <span>Tarahumara</span></h1>
     <p class="hero__meta">
       Sierra Tarahumara, Chihuahua
@@ -927,6 +960,8 @@
 let WEEKS = [];
 let selectedWeek = 0;
 let dropdownOpen = false;
+let PROFILES = [];
+let activeProfile = localStorage.getItem('tarahumara_profile') || 'default';
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -1365,19 +1400,49 @@ setInterval(updateCountdown, 1000);
 // ═══════════════════════════════════════════════════════
 // INITIAL LOAD — fetch all weeks from API, fallback to offline
 // ═══════════════════════════════════════════════════════
+async function loadProfiles() {
+  try {
+    const res = await fetch('/api/profiles');
+    PROFILES = await res.json();
+    if (PROFILES.length > 1) {
+      const switcher = document.getElementById('profileSwitcher');
+      const tabs = document.getElementById('profileTabs');
+      switcher.classList.add('profile-switcher--visible');
+      tabs.innerHTML = PROFILES.map(p =>
+        '<button class="profile-switcher__tab' + (p.id === activeProfile ? ' profile-switcher__tab--active' : '') + '" data-profile="' + p.id + '">' + p.name + '</button>'
+      ).join('');
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-profile]');
+        if (!btn || btn.dataset.profile === activeProfile) return;
+        activeProfile = btn.dataset.profile;
+        localStorage.setItem('tarahumara_profile', activeProfile);
+        tabs.querySelectorAll('.profile-switcher__tab').forEach(t => t.classList.remove('profile-switcher__tab--active'));
+        btn.classList.add('profile-switcher__tab--active');
+        loadWeeks();
+      });
+      // Validate stored profile still exists
+      if (!PROFILES.find(p => p.id === activeProfile)) {
+        activeProfile = PROFILES[0].id;
+        localStorage.setItem('tarahumara_profile', activeProfile);
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load profiles');
+  }
+}
+
 async function loadWeeks() {
   try {
-    const res = await fetch('/api/weeks');
+    const profileParam = activeProfile !== 'default' ? '?profile=' + activeProfile : '';
+    const res = await fetch('/api/weeks' + profileParam);
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {
       WEEKS = data;
-      // Select the latest week that has actual data, or the first week with actual data
       let bestIdx = 0;
       for (let i = 0; i < WEEKS.length; i++) {
         if (WEEKS[i].actual) bestIdx = i;
       }
       selectedWeek = bestIdx;
-      // Update progress bar and header
       const currentNum = WEEKS[bestIdx].number;
       const pct = (currentNum / 30 * 100).toFixed(1);
       document.documentElement.style.setProperty('--progress-pct', pct + '%');
@@ -1389,7 +1454,6 @@ async function loadWeeks() {
   } catch (e) {
     console.warn('API unavailable, using cached data if any');
   }
-  // If API fails and WEEKS is empty, show a message
   if (WEEKS.length === 0) {
     document.getElementById('dynamicContent').innerHTML =
       '<div class="empty-state" style="margin-top:40px">'
@@ -1398,7 +1462,7 @@ async function loadWeeks() {
       + 'Start the dashboard server:<br><code style="color:var(--copper-light)">python dashboard/serve.py</code></div></div>';
   }
 }
-loadWeeks();
+loadProfiles().then(() => loadWeeks());
 
 // ═══════════════════════════════════════════════════════
 // SYNC BUTTON — calls /api/sync on the local server
@@ -1425,7 +1489,8 @@ syncBtn.addEventListener('click', async () => {
     const headers = {};
     const apiKey = localStorage.getItem('tarahumara_api_key');
     if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
-    const res = await fetch('/api/sync?week=' + weekNum, { method: 'POST', headers });
+    const profileParam = activeProfile !== 'default' ? '&profile=' + activeProfile : '';
+    const res = await fetch('/api/sync?week=' + weekNum + profileParam, { method: 'POST', headers });
     const data = await res.json();
 
     if (res.status === 401) {

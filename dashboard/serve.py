@@ -17,14 +17,33 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from tracker.plan_data import get_current_week, get_week, get_week_dates, load_plan
-from tracker.garmin_sync import sync_activities, load_cached_activities
+from tracker.garmin_sync import sync_activities, load_cached_activities, DEFAULT_PROFILE
 from tracker.analysis import build_week_actual, compliance_score
 from tracker.alerts import generate_alerts
 
 DASHBOARD_DIR = Path(__file__).resolve().parent
 API_KEY = os.environ.get("API_KEY", "")
 SYNC_COOLDOWN_SECONDS = 60
-_last_sync_time: dict[int, float] = {}
+_last_sync_time: dict[str, float] = {}  # key: "profile:week"
+
+
+def _load_profiles() -> list[dict]:
+    """Load profiles from PROFILES env var. Format: id1:Name1,id2:Name2"""
+    raw = os.environ.get("PROFILES", "")
+    profiles = []
+    if raw:
+        for entry in raw.split(","):
+            entry = entry.strip()
+            if ":" in entry:
+                pid, name = entry.split(":", 1)
+                profiles.append({"id": pid.strip(), "name": name.strip()})
+            elif entry:
+                profiles.append({"id": entry.strip(), "name": entry.strip()})
+    if not profiles:
+        profiles = [{"id": DEFAULT_PROFILE, "name": "Default"}]
+    return profiles
+
+PROFILES = _load_profiles()
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 LOCATION_WORDS = {
     "Calimaya", "Metepec", "Cuajimalpa", "Toluca", "Morelos",
@@ -66,7 +85,7 @@ def activity_type_for_dashboard(garmin_type: str) -> str:
     return 'cycling'
 
 
-def build_week_json(week_num: int, do_sync: bool = False) -> dict:
+def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFAULT_PROFILE) -> dict:
     """Build a single week's data in the dashboard WEEKS format."""
     plan = get_week(week_num)
     if plan is None:
@@ -78,11 +97,11 @@ def build_week_json(week_num: int, do_sync: bool = False) -> dict:
     activities = None
     if do_sync:
         try:
-            activities = sync_activities(start, end)
+            activities = sync_activities(start, end, profile_id)
         except Exception as e:
             return {"error": f"Garmin sync failed: {str(e)}"}
     else:
-        activities = load_cached_activities(start, end)
+        activities = load_cached_activities(start, end, profile_id)
 
     # Base plan data
     result = {
@@ -116,14 +135,14 @@ def build_week_json(week_num: int, do_sync: bool = False) -> dict:
     prev_actual = None
     if week_num > 1:
         prev_start, prev_end = get_week_dates(week_num - 1)
-        prev_acts = load_cached_activities(prev_start, prev_end)
+        prev_acts = load_cached_activities(prev_start, prev_end, profile_id)
         if prev_acts:
             prev_actual = build_week_actual(prev_acts, week_num - 1)
 
     prev_weeks = []
     for w in range(max(1, week_num - 4), week_num):
         ws, we = get_week_dates(w)
-        wa = load_cached_activities(ws, we)
+        wa = load_cached_activities(ws, we, profile_id)
         if wa:
             prev_weeks.append(build_week_actual(wa, w))
 
@@ -170,9 +189,10 @@ def build_week_json(week_num: int, do_sync: bool = False) -> dict:
     return result
 
 
-def _update_weeks_cache(week_num: int, week_data: dict):
+def _update_weeks_cache(week_num: int, week_data: dict, profile_id: str = DEFAULT_PROFILE):
     """Update the static weeks cache file with fresh data for one week."""
-    cache_path = DASHBOARD_DIR / "weeks_cache.json"
+    suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+    cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
     try:
         if cache_path.exists():
             weeks = json.loads(cache_path.read_text())
@@ -194,7 +214,7 @@ def _update_weeks_cache(week_num: int, week_data: dict):
         print(f"[cache] Failed to update cache: {e}")
 
 
-def build_all_weeks_json(do_sync: bool = False) -> list[dict]:
+def build_all_weeks_json(do_sync: bool = False, profile_id: str = DEFAULT_PROFILE) -> list[dict]:
     """Build data for all weeks that have plan data."""
     plan_weeks = load_plan()
     current = get_current_week()
@@ -204,9 +224,9 @@ def build_all_weeks_json(do_sync: bool = False) -> list[dict]:
         wn = wp.week_number
         # Only sync current week, load cached for past weeks
         if do_sync and wn == current:
-            results.append(build_week_json(wn, do_sync=True))
+            results.append(build_week_json(wn, do_sync=True, profile_id=profile_id))
         elif wn <= (current or 0):
-            results.append(build_week_json(wn, do_sync=False))
+            results.append(build_week_json(wn, do_sync=False, profile_id=profile_id))
         else:
             # Future week — plan only
             start, end = get_week_dates(wn)
@@ -259,8 +279,10 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if parsed.path in ('/', '/index.html'):
             self.path = '/dashboard.html'
             super().do_GET()
+        elif parsed.path == '/api/profiles':
+            self._send_json(PROFILES)
         elif parsed.path == '/api/weeks':
-            self._handle_weeks()
+            self._handle_weeks(parsed)
         else:
             super().do_GET()
 
@@ -281,13 +303,22 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _validate_profile(self, params: dict) -> str:
+        """Extract and validate profile ID from query params."""
+        profile_id = params.get('profile', [DEFAULT_PROFILE])[0]
+        valid_ids = {p["id"] for p in PROFILES}
+        if profile_id not in valid_ids:
+            return DEFAULT_PROFILE
+        return profile_id
+
     def _handle_sync(self, parsed):
         if not self._check_auth():
             self._send_json({"error": "Unauthorized"}, 401)
             return
 
-        # Parse and validate week number
+        # Parse and validate params
         params = parse_qs(parsed.query)
+        profile_id = self._validate_profile(params)
         week_str = params.get('week', [None])[0]
 
         if week_str:
@@ -305,35 +336,37 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 self._send_json({"error": "Not in training window"}, 400)
                 return
 
-        # Rate limiting
+        # Rate limiting per profile+week
+        rate_key = f"{profile_id}:{week_num}"
         now = time.time()
-        last = _last_sync_time.get(week_num, 0)
+        last = _last_sync_time.get(rate_key, 0)
         if now - last < SYNC_COOLDOWN_SECONDS:
             remaining = int(SYNC_COOLDOWN_SECONDS - (now - last))
             self._send_json({"error": f"Please wait {remaining}s before syncing again"}, 429)
             return
 
-        print(f"[sync] Syncing week {week_num} from Garmin...")
-        result = build_week_json(week_num, do_sync=True)
+        print(f"[sync] Syncing week {week_num} for profile '{profile_id}' from Garmin...")
+        result = build_week_json(week_num, do_sync=True, profile_id=profile_id)
 
         if "error" in result:
             print(f"[sync] Failed: {result['error']}")
             self._send_json({"error": "Garmin sync failed. Check server logs."}, 500)
         else:
-            _last_sync_time[week_num] = time.time()
-            print(f"[sync] Week {week_num}: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
-            # Update static cache with fresh data
-            _update_weeks_cache(week_num, result)
+            _last_sync_time[rate_key] = time.time()
+            print(f"[sync] Week {week_num} [{profile_id}]: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
+            _update_weeks_cache(week_num, result, profile_id)
             self._send_json(result)
 
-    def _handle_weeks(self):
-        print("[weeks] Loading all weeks...")
-        results = build_all_weeks_json(do_sync=False)
+    def _handle_weeks(self, parsed):
+        params = parse_qs(parsed.query)
+        profile_id = self._validate_profile(params)
+        print(f"[weeks] Loading all weeks for profile '{profile_id}'...")
+        results = build_all_weeks_json(do_sync=False, profile_id=profile_id)
         # Fallback to static cache if no activity data was found
         if all(w.get("actual") is None for w in results):
-            cache_path = DASHBOARD_DIR / "weeks_cache.json"
+            cache_path = DASHBOARD_DIR / f"weeks_cache{'_' + profile_id if profile_id != DEFAULT_PROFILE else ''}.json"
             if cache_path.exists():
-                print("[weeks] No live data, using static cache")
+                print(f"[weeks] No live data, using static cache for '{profile_id}'")
                 results = json.loads(cache_path.read_text())
         print(f"[weeks] Loaded {len(results)} weeks")
         self._send_json(results)
