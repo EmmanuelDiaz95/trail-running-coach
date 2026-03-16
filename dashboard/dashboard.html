@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tarahumara Ultra Tracker</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tarahumara">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #070a0f;
+    --bg-primary: #0c0f16;
+    --bg-card: #12161f;
+    --bg-card-hover: #181d28;
+    --bg-card-alt: #161b25;
+    --border: #1c2230;
+    --border-accent: #252d3d;
+
+    --copper: #c87941;
+    --copper-light: #dba070;
+    --copper-dim: #8b5a30;
+    --copper-glow: rgba(200, 121, 65, 0.12);
+    --copper-glow-strong: rgba(200, 121, 65, 0.25);
+    --terracotta: #b85c38;
+    --canyon-red: #a04030;
+
+    --forest: #3d8b5e;
+    --forest-light: #5aad78;
+    --desert-gold: #c49a3a;
+    --desert-gold-dim: #8a6d2a;
+    --info-blue: #4a7eb8;
+
+    --text-primary: #e5dfd6;
+    --text-secondary: #8a8578;
+    --text-tertiary: #5a564e;
+    --text-accent: var(--copper-light);
+
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-xs: 5px;
+  }
+
+  html {
+    font-size: 22px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Topographic background ── */
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
+  .topo-bg svg { width: 100%; height: 100%; }
+
+  /* ── Grain overlay ── */
+  .grain {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat; background-size: 256px 256px;
+  }
+
+  .container { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 0 40px 80px; }
+
+  /* ── Hero Header ── */
+  .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; }
+
+  .hero__eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--copper); margin-bottom: 12px;
+    opacity: 0; animation: fadeUp 0.6s ease forwards;
+  }
+
+  .hero__title {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.05; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 10px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.08s forwards;
+  }
+
+  .hero__title span {
+    background: linear-gradient(135deg, var(--copper-light), var(--copper), var(--terracotta));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .hero__meta {
+    font-size: 0.87rem; color: var(--text-secondary); font-weight: 400; margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.15s forwards;
+  }
+  .hero__meta strong { color: var(--text-primary); font-weight: 500; }
+  .hero__meta .sep {
+    display: inline-block; width: 3px; height: 3px; border-radius: 50%;
+    background: var(--copper-dim); margin: 0 10px; vertical-align: middle;
+  }
+
+  .countdown {
+    display: flex; gap: 20px; margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.22s forwards;
+  }
+  .countdown__block { text-align: center; }
+  .countdown__number {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 2.2rem;
+    line-height: 1; color: var(--text-primary); min-width: 56px; display: block;
+  }
+  .countdown__label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 6px;
+  }
+
+  .progress-bar {
+    width: 100%; height: 6px; background: var(--border); border-radius: 3px;
+    overflow: hidden; margin-bottom: 8px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+  .progress-bar__fill {
+    height: 100%; background: linear-gradient(90deg, var(--copper), var(--copper-light));
+    border-radius: 2px; width: 0; animation: progressGrow 1.2s ease 0.8s forwards;
+  }
+  .progress-bar__label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-tertiary);
+    display: flex; justify-content: space-between;
+    opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
+  }
+
+  /* ── Data tags (ACTUAL / PLANNED) ── */
+  .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 9px;
+    border-radius: 3px; display: inline-flex; align-items: center; gap: 5px;
+    vertical-align: middle; line-height: 1;
+  }
+  .tag--actual {
+    background: rgba(200, 121, 65, 0.15); color: var(--copper-light);
+    border: 1px solid rgba(200, 121, 65, 0.25);
+  }
+  .tag--planned {
+    background: rgba(90, 86, 78, 0.1); color: var(--text-tertiary);
+    border: 1px solid var(--border);
+  }
+  .tag--pending {
+    background: rgba(74, 126, 184, 0.08); color: rgba(74, 126, 184, 0.6);
+    border: 1px solid rgba(74, 126, 184, 0.15);
+  }
+  .tag__dot {
+    width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+  }
+  .tag__dot--actual { background: var(--copper); }
+  .tag__dot--planned { background: var(--text-tertiary); }
+
+  /* ── Week Selector ── */
+  .week-selector {
+    margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.38s forwards;
+    position: relative;
+    z-index: 10;
+  }
+
+  .week-selector__control {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    display: flex; align-items: center; gap: 0;
+    transition: border-color 0.3s ease;
+  }
+
+  .week-selector__control:hover,
+  .week-selector--open .week-selector__control {
+    border-color: var(--border-accent);
+  }
+
+  .week-selector__arrow {
+    background: none; border: none; color: var(--text-tertiary); cursor: pointer;
+    width: 48px; height: 56px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; transition: color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .week-selector__arrow:hover { color: var(--copper-light); }
+  .week-selector__arrow:disabled { opacity: 0.2; cursor: default; }
+  .week-selector__arrow:disabled:hover { color: var(--text-tertiary); }
+
+  .week-selector__display {
+    flex: 1; display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 4px; cursor: pointer; gap: 12px;
+    border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+    min-height: 56px;
+  }
+
+  .week-selector__main {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  .week-selector__week-num {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem;
+    color: var(--text-primary);
+  }
+
+  .week-selector__phase {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--copper-glow); color: var(--copper-light);
+    padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(200, 121, 65, 0.2);
+  }
+
+  .week-selector__phase--recovery {
+    background: rgba(196, 154, 58, 0.1); color: var(--desert-gold);
+    border-color: rgba(196, 154, 58, 0.2);
+  }
+
+  .week-selector__dates {
+    font-size: 0.92rem; color: var(--text-secondary);
+  }
+
+  .week-selector__right {
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-right: 4px;
+  }
+
+  .week-selector__chevron {
+    color: var(--text-tertiary); font-size: 0.7rem; transition: transform 0.3s ease;
+  }
+  .week-selector--open .week-selector__chevron { transform: rotate(180deg); }
+
+  /* ── Dropdown panel ── */
+  .week-dropdown {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--bg-card); border: 1px solid var(--border-accent);
+    border-radius: var(--radius); overflow-y: auto; overflow-x: hidden; z-index: 20;
+    max-height: 0; opacity: 0; transform: translateY(-6px);
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    overscroll-behavior: contain;
+  }
+  .week-dropdown::-webkit-scrollbar { width: 6px; }
+  .week-dropdown::-webkit-scrollbar-track { background: transparent; }
+  .week-dropdown::-webkit-scrollbar-thumb { background: var(--copper-dim); border-radius: 3px; }
+
+  .week-selector--open .week-dropdown {
+    max-height: 60vh; opacity: 1; transform: translateY(0); pointer-events: auto;
+  }
+
+  .week-dropdown__list { padding: 6px; }
+
+  .week-dropdown__option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 14px; border-radius: var(--radius-sm); cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .week-dropdown__option:hover { background: var(--bg-card-hover); }
+  .week-dropdown__option--active {
+    background: var(--copper-glow); border: 1px solid rgba(200, 121, 65, 0.15);
+  }
+
+  .week-dropdown__opt-num {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem;
+    color: var(--copper); min-width: 28px;
+  }
+
+  .week-dropdown__opt-info { flex: 1; }
+  .week-dropdown__opt-dates {
+    font-size: 0.8rem; color: var(--text-primary); font-weight: 500;
+  }
+  .week-dropdown__opt-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text-tertiary); margin-top: 2px;
+  }
+
+  .week-dropdown__opt-badges {
+    display: flex; gap: 6px; align-items: center;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 18px; padding-left: 2px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  /* ── Main grid ── */
+  .stats-grid {
+    display: grid; grid-template-columns: 280px 1fr 300px;
+    gap: 24px; margin-bottom: 40px;
+  }
+  @media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr; } }
+
+  /* ── Compliance Ring ── */
+  .compliance-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px 20px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; position: relative; overflow: hidden;
+  }
+  .compliance-card::before {
+    content: ''; position: absolute; top: -40%; left: -40%; width: 180%; height: 180%;
+    background: radial-gradient(circle at center, var(--copper-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .compliance-card--empty::before { opacity: 0.3; }
+
+  .compliance-ring { width: 200px; height: 200px; position: relative; margin-bottom: 18px; }
+  .compliance-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .compliance-ring__track { fill: none; stroke: var(--border); stroke-width: 8; }
+  .compliance-ring__fill {
+    fill: none; stroke: url(#copperGradient); stroke-width: 8; stroke-linecap: round;
+    stroke-dasharray: 408; stroke-dashoffset: 408;
+    transition: stroke-dashoffset 1.2s ease;
+    filter: drop-shadow(0 0 8px rgba(200, 121, 65, 0.4));
+  }
+  .compliance-card--empty .compliance-ring__fill {
+    stroke: var(--border); filter: none;
+  }
+  .compliance-ring__value {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .compliance-ring__number {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 3.2rem;
+    line-height: 1; color: var(--text-primary);
+  }
+  .compliance-ring__unit {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    color: var(--copper); letter-spacing: 0.1em; margin-top: 4px;
+  }
+  .compliance-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .compliance-week {
+    font-size: 1rem; color: var(--text-secondary); margin-top: 8px; font-weight: 500;
+  }
+
+  /* ── Metric Cards ── */
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .metric-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px 24px; transition: border-color 0.3s ease, background 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .metric-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+
+  .metric-card__header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+  }
+  .metric-card__icon {
+    width: 34px; height: 34px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .metric-card__icon--run { background: rgba(200, 121, 65, 0.12); color: var(--copper-light); }
+  .metric-card__icon--vert { background: rgba(61, 139, 94, 0.12); color: var(--forest-light); }
+  .metric-card__icon--long { background: rgba(196, 154, 58, 0.12); color: var(--desert-gold); }
+  .metric-card__icon--gym { background: rgba(74, 126, 184, 0.12); color: var(--info-blue); }
+
+  .metric-card__delta {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500;
+    padding: 3px 9px; border-radius: 4px;
+  }
+  .metric-card__delta--positive { background: rgba(61, 139, 94, 0.12); color: var(--forest-light); }
+  .metric-card__delta--negative { background: rgba(196, 154, 58, 0.1); color: var(--desert-gold); }
+  .metric-card__delta--neutral { background: rgba(90, 86, 78, 0.15); color: var(--text-secondary); }
+
+  .metric-card__label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 10px;
+  }
+
+  .metric-card__dual {
+    display: flex; gap: 16px; margin-bottom: 12px;
+  }
+
+  .metric-card__value-group { display: flex; flex-direction: column; gap: 3px; }
+
+  .metric-card__value-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .metric-card__value-tag--actual { color: var(--copper); }
+  .metric-card__value-tag--planned { color: var(--text-tertiary); }
+
+  .metric-card__value-num {
+    font-family: 'Syne', sans-serif; font-weight: 700; line-height: 1;
+  }
+  .metric-card__value-num--actual { font-size: 1.9rem; color: var(--text-primary); }
+  .metric-card__value-num--planned { font-size: 1.4rem; color: var(--text-tertiary); }
+  .metric-card__value-num--solo { font-size: 1.9rem; color: var(--text-secondary); }
+
+  .metric-card__value-unit {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-tertiary);
+    font-weight: 400;
+  }
+
+  .metric-card__bar {
+    width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .metric-card__bar-fill {
+    height: 100%; border-radius: 2px; width: 0; transition: width 1s ease;
+  }
+  .metric-card__bar-fill--run { background: linear-gradient(90deg, var(--copper), var(--copper-light)); }
+  .metric-card__bar-fill--vert { background: linear-gradient(90deg, var(--forest), var(--forest-light)); }
+  .metric-card__bar-fill--long { background: linear-gradient(90deg, var(--desert-gold-dim), var(--desert-gold)); }
+  .metric-card__bar-fill--gym { background: linear-gradient(90deg, var(--info-blue), #6a9ed0); }
+
+  .metric-card__empty-note {
+    font-size: 0.72rem; color: var(--text-tertiary); font-style: italic; margin-top: 4px;
+  }
+
+  /* ── Upcoming Weeks ── */
+  .upcoming-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .upcoming-card .section-title { margin-bottom: 14px; }
+
+  .upcoming-week {
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .upcoming-week:last-child { border-bottom: none; }
+  .upcoming-week__num {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+    color: var(--copper); min-width: 32px;
+  }
+  .upcoming-week__details { flex: 1; }
+  .upcoming-week__dist {
+    font-family: 'JetBrains Mono', monospace; font-weight: 500;
+    font-size: 0.92rem; color: var(--text-primary);
+  }
+  .upcoming-week__type { font-size: 0.8rem; color: var(--text-tertiary); margin-top: 3px; }
+  .upcoming-week__badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 3px;
+  }
+  .upcoming-week__badge--recovery { background: rgba(196, 154, 58, 0.12); color: var(--desert-gold); }
+  .upcoming-week__badge--series { background: rgba(200, 121, 65, 0.1); color: var(--copper-light); }
+
+  /* ── Activities Section ── */
+  .activities-section { margin-bottom: 36px; }
+
+  .activities-scroll {
+    display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .activities-scroll::-webkit-scrollbar { height: 4px; }
+  .activities-scroll::-webkit-scrollbar-track { background: var(--border); border-radius: 2px; }
+  .activities-scroll::-webkit-scrollbar-thumb { background: var(--copper-dim); border-radius: 2px; }
+
+  .activity-card {
+    min-width: 300px; max-width: 300px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; scroll-snap-align: start;
+    transition: border-color 0.3s ease, transform 0.25s ease; flex-shrink: 0;
+  }
+  .activity-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+  .activity-card__date {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px;
+  }
+  .activity-card__name {
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1.05rem;
+    color: var(--text-primary); margin-bottom: 5px; line-height: 1.25;
+  }
+  .activity-card__type {
+    font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .activity-card__type-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .activity-card__type-dot--trail { background: var(--copper); }
+  .activity-card__type-dot--strength { background: var(--info-blue); }
+  .activity-card__type-dot--cycling { background: var(--forest); }
+  .activity-card__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .activity-card__stat { display: flex; flex-direction: column; }
+  .activity-card__stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .activity-card__stat-value {
+    font-family: 'JetBrains Mono', monospace; font-weight: 500;
+    font-size: 1rem; color: var(--text-primary);
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    background: var(--bg-card); border: 1px dashed var(--border);
+    border-radius: var(--radius); padding: 36px 24px; text-align: center;
+  }
+  .empty-state__icon { font-size: 1.8rem; margin-bottom: 10px; opacity: 0.3; }
+  .empty-state__text {
+    font-size: 0.85rem; color: var(--text-tertiary); line-height: 1.5;
+  }
+  .empty-state__text strong { color: var(--text-secondary); font-weight: 500; }
+
+  /* ── Volume Chart ── */
+  .chart-section { margin-bottom: 36px; }
+  .chart-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 10px; height: 220px; padding-top: 24px;
+  }
+  .chart-bar-group {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    height: 100%; justify-content: flex-end; position: relative;
+  }
+  .chart-bar-wrapper {
+    width: 100%; display: flex; justify-content: center;
+    align-items: flex-end; gap: 3px; flex: 1;
+  }
+  .chart-bar {
+    width: 100%; max-width: 32px; border-radius: 4px 4px 0 0;
+    transition: height 1s ease; position: relative; min-height: 0;
+  }
+  .chart-bar--planned { background: var(--border-accent); opacity: 0.7; }
+  .chart-bar--actual {
+    background: linear-gradient(180deg, var(--copper-light), var(--copper));
+    box-shadow: 0 0 12px rgba(200, 121, 65, 0.2);
+  }
+  .chart-bar--selected { outline: 2px solid var(--copper); outline-offset: 2px; border-radius: 4px 4px 0 0; }
+  .chart-bar-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text-tertiary); margin-top: 8px; text-align: center;
+  }
+  .chart-bar-label--active { color: var(--copper); font-weight: 600; }
+  .chart-bar-value {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--text-secondary); white-space: nowrap;
+  }
+  .chart-legend {
+    display: flex; gap: 20px; margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .chart-legend__item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-tertiary);
+  }
+  .chart-legend__dot { width: 8px; height: 8px; border-radius: 2px; }
+  .chart-legend__dot--planned { background: var(--border-accent); }
+  .chart-legend__dot--actual { background: var(--copper); }
+
+  /* ── Alerts ── */
+  .alerts-section { margin-bottom: 36px; }
+  .alerts-list { display: flex; flex-direction: column; gap: 10px; }
+  .alert-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;
+  }
+  .alert-card__icon {
+    width: 30px; height: 30px; border-radius: 7px; display: flex;
+    align-items: center; justify-content: center; font-size: 0.8rem;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .alert-card__icon--info { background: rgba(74, 126, 184, 0.12); color: var(--info-blue); }
+  .alert-card__icon--warning { background: rgba(196, 154, 58, 0.12); color: var(--desert-gold); }
+  .alert-card__text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; }
+  .alert-card__text strong { color: var(--text-primary); font-weight: 500; }
+
+  /* ── Sync Button ── */
+  .sync-btn {
+    position: fixed; bottom: 28px; right: 28px; z-index: 50;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--copper), var(--terracotta));
+    border: none; cursor: pointer; color: #fff;
+    box-shadow: 0 4px 20px rgba(200, 121, 65, 0.4), 0 0 0 0 rgba(200, 121, 65, 0);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  .sync-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 28px rgba(200, 121, 65, 0.5), 0 0 0 4px rgba(200, 121, 65, 0.15);
+  }
+  .sync-btn:active { transform: scale(0.95); }
+  .sync-btn--syncing { pointer-events: none; }
+  .sync-btn--syncing .sync-btn__icon { animation: spin 1s linear infinite; }
+  .sync-btn__icon { width: 26px; height: 26px; }
+
+  .sync-toast {
+    position: fixed; bottom: 100px; right: 28px; z-index: 50;
+    background: var(--bg-card); border: 1px solid var(--border-accent);
+    border-radius: var(--radius); padding: 14px 20px;
+    font-size: 0.82rem; color: var(--text-secondary);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none; max-width: 320px;
+  }
+  .sync-toast--visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .sync-toast strong { color: var(--text-primary); font-weight: 500; }
+  .sync-toast--error { border-color: var(--canyon-red); }
+  .sync-toast--success { border-color: rgba(61, 139, 94, 0.4); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Footer ── */
+  .footer { text-align: center; padding: 30px 0; }
+  .footer__text {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .footer__text span { color: var(--copper-dim); }
+
+  /* ── Content transition ── */
+  .dynamic-content { transition: opacity 0.25s ease; }
+  .dynamic-content--fading { opacity: 0; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes progressGrow { to { width: var(--progress-pct, 6.67%); } }
+
+  /* ── Responsive ── */
+  @media (max-width: 720px) {
+    .hero { padding: 32px 0 0; }
+    .hero__title { font-size: 1.8rem; }
+    .countdown { gap: 14px; }
+    .countdown__number { font-size: 1.6rem; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .activity-card { min-width: 260px; max-width: 260px; }
+  }
+  @media (max-width: 480px) {
+    .container { padding: 0 16px 60px; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .chart-bars { height: 140px; }
+    .week-selector__dates { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topo-bg">
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="topo" width="300" height="300" patternUnits="userSpaceOnUse">
+      <path d="M0,150 Q75,80 150,130 T300,100" stroke="rgba(200,121,65,0.03)" fill="none" stroke-width="0.8"/>
+      <path d="M0,180 Q90,120 180,170 T300,140" stroke="rgba(200,121,65,0.025)" fill="none" stroke-width="0.6"/>
+      <path d="M0,100 Q60,50 130,90 T300,60" stroke="rgba(200,121,65,0.02)" fill="none" stroke-width="0.5"/>
+      <path d="M0,220 Q100,170 200,210 T300,190" stroke="rgba(200,121,65,0.02)" fill="none" stroke-width="0.5"/>
+      <path d="M0,60 Q50,20 100,50 T300,30" stroke="rgba(200,121,65,0.015)" fill="none" stroke-width="0.4"/>
+      <path d="M0,260 Q80,230 160,250 T300,240" stroke="rgba(200,121,65,0.015)" fill="none" stroke-width="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#topo)"/>
+</svg>
+</div>
+<div class="grain"></div>
+
+<!-- SVG defs for compliance ring gradient -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="copperGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dba070"/>
+      <stop offset="50%" stop-color="#c87941"/>
+      <stop offset="100%" stop-color="#b85c38"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="container">
+
+  <!-- ═══════════ HERO (static) ═══════════ -->
+  <header class="hero">
+    <div class="hero__eyebrow">30-Week Training Program</div>
+    <h1 class="hero__title">Ultra Trail <span>Tarahumara</span></h1>
+    <p class="hero__meta">
+      Sierra Tarahumara, Chihuahua
+      <span class="sep"></span><strong>59km</strong>
+      <span class="sep"></span><strong>2,400m</strong> D+
+      <span class="sep"></span>Oct 2, 2026
+    </p>
+    <div class="countdown">
+      <div class="countdown__block">
+        <span class="countdown__number" id="cd-days">207</span>
+        <span class="countdown__label">Days</span>
+      </div>
+      <div class="countdown__block">
+        <span class="countdown__number" id="cd-hours">00</span>
+        <span class="countdown__label">Hours</span>
+      </div>
+      <div class="countdown__block">
+        <span class="countdown__number" id="cd-mins">00</span>
+        <span class="countdown__label">Mins</span>
+      </div>
+      <div class="countdown__block">
+        <span class="countdown__number" id="cd-secs">00</span>
+        <span class="countdown__label">Secs</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-bar__fill"></div></div>
+    <div class="progress-bar__label"><span>Week 2 of 30</span><span>Base Phase</span></div>
+  </header>
+
+  <!-- ═══════════ WEEK SELECTOR ═══════════ -->
+  <div class="week-selector" id="weekSelector">
+    <div class="week-selector__control">
+      <button class="week-selector__arrow" id="prevWeek" aria-label="Previous week">&#9664;</button>
+      <div class="week-selector__display" id="weekDisplay">
+        <div class="week-selector__main">
+          <span class="week-selector__week-num" id="selWeekNum">Week 1</span>
+          <span class="week-selector__phase" id="selPhase">Base</span>
+          <span class="week-selector__dates" id="selDates">Mar 2 &ndash; 8, 2026</span>
+        </div>
+        <div class="week-selector__right">
+          <span id="selDataTag"></span>
+          <span class="week-selector__chevron">&#9660;</span>
+        </div>
+      </div>
+      <button class="week-selector__arrow" id="nextWeek" aria-label="Next week">&#9654;</button>
+    </div>
+    <div class="week-dropdown" id="weekDropdown">
+      <div class="week-dropdown__list" id="weekDropdownList"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ DYNAMIC CONTENT (re-rendered on week change) ═══════════ -->
+  <div class="dynamic-content" id="dynamicContent">
+
+    <div class="section-title" id="recapTitle">Week Recap</div>
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <div class="activities-section" id="activitiesSection"></div>
+
+    <div class="chart-section">
+      <div class="section-title">Volume Progression</div>
+      <div class="chart-card">
+        <div class="chart-bars" id="volumeChart"></div>
+        <div class="chart-legend">
+          <div class="chart-legend__item">
+            <span class="chart-legend__dot chart-legend__dot--planned"></span>
+            Planned (km) <span class="tag tag--planned" style="margin-left:4px">TARGET</span>
+          </div>
+          <div class="chart-legend__item">
+            <span class="chart-legend__dot chart-legend__dot--actual"></span>
+            Actual (km) <span class="tag tag--actual" style="margin-left:4px">RECORDED</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alerts-section" id="alertsSection"></div>
+
+  </div>
+
+  <footer class="footer">
+    <p class="footer__text">
+      Tarahumara Ultra Tracker <span>&middot;</span> Last synced Mar 15, 2026 <span>&middot;</span> Garmin Connect
+    </p>
+  </footer>
+
+</div>
+
+<!-- ═══════════ SYNC BUTTON (FAB) ═══════════ -->
+<button class="sync-btn" id="syncBtn" title="Sync with Garmin">
+  <svg class="sync-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+    <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+  </svg>
+</button>
+<div class="sync-toast" id="syncToast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA STORE — loaded dynamically from /api/weeks
+// ═══════════════════════════════════════════════════════
+let WEEKS = [];
+let selectedWeek = 0;
+let dropdownOpen = false;
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function delta(actual, planned) {
+  if (actual == null || planned === 0) return null;
+  return ((actual - planned) / planned * 100);
+}
+
+function deltaClass(d) {
+  if (d == null) return '';
+  if (d > 1) return 'metric-card__delta--positive';
+  if (d < -1) return 'metric-card__delta--negative';
+  return 'metric-card__delta--neutral';
+}
+
+function formatDelta(d, isAbs) {
+  if (d == null) return '';
+  if (isAbs) return (d >= 0 ? '+' : '') + d;
+  return (d >= 0 ? '+' : '') + d.toFixed(1) + '%';
+}
+
+function dotClass(type) {
+  if (type === 'trail') return 'activity-card__type-dot--trail';
+  if (type === 'strength') return 'activity-card__type-dot--strength';
+  return 'activity-card__type-dot--cycling';
+}
+
+function typeLabel(type) {
+  if (type === 'trail') return 'Trail Running';
+  if (type === 'strength') return 'Strength';
+  return 'Cross-Training';
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER: Week Selector
+// ═══════════════════════════════════════════════════════
+function renderSelector() {
+  const w = WEEKS[selectedWeek];
+  document.getElementById('selWeekNum').textContent = 'Week ' + w.number;
+
+  const phaseEl = document.getElementById('selPhase');
+  phaseEl.textContent = w.recovery ? 'Recovery' : w.phase.charAt(0).toUpperCase() + w.phase.slice(1);
+  phaseEl.className = 'week-selector__phase' + (w.recovery ? ' week-selector__phase--recovery' : '');
+
+  document.getElementById('selDates').innerHTML = w.start + ' &ndash; ' + w.end + ', ' + w.year;
+
+  const tagEl = document.getElementById('selDataTag');
+  if (w.actual) {
+    tagEl.innerHTML = '<span class="tag tag--actual"><span class="tag__dot tag__dot--actual"></span> Actual data</span>';
+  } else {
+    tagEl.innerHTML = '<span class="tag tag--planned"><span class="tag__dot tag__dot--planned"></span> Plan only</span>';
+  }
+
+  document.getElementById('prevWeek').disabled = selectedWeek === 0;
+  document.getElementById('nextWeek').disabled = selectedWeek === WEEKS.length - 1;
+
+  // Dropdown options
+  const list = document.getElementById('weekDropdownList');
+  list.innerHTML = WEEKS.map((wk, i) => {
+    const active = i === selectedWeek ? ' week-dropdown__option--active' : '';
+    const badges = [];
+    if (wk.actual) badges.push('<span class="tag tag--actual" style="font-size:0.48rem">ACTUAL</span>');
+    if (wk.recovery) badges.push('<span class="tag tag--pending" style="font-size:0.48rem">RECOVERY</span>');
+    if (wk.plan.series) badges.push('<span class="tag tag--planned" style="font-size:0.48rem">' + wk.plan.series.toUpperCase() + '</span>');
+
+    return '<div class="week-dropdown__option' + active + '" data-index="' + i + '">'
+      + '<span class="week-dropdown__opt-num">W' + wk.number + '</span>'
+      + '<div class="week-dropdown__opt-info">'
+      + '<div class="week-dropdown__opt-dates">' + wk.start + ' &ndash; ' + wk.end + '</div>'
+      + '<div class="week-dropdown__opt-meta">' + wk.plan.distance_km + ' km &middot; '
+      + wk.plan.vert_m + 'm D+ &middot; ' + wk.plan.long_run_km + 'km long</div>'
+      + '</div>'
+      + '<div class="week-dropdown__opt-badges">' + badges.join('') + '</div>'
+      + '</div>';
+  }).join('');
+
+  list.querySelectorAll('.week-dropdown__option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedWeek = parseInt(opt.dataset.index);
+      closeDropdown();
+      transitionRender();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER: Stats Grid (compliance + metrics + upcoming)
+// ═══════════════════════════════════════════════════════
+function renderStats() {
+  const w = WEEKS[selectedWeek];
+  const hasActual = w.actual != null;
+  const grid = document.getElementById('statsGrid');
+
+  // Section title
+  const title = document.getElementById('recapTitle');
+  if (hasActual) {
+    title.innerHTML = 'Week ' + w.number + ' Results <span class="tag tag--actual" style="margin-left:2px"><span class="tag__dot tag__dot--actual"></span> Recorded</span>';
+  } else {
+    title.innerHTML = 'Week ' + w.number + ' Targets <span class="tag tag--planned" style="margin-left:2px"><span class="tag__dot tag__dot--planned"></span> Plan</span>';
+  }
+
+  // Compliance ring
+  const compScore = hasActual ? w.compliance : null;
+  const compEmpty = compScore == null ? ' compliance-card--empty' : '';
+  const ringOffset = compScore != null ? 408 - (408 * compScore / 100) : 408;
+
+  // Metrics
+  const metrics = [
+    { key: 'distance_km', label: 'Distance', unit: 'km', icon: '&#x1F3C3;', iconClass: 'run', barClass: 'run' },
+    { key: 'vert_m', label: 'Elevation', unit: 'm', icon: '&#x26F0;', iconClass: 'vert', barClass: 'vert' },
+    { key: 'long_run_km', label: 'Long Run', unit: 'km', icon: '&#x1F30E;', iconClass: 'long', barClass: 'long' },
+    { key: 'gym', label: 'Gym Sessions', unit: '', icon: '&#x1F4AA;', iconClass: 'gym', barClass: 'gym' }
+  ];
+
+  let metricsHtml = '';
+  metrics.forEach(m => {
+    const planned = w.plan[m.key];
+    const actual = hasActual ? w.actual[m.key] : null;
+    const isGym = m.key === 'gym';
+    const d = isGym ? (actual != null ? actual - planned : null) : delta(actual, planned);
+    const dStr = isGym ? formatDelta(d, true) : formatDelta(d, false);
+    const dClass = deltaClass(d);
+    const pct = actual != null ? Math.min((actual / planned) * 100, 100) : 0;
+
+    let valuesHtml;
+    if (hasActual) {
+      valuesHtml = '<div class="metric-card__dual">'
+        + '<div class="metric-card__value-group">'
+        + '<span class="metric-card__value-tag metric-card__value-tag--actual">Actual</span>'
+        + '<span class="metric-card__value-num metric-card__value-num--actual">' + actual + ' <span class="metric-card__value-unit">' + m.unit + '</span></span>'
+        + '</div>'
+        + '<div class="metric-card__value-group">'
+        + '<span class="metric-card__value-tag metric-card__value-tag--planned">Planned</span>'
+        + '<span class="metric-card__value-num metric-card__value-num--planned">' + planned + ' <span class="metric-card__value-unit">' + m.unit + '</span></span>'
+        + '</div></div>';
+    } else {
+      valuesHtml = '<div class="metric-card__dual">'
+        + '<div class="metric-card__value-group">'
+        + '<span class="metric-card__value-tag metric-card__value-tag--planned">Target</span>'
+        + '<span class="metric-card__value-num metric-card__value-num--solo">' + planned + ' <span class="metric-card__value-unit">' + m.unit + '</span></span>'
+        + '</div></div>'
+        + '<div class="metric-card__empty-note">Awaiting sync...</div>';
+    }
+
+    metricsHtml += '<div class="metric-card">'
+      + '<div class="metric-card__header">'
+      + '<div class="metric-card__icon metric-card__icon--' + m.iconClass + '">' + m.icon + '</div>'
+      + (dStr ? '<span class="metric-card__delta ' + dClass + '">' + dStr + '</span>' : '')
+      + '</div>'
+      + '<div class="metric-card__label">' + m.label + '</div>'
+      + valuesHtml
+      + '<div class="metric-card__bar">'
+      + '<div class="metric-card__bar-fill metric-card__bar-fill--' + m.barClass + '" data-width="' + pct + '"></div>'
+      + '</div></div>';
+  });
+
+  // Upcoming weeks (next 4 after selected)
+  let upcomingHtml = '<div class="section-title">Upcoming <span class="tag tag--planned">Plan</span></div>';
+  let count = 0;
+  for (let i = selectedWeek + 1; i < WEEKS.length && count < 4; i++, count++) {
+    const uw = WEEKS[i];
+    let badge = '';
+    if (uw.recovery) badge = '<span class="upcoming-week__badge upcoming-week__badge--recovery">recovery</span>';
+    else if (uw.plan.series) badge = '<span class="upcoming-week__badge upcoming-week__badge--series">' + uw.plan.series + '</span>';
+
+    upcomingHtml += '<div class="upcoming-week">'
+      + '<span class="upcoming-week__num">W' + uw.number + '</span>'
+      + '<div class="upcoming-week__details">'
+      + '<div class="upcoming-week__dist">' + uw.plan.distance_km + ' km &middot; ' + uw.plan.vert_m + 'm D+</div>'
+      + '<div class="upcoming-week__type">' + uw.plan.long_run_km + 'km long run &middot; ' + uw.plan.gym + ' gym</div>'
+      + '</div>' + badge + '</div>';
+  }
+  if (count === 0) {
+    upcomingHtml += '<div class="upcoming-week"><div class="upcoming-week__details"><div class="upcoming-week__type">No more weeks in view</div></div></div>';
+  }
+
+  grid.innerHTML =
+    // Col 1: Compliance
+    '<div class="compliance-card' + compEmpty + '">'
+    + '<div class="compliance-ring"><svg viewBox="0 0 140 140">'
+    + '<circle class="compliance-ring__track" cx="70" cy="70" r="65"/>'
+    + '<circle class="compliance-ring__fill" cx="70" cy="70" r="65" style="stroke-dashoffset:' + ringOffset + '"/>'
+    + '</svg><div class="compliance-ring__value">'
+    + '<span class="compliance-ring__number">' + (compScore != null ? compScore : '—') + '</span>'
+    + '<span class="compliance-ring__unit">' + (compScore != null ? '% score' : '') + '</span>'
+    + '</div></div>'
+    + (compScore != null
+      ? '<span class="tag tag--actual" style="margin-bottom:6px"><span class="tag__dot tag__dot--actual"></span> Actual score</span>'
+      : '<span class="tag tag--planned" style="margin-bottom:6px">No data yet</span>')
+    + '<span class="compliance-week">Week ' + w.number + ' &middot; ' + w.start + '-' + w.end.split(' ').pop() + '</span>'
+    + '</div>'
+
+    // Col 2: Metrics
+    + '<div class="metrics-grid">' + metricsHtml + '</div>'
+
+    // Col 3: Upcoming
+    + '<div class="upcoming-card">' + upcomingHtml + '</div>';
+
+  // Animate bars after DOM insert
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      grid.querySelectorAll('.metric-card__bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }, 50);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER: Activities
+// ═══════════════════════════════════════════════════════
+function renderActivities() {
+  const w = WEEKS[selectedWeek];
+  const section = document.getElementById('activitiesSection');
+
+  if (w.activities.length === 0) {
+    section.innerHTML = '<div class="section-title">Activities <span class="tag tag--pending">Pending</span></div>'
+      + '<div class="empty-state">'
+      + '<div class="empty-state__icon">&#x1F3C3;</div>'
+      + '<div class="empty-state__text"><strong>No activities recorded yet.</strong><br>'
+      + 'Sync with Garmin after completing workouts this week.</div></div>';
+    return;
+  }
+
+  let html = '<div class="section-title">Week ' + w.number + ' Activities '
+    + '<span class="tag tag--actual"><span class="tag__dot tag__dot--actual"></span> Garmin data</span></div>'
+    + '<div class="activities-scroll">';
+
+  w.activities.forEach(a => {
+    const isRun = a.type === 'trail';
+    const isSt = a.type === 'strength';
+
+    let stats = '';
+    if (isRun) {
+      stats = '<div class="activity-card__stat"><span class="activity-card__stat-label">Dist</span>'
+        + '<span class="activity-card__stat-value">' + a.dist + ' km</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Pace</span>'
+        + '<span class="activity-card__stat-value">' + a.pace + ' /km</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">HR</span>'
+        + '<span class="activity-card__stat-value">' + a.hr + ' bpm</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Elev</span>'
+        + '<span class="activity-card__stat-value">+' + a.elev + ' m</span></div>';
+    } else if (isSt) {
+      stats = '<div class="activity-card__stat"><span class="activity-card__stat-label">HR</span>'
+        + '<span class="activity-card__stat-value">' + a.hr + ' bpm</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Cal</span>'
+        + '<span class="activity-card__stat-value">' + a.cal + '</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Sets</span>'
+        + '<span class="activity-card__stat-value">' + (a.sets || '—') + '</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Reps</span>'
+        + '<span class="activity-card__stat-value">' + (a.reps || '—') + '</span></div>';
+    } else {
+      stats = '<div class="activity-card__stat"><span class="activity-card__stat-label">HR</span>'
+        + '<span class="activity-card__stat-value">' + a.hr + ' bpm</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Cal</span>'
+        + '<span class="activity-card__stat-value">' + a.cal + '</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Time</span>'
+        + '<span class="activity-card__stat-value">' + a.dur + ' min</span></div>'
+        + '<div class="activity-card__stat"><span class="activity-card__stat-label">Type</span>'
+        + '<span class="activity-card__stat-value">' + typeLabel(a.type) + '</span></div>';
+    }
+
+    const durLabel = isSt || !isRun ? ' &middot; ' + a.dur + ' min' : '';
+
+    html += '<div class="activity-card">'
+      + '<div class="activity-card__date">' + a.date + '</div>'
+      + '<div class="activity-card__name">' + a.name + '</div>'
+      + '<div class="activity-card__type"><span class="activity-card__type-dot ' + dotClass(a.type) + '"></span>'
+      + typeLabel(a.type) + durLabel + '</div>'
+      + '<div class="activity-card__stats">' + stats + '</div></div>';
+  });
+
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER: Volume Chart (highlights selected week)
+// ═══════════════════════════════════════════════════════
+function renderChart() {
+  const maxDist = Math.max(...WEEKS.map(w => Math.max(w.plan.distance_km, w.actual ? w.actual.distance_km : 0)));
+  const chart = document.getElementById('volumeChart');
+  let html = '';
+
+  WEEKS.forEach((w, i) => {
+    const plannedH = (w.plan.distance_km / maxDist * 100).toFixed(0);
+    const isSelected = i === selectedWeek;
+    const labelClass = isSelected ? ' chart-bar-label--active' : '';
+    const recoveryStyle = w.recovery ? ' opacity:0.5;' : '';
+    const selectedClass = isSelected ? ' chart-bar--selected' : '';
+    const valColor = w.recovery ? ' style="color:var(--desert-gold)"' : '';
+    const recLabel = w.recovery ? ' R' : '';
+
+    let barsHtml = '<div class="chart-bar chart-bar--planned' + selectedClass + '" data-height="' + plannedH + '" style="height:0;' + recoveryStyle + '">'
+      + '<span class="chart-bar-value"' + valColor + '>' + w.plan.distance_km + recLabel + '</span></div>';
+
+    if (w.actual) {
+      const actualH = (w.actual.distance_km / maxDist * 100).toFixed(0);
+      barsHtml += '<div class="chart-bar chart-bar--actual" data-height="' + actualH + '" style="height:0">'
+        + '<span class="chart-bar-value">' + w.actual.distance_km + '</span></div>';
+    }
+
+    html += '<div class="chart-bar-group"><div class="chart-bar-wrapper">' + barsHtml + '</div>'
+      + '<span class="chart-bar-label' + labelClass + '">W' + w.number + '</span></div>';
+  });
+
+  chart.innerHTML = html;
+
+  // Animate
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      chart.querySelectorAll('.chart-bar').forEach((bar, i) => {
+        setTimeout(() => { bar.style.height = bar.dataset.height + '%'; }, i * 60);
+      });
+    }, 100);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER: Alerts
+// ═══════════════════════════════════════════════════════
+// Long runs happen on weekends — suppress long run alerts until Sunday is over
+function isWeekendOver(weekIdx) {
+  const w = WEEKS[weekIdx];
+  // Parse the week's end date (Sunday)
+  const endDate = new Date(w.end + ', ' + w.year);
+  // Weekend is over after Sunday 23:59
+  endDate.setHours(23, 59, 59);
+  return new Date() > endDate;
+}
+
+function filterAlerts(weekIdx) {
+  const w = WEEKS[weekIdx];
+  let alerts = w.alerts;
+  // Only suppress long run alerts if the weekend hasn't passed yet
+  if (!isWeekendOver(weekIdx)) {
+    alerts = alerts.filter(a => !a.text.includes('Long run'));
+  }
+  return alerts;
+}
+
+function renderAlerts() {
+  const w = WEEKS[selectedWeek];
+  const section = document.getElementById('alertsSection');
+  const alerts = filterAlerts(selectedWeek);
+
+  if (alerts.length === 0) {
+    section.innerHTML = '';
+    return;
+  }
+
+  let html = '<div class="section-title">Alerts</div><div class="alerts-list">';
+  alerts.forEach(a => {
+    const iconClass = a.level === 'warning' ? 'alert-card__icon--warning' : 'alert-card__icon--info';
+    const iconChar = a.level === 'warning' ? '!' : 'i';
+    html += '<div class="alert-card"><div class="alert-card__icon ' + iconClass + '">' + iconChar + '</div>'
+      + '<div class="alert-card__text">' + a.text + '</div></div>';
+  });
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// TRANSITION + FULL RENDER
+// ═══════════════════════════════════════════════════════
+function renderAll() {
+  renderSelector();
+  renderStats();
+  renderActivities();
+  renderChart();
+  renderAlerts();
+}
+
+function transitionRender() {
+  const content = document.getElementById('dynamicContent');
+  content.classList.add('dynamic-content--fading');
+  setTimeout(() => {
+    renderAll();
+    content.classList.remove('dynamic-content--fading');
+  }, 200);
+}
+
+// ═══════════════════════════════════════════════════════
+// DROPDOWN TOGGLE
+// ═══════════════════════════════════════════════════════
+function openDropdown() {
+  dropdownOpen = true;
+  document.getElementById('weekSelector').classList.add('week-selector--open');
+}
+function closeDropdown() {
+  dropdownOpen = false;
+  document.getElementById('weekSelector').classList.remove('week-selector--open');
+}
+
+document.getElementById('weekDisplay').addEventListener('click', () => {
+  dropdownOpen ? closeDropdown() : openDropdown();
+});
+
+document.addEventListener('click', (e) => {
+  if (dropdownOpen && !document.getElementById('weekSelector').contains(e.target)) {
+    closeDropdown();
+  }
+});
+
+document.getElementById('prevWeek').addEventListener('click', () => {
+  if (selectedWeek > 0) { selectedWeek--; closeDropdown(); transitionRender(); }
+});
+document.getElementById('nextWeek').addEventListener('click', () => {
+  if (selectedWeek < WEEKS.length - 1) { selectedWeek++; closeDropdown(); transitionRender(); }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' && selectedWeek > 0) { selectedWeek--; closeDropdown(); transitionRender(); }
+  if (e.key === 'ArrowRight' && selectedWeek < WEEKS.length - 1) { selectedWeek++; closeDropdown(); transitionRender(); }
+  if (e.key === 'Escape') closeDropdown();
+});
+
+// ═══════════════════════════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════════════════════════
+function updateCountdown() {
+  const race = new Date('2026-10-02T06:00:00');
+  const now = new Date();
+  const diff = race - now;
+  if (diff <= 0) return;
+  document.getElementById('cd-days').textContent = Math.floor(diff / 864e5);
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(Math.floor((diff % 6e4) / 1e3)).padStart(2, '0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ═══════════════════════════════════════════════════════
+// INITIAL LOAD — fetch all weeks from API, fallback to offline
+// ═══════════════════════════════════════════════════════
+async function loadWeeks() {
+  try {
+    const res = await fetch('/api/weeks');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      WEEKS = data;
+      // Select the latest week that has actual data, or the first week with actual data
+      let bestIdx = 0;
+      for (let i = 0; i < WEEKS.length; i++) {
+        if (WEEKS[i].actual) bestIdx = i;
+      }
+      selectedWeek = bestIdx;
+      // Update progress bar and header
+      const currentNum = WEEKS[bestIdx].number;
+      const pct = (currentNum / 30 * 100).toFixed(1);
+      document.documentElement.style.setProperty('--progress-pct', pct + '%');
+      document.querySelector('.progress-bar__label span:first-child').textContent = 'Week ' + currentNum + ' of 30';
+      document.querySelector('.progress-bar__label span:last-child').textContent = WEEKS[bestIdx].phase.charAt(0).toUpperCase() + WEEKS[bestIdx].phase.slice(1) + ' Phase';
+      renderAll();
+      return;
+    }
+  } catch (e) {
+    console.warn('API unavailable, using cached data if any');
+  }
+  // If API fails and WEEKS is empty, show a message
+  if (WEEKS.length === 0) {
+    document.getElementById('dynamicContent').innerHTML =
+      '<div class="empty-state" style="margin-top:40px">'
+      + '<div class="empty-state__icon">&#x1F50C;</div>'
+      + '<div class="empty-state__text"><strong>Server not reachable.</strong><br>'
+      + 'Start the dashboard server:<br><code style="color:var(--copper-light)">python dashboard/serve.py</code></div></div>';
+  }
+}
+loadWeeks();
+
+// ═══════════════════════════════════════════════════════
+// SYNC BUTTON — calls /api/sync on the local server
+// ═══════════════════════════════════════════════════════
+const syncBtn = document.getElementById('syncBtn');
+const syncToast = document.getElementById('syncToast');
+let toastTimer = null;
+
+function showToast(msg, type) {
+  syncToast.className = 'sync-toast sync-toast--visible' + (type ? ' sync-toast--' + type : '');
+  syncToast.innerHTML = msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { syncToast.className = 'sync-toast'; }, 4000);
+}
+
+syncBtn.addEventListener('click', async () => {
+  if (syncBtn.classList.contains('sync-btn--syncing')) return;
+  syncBtn.classList.add('sync-btn--syncing');
+  showToast('Syncing with Garmin...', '');
+
+  const weekNum = WEEKS[selectedWeek].number;
+
+  try {
+    const headers = {};
+    const apiKey = localStorage.getItem('tarahumara_api_key');
+    if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+    const res = await fetch('/api/sync?week=' + weekNum, { method: 'POST', headers });
+    const data = await res.json();
+
+    if (res.status === 401) {
+      const key = prompt('Enter API key:');
+      if (key) { localStorage.setItem('tarahumara_api_key', key); showToast('Key saved. Tap sync again.', ''); }
+      else { showToast('Sync requires an API key.', 'error'); }
+      syncBtn.classList.remove('sync-btn--syncing');
+      return;
+    }
+
+    if (data.error) {
+      showToast('<strong>Sync failed:</strong> ' + data.error, 'error');
+      syncBtn.classList.remove('sync-btn--syncing');
+      return;
+    }
+
+    // Update the WEEKS entry with fresh data
+    WEEKS[selectedWeek] = data;
+    transitionRender();
+
+    const acts = data.activities ? data.activities.length : 0;
+    const score = data.compliance != null ? data.compliance + '%' : 'no data';
+    showToast('<strong>Synced!</strong> ' + acts + ' activities, ' + score + ' compliance', 'success');
+  } catch (e) {
+    showToast('<strong>Sync failed:</strong> server not reachable. Run <code>serve.py</code>', 'error');
+  }
+
+  syncBtn.classList.remove('sync-btn--syncing');
+});
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+
+</body>
+</html>

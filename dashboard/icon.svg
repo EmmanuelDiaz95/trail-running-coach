@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dba070"/>
+      <stop offset="50%" stop-color="#c87941"/>
+      <stop offset="100%" stop-color="#b85c38"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#070a0f"/>
+  <!-- Mountain silhouette -->
+  <path d="M60 380 L160 200 L220 280 L300 160 L380 260 L452 180 L452 380 Z" fill="#12161f" stroke="url(#g)" stroke-width="3"/>
+  <!-- Runner figure -->
+  <circle cx="256" cy="130" r="22" fill="url(#g)"/>
+  <path d="M240 155 L256 200 L272 155" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M256 200 L232 250 L215 280" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M256 200 L278 248 L300 275" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M240 170 L215 195" stroke="url(#g)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M272 170 L295 190" stroke="url(#g)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Trail path -->
+  <path d="M80 400 Q180 360 256 380 T440 360" stroke="url(#g)" stroke-width="3" fill="none" opacity="0.4" stroke-dasharray="8 6"/>
+  <!-- 59K text -->
+  <text x="256" y="440" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="52" fill="#dba070" letter-spacing="4">59K</text>
+</svg>
