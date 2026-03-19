@@ -313,10 +313,61 @@
       "gym": 3,
       "series": "hills"
     },
-    "actual": null,
-    "compliance": null,
-    "activities": [],
-    "alerts": []
+    "actual": {
+      "distance_km": 0,
+      "vert_m": 0,
+      "long_run_km": 0,
+      "gym": 3,
+      "series": false
+    },
+    "compliance": 15,
+    "activities": [
+      {
+        "date": "Wed, Mar 18",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 93.0,
+        "elev": null,
+        "cal": 306.0,
+        "dur": 71,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Tue, Mar 17",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 91.0,
+        "elev": null,
+        "cal": 370.0,
+        "dur": 91,
+        "sets": null,
+        "reps": null
+      },
+      {
+        "date": "Mon, Mar 16",
+        "name": "Strength",
+        "type": "strength",
+        "dist": null,
+        "pace": null,
+        "hr": 126.0,
+        "elev": null,
+        "cal": 494.0,
+        "dur": 61,
+        "sets": null,
+        "reps": null
+      }
+    ],
+    "alerts": [
+      {
+        "level": "warning",
+        "text": "<strong>Missed Series:</strong> Series: planned hills not detected in activities"
+      }
+    ]
   },
   {
     "number": 4,
