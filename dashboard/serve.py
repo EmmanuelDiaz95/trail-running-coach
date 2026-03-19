@@ -21,6 +21,7 @@ from tracker.plan_data import get_current_week, get_week, get_week_dates, load_p
 from tracker.garmin_sync import sync_activities, load_cached_activities, DEFAULT_PROFILE
 from tracker.analysis import build_week_actual, compliance_score
 from tracker.alerts import generate_alerts
+from tracker.workout_builder import has_garmin_workout, push_workout, _load_series_workout
 
 DASHBOARD_DIR = Path(__file__).resolve().parent
 API_KEY = os.environ.get("API_KEY", "")
@@ -87,6 +88,34 @@ def activity_type_for_dashboard(garmin_type: str) -> str:
     return 'cycling'
 
 
+def _get_garmin_steps(week_num: int) -> dict | None:
+    """Get garmin_steps data for dashboard display."""
+    wo = _load_series_workout(week_num)
+    if wo is None:
+        return None
+    gs = wo["garmin_steps"]
+    # Format for dashboard: human-readable structure
+    wu = gs["warmup"]
+    cd = gs["cooldown"]
+    work = gs["work"]
+    rec = gs["recovery"]
+    return {
+        "description": wo.get("description", ""),
+        "date": wo.get("date"),
+        "warmup": f"{wu['value']} km" if wu["end_condition"] == "distance" else f"{wu.get('value_seconds', 0) // 60} min",
+        "warmup_hr": f"{wu['hr_low']}-{wu['hr_high']} bpm",
+        "repeat": gs["repeat"],
+        "work": f"{work.get('value_seconds', 0) // 60}:{work.get('value_seconds', 0) % 60:02d}" if work["end_condition"] == "time" else f"{work['value']} km",
+        "work_name": work.get("name", "Work"),
+        "work_hr": f"{work['hr_low']}-{work['hr_high']} bpm",
+        "recovery": f"{rec.get('value_seconds', 0) // 60}:{rec.get('value_seconds', 0) % 60:02d}" if rec["end_condition"] == "time" else f"{rec['value']} km",
+        "recovery_name": rec.get("name", "Recovery"),
+        "recovery_hr": f"<{rec['hr_high']} bpm",
+        "cooldown": f"{cd['value']} km" if cd["end_condition"] == "distance" else f"{cd.get('value_seconds', 0) // 60} min",
+        "cooldown_hr": f"{cd['hr_low']}-{cd['hr_high']} bpm",
+    }
+
+
 def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFAULT_PROFILE) -> dict:
     """Build a single week's data in the dashboard WEEKS format."""
     plan = get_week(week_num)
@@ -124,6 +153,8 @@ def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFA
         "compliance": None,
         "activities": [],
         "alerts": [],
+        "has_garmin_workout": has_garmin_workout(week_num),
+        "garmin_steps": _get_garmin_steps(week_num),
     }
 
     if activities is None or len(activities) == 0:
@@ -250,6 +281,8 @@ def build_all_weeks_json(do_sync: bool = False, profile_id: str = DEFAULT_PROFIL
                 "compliance": None,
                 "activities": [],
                 "alerts": [],
+                "has_garmin_workout": has_garmin_workout(wn),
+                "garmin_steps": _get_garmin_steps(wn),
             })
 
     return results
@@ -293,6 +326,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
         if parsed.path == '/api/sync':
             self._handle_sync(parsed)
+        elif parsed.path == '/api/push-workout':
+            self._handle_push_workout(parsed)
         else:
             self.send_error(405, "Method not allowed")
 
@@ -357,6 +392,47 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             _last_sync_time[rate_key] = time.time()
             print(f"[sync] Week {week_num} [{profile_id}]: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
             _update_weeks_cache(week_num, result, profile_id)
+            self._send_json(result)
+
+    def _handle_push_workout(self, parsed):
+        if not self._check_auth():
+            self._send_json({"error": "Unauthorized"}, 401)
+            return
+
+        params = parse_qs(parsed.query)
+        profile_id = self._validate_profile(params)
+        week_str = params.get('week', [None])[0]
+
+        if not week_str:
+            self._send_json({"error": "week parameter required"}, 400)
+            return
+        try:
+            week_num = int(week_str)
+        except ValueError:
+            self._send_json({"error": "Invalid week number"}, 400)
+            return
+        if week_num < 1 or week_num > 30:
+            self._send_json({"error": "Week must be between 1 and 30"}, 400)
+            return
+
+        # Rate limiting
+        rate_key = f"push:{profile_id}:{week_num}"
+        now = time.time()
+        last = _last_sync_time.get(rate_key, 0)
+        if now - last < SYNC_COOLDOWN_SECONDS:
+            remaining = int(SYNC_COOLDOWN_SECONDS - (now - last))
+            self._send_json({"error": f"Please wait {remaining}s"}, 429)
+            return
+
+        print(f"[push] Pushing workout for week {week_num}, profile '{profile_id}'...")
+        result = push_workout(week_num, profile_id)
+
+        if result.get("error"):
+            print(f"[push] Failed: {result['error']}")
+            self._send_json(result, 500)
+        else:
+            _last_sync_time[rate_key] = time.time()
+            print(f"[push] Success: {result.get('name')} -> workout_id={result.get('workout_id')}")
             self._send_json(result)
 
     def _handle_weeks(self, parsed):

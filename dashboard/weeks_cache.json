@@ -297,7 +297,23 @@
         "level": "info",
         "text": "<strong>Long Run Ratio:</strong> Long run ratio: 15.0km is 50% of weekly 30.1km (threshold: 30%)"
       }
-    ]
+    ],
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Tempo 3x5min @ 6:30-6:45/km",
+      "date": "2026-03-13",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "5:00",
+      "work_name": "Tempo 6:30-6:45/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 3,
@@ -367,7 +383,23 @@
         "level": "warning",
         "text": "<strong>Missed Series:</strong> Series: planned hills not detected in activities"
       }
-    ]
+    ],
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 5x4min uphill",
+      "date": "2026-03-20",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 5,
+      "work": "4:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "155-170 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 4,
@@ -386,7 +418,23 @@
     "actual": null,
     "compliance": null,
     "activities": [],
-    "alerts": []
+    "alerts": [],
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 6x1min @ 6:15-6:30",
+      "date": "2026-03-27",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "1:00",
+      "work_name": "Fast 6:15-6:30, fun effort",
+      "work_hr": "160-170 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 5,
