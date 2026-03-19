@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import time
+import threading
 from datetime import date, timedelta
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
@@ -24,6 +25,7 @@ from tracker.alerts import generate_alerts
 DASHBOARD_DIR = Path(__file__).resolve().parent
 API_KEY = os.environ.get("API_KEY", "")
 SYNC_COOLDOWN_SECONDS = 60
+AUTO_SYNC_INTERVAL = int(os.environ.get("AUTO_SYNC_INTERVAL", 86400))  # default: 24h
 _last_sync_time: dict[str, float] = {}  # key: "profile:week"
 
 
@@ -380,15 +382,44 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             super().log_message(format, *args)
 
 
+def _auto_sync():
+    """Background thread: sync current week for all profiles on a daily interval."""
+    # Initial delay to let the server start up
+    time.sleep(10)
+    while True:
+        current_week = get_current_week()
+        if current_week is None:
+            print("[auto-sync] Not in training window, skipping")
+        else:
+            for profile in PROFILES:
+                pid = profile["id"]
+                print(f"[auto-sync] Syncing week {current_week} for '{pid}'...")
+                try:
+                    result = build_week_json(current_week, do_sync=True, profile_id=pid)
+                    if "error" in result:
+                        print(f"[auto-sync] Failed for '{pid}': {result['error']}")
+                    else:
+                        _update_weeks_cache(current_week, result, pid)
+                        print(f"[auto-sync] Week {current_week} [{pid}]: {result.get('compliance', '—')}% compliance, {len(result.get('activities', []))} activities")
+                except Exception as e:
+                    print(f"[auto-sync] Error for '{pid}': {e}")
+        print(f"[auto-sync] Next sync in {AUTO_SYNC_INTERVAL}s")
+        time.sleep(AUTO_SYNC_INTERVAL)
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', sys.argv[1] if len(sys.argv) > 1 else 8000))
     host = os.environ.get('HOST', '127.0.0.1')
     server = HTTPServer((host, port), DashboardHandler)
     print(f"Tarahumara Dashboard running on port {port}")
+    print(f"  Auto-sync every {AUTO_SYNC_INTERVAL}s ({AUTO_SYNC_INTERVAL // 3600}h)")
     print(f"  GET /api/sync         — sync current week from Garmin")
     print(f"  GET /api/sync?week=N  — sync specific week")
     print(f"  GET /api/weeks        — load all weeks (cached)")
     print()
+    # Start auto-sync background thread
+    sync_thread = threading.Thread(target=_auto_sync, daemon=True)
+    sync_thread.start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
