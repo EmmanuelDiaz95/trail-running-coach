@@ -1,0 +1,96 @@
+{
+  "week_number": 1,
+  "generated_at": "2026-03-19T08:06:31.926734",
+  "phase": "base",
+  "is_recovery_week": false,
+  "days_to_race": 197,
+  "compliance_score": 99,
+  "compliance_breakdown": {
+    "distance_km": {
+      "planned": 27,
+      "actual": 26.3,
+      "pct": 97
+    },
+    "vert_m": {
+      "planned": 400,
+      "actual": 715,
+      "pct": 179
+    },
+    "long_run_km": {
+      "planned": 14,
+      "actual": 14.0,
+      "pct": 100
+    },
+    "gym_sessions": {
+      "planned": 3,
+      "actual": 5,
+      "pct": 167
+    },
+    "series": {
+      "planned": null,
+      "actual": null,
+      "pct": null
+    }
+  },
+  "readiness": {
+    "score": 8,
+    "acwr": 1.0,
+    "acwr_zone": "optimal",
+    "recommendation": "maintain",
+    "signals": [
+      "Limited data: only 1 week(s) recorded; ACWR estimate may be unreliable"
+    ]
+  },
+  "trends": [
+    {
+      "metric": "weekly_distance",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    },
+    {
+      "metric": "weekly_vert",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    },
+    {
+      "metric": "longest_run",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    },
+    {
+      "metric": "gym_frequency",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    },
+    {
+      "metric": "easy_run_avg_hr",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    },
+    {
+      "metric": "easy_run_avg_pace",
+      "trend": "insufficient_data",
+      "values": [],
+      "delta": "insufficient data",
+      "significance": "watch"
+    }
+  ],
+  "adjustments": [],
+  "alerts": [
+    {
+      "level": "INFO",
+      "category": "long_run_ratio",
+      "message": "Long run ratio: 14.0km is 53% of weekly 26.3km (threshold: 30%)"
+    }
+  ]
+}
