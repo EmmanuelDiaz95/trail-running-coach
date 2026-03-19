@@ -1,0 +1,33 @@
+{
+  "name": "Emmanuel Diaz",
+  "date_of_birth": "1995-12-15",
+  "weight_kg": 70,
+  "altitude_m": 2600,
+  "hr_zones": {
+    "z1": [0, 125],
+    "z2": [125, 145],
+    "z3": [145, 160],
+    "z4": [160, 175],
+    "z5": [175, 200]
+  },
+  "race": {
+    "name": "Ultra Trail Tarahumara",
+    "date": "2026-10-02",
+    "distance_km": 59,
+    "vert_m": 2400
+  },
+  "history": {
+    "recent_race": {
+      "distance_km": 33.3,
+      "vert_m": 1184,
+      "time": "4:38:00",
+      "avg_hr": 149
+    },
+    "baseline_weekly_km": 21
+  },
+  "nutrition": {
+    "gut_training_start": null,
+    "target_carb_per_hr": null,
+    "caffeine_sensitivity": "normal"
+  }
+}
