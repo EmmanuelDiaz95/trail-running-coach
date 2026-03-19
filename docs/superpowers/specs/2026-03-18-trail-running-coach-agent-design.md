@@ -77,6 +77,115 @@ An AI-powered trail running coach built as a rule engine with an LLM narrator la
 
 ---
 
+## Shared Utilities
+
+### Activity Intensity Classifier (`tracker/classify.py` — new addition to tracker)
+
+The existing tracker classifies activities as `"run"`, `"gym"`, or `"other"`. The coach needs finer-grained intensity classification for ACWR calculation and trend analysis. This classifier extends the tracker (not the coach) because it's a data-level concern.
+
+**Classification rules (using existing GarminActivity fields):**
+
+| Intensity Type | Criteria | Factor |
+|---------------|----------|--------|
+| `easy` | Run, NOT series (per existing `_is_series()` heuristic), avg HR < Z3 ceiling | 1.0 |
+| `tempo` | Run, avg HR in Z3 range, duration > 20min | 1.5 |
+| `intervals` | Run, detected as series by `_is_series()` heuristic | 2.0 |
+| `long_run` | Run, distance > 60% of week's longest (or > 15km), avg HR < Z3 ceiling | 1.2 |
+| `gym` | Activity type in `GYM_TYPES` | 0.8 |
+| `other` | Cycling, hiking, etc. | 0.5 |
+
+The classifier reuses the existing `_is_series()` logic from `alerts.py` for consistency. HR zone thresholds come from `athlete.json`.
+
+**"Easy run" definition** (used by both trend analyzer and existing alert engine): any run activity where `_is_series()` returns False AND avg HR is below Z3 ceiling. This definition is shared to prevent drift between the alert engine and coach.
+
+### Multi-Week Data Loader (`tracker/data_loader.py` — new addition to tracker)
+
+The existing `load_cached_activities()` loads one week at a time. The coach needs rolling windows across multiple weeks. New utility:
+
+```python
+def load_week_range(start_week: int, end_week: int) -> list[WeekActual]:
+    """Load and merge activity data across a range of weeks.
+
+    Gracefully handles missing weeks — returns only weeks that have
+    cached data. Callers check len(results) >= min_weeks_for_trend
+    before computing trends.
+    """
+```
+
+**Missing data behavior:** If a week has no cached data (not synced), it is skipped. Modules that need N weeks of data check the count and degrade gracefully:
+- Trend analyzer: requires `min_weeks_for_trend` (default 3). If fewer, returns `"insufficient_data"` instead of a trend.
+- ACWR: if < 28 days of data, uses available data for chronic load (with a warning flag).
+
+---
+
+## Coaching Output Schema
+
+The coaching JSON is the contract between the rule engine and the LLM narrator. Every module writes to a defined section of this schema.
+
+```json
+{
+  "week_number": 4,
+  "generated_at": "2026-03-22T10:30:00",
+  "phase": "base",
+  "is_recovery_week": true,
+  "days_to_race": 194,
+
+  "compliance": {
+    "score": 92,
+    "breakdown": {
+      "distance": { "planned": 20, "actual": 19.2, "pct": 96 },
+      "vert": { "planned": 300, "actual": 280, "pct": 93 },
+      "long_run": { "planned": 10, "actual": 11, "pct": 110 },
+      "gym": { "planned": 2, "actual": 2, "pct": 100 },
+      "series": { "planned": null, "actual": null, "pct": null }
+    }
+  },
+
+  "readiness": {
+    "score": 7,
+    "acwr": 0.72,
+    "acwr_zone": "expected_recovery",
+    "recommendation": "maintain",
+    "signals": ["Recovery week — low ACWR is expected and healthy"]
+  },
+
+  "trends": [
+    {
+      "metric": "weekly_distance",
+      "trend": "improving",
+      "values": [21, 24, 26.7, 19.2],
+      "delta": "+27% over 4 weeks (excluding recovery)",
+      "significance": "on_track"
+    }
+  ],
+
+  "adjustments": [],
+
+  "alerts": [
+    { "level": "INFO", "category": "long_run_ratio", "message": "Long run was 57% of weekly volume" }
+  ],
+
+  "nutrition": {
+    "daily_target": { "carbs_g": "350-490", "protein_g": "98-112" },
+    "training_load_category": "light",
+    "race_countdown_tip": null,
+    "altitude_reminder": "Extra 500-1000ml water daily at 2,600m"
+  },
+
+  "mental": {
+    "phase_focus": "Building consistency habits",
+    "trigger": "milestone",
+    "message": "First full month of training complete. You haven't missed a gym session yet."
+  },
+
+  "pacing": null
+}
+```
+
+The narrator receives this entire JSON as context. It never sees raw activity data — only pre-digested coaching outputs.
+
+---
+
 ## Rule Engine Modules
 
 ### 1. Trend Analyzer (`coach/trends.py`)
@@ -125,6 +234,8 @@ Calculates training load balance and outputs a readiness recommendation.
 | 1.3–1.5 | Caution | Monitor closely, reduce if fatigued |
 | > 1.5 | Danger | Back off — injury risk elevated |
 
+**Recovery week override:** If the current week is a planned recovery week (`is_recovery: true` in plan.json), ACWR < 0.8 is reclassified as `expected_recovery` instead of `detraining`. No warning is generated.
+
 **Additional fatigue signals:**
 - HR drift trend (rising across weeks = accumulated fatigue)
 - Resting HR elevation > 7% above baseline
@@ -153,10 +264,12 @@ Phase-appropriate fueling guidance based on training load and race timeline.
 
 | Training Load | Carbs (g/kg/day) | Protein (g/kg/day) |
 |---------------|-------------------|---------------------|
-| Light (< 5km) | 5–7 | 1.2–1.4 |
-| Moderate (5–15km) | 6–8 | 1.4–1.6 |
-| Heavy (15–25km) | 8–10 | 1.6–1.8 |
-| Extreme (25km+) | 10–12 | 1.8–2.0 |
+| Light (< 5km/day) | 5–7 | 1.2–1.4 |
+| Moderate (5–15km/day) | 6–8 | 1.4–1.6 |
+| Heavy (15–25km/day) | 8–10 | 1.6–1.8 |
+| Extreme (25km+/day) | 10–12 | 1.8–2.0 |
+
+**Load source:** Uses the planned weekly distance from plan.json divided by training days (typically 5-6) to determine the daily category. On days with actual Garmin data, uses the actual distance instead. This avoids depending on daily workout detail (only available for weeks 1-4).
 
 **Race timeline triggers:**
 - 16 weeks out: "Start gut training — practice eating during long runs at 30-40g carbs/hr"
@@ -180,9 +293,11 @@ Race simulation and finish time prediction.
 
 **Outputs:**
 - Predicted finish time range (optimistic / realistic / conservative)
-- Segment-by-segment effort targets (climb, flat, descent)
-- Aid station timing with nutrition plan
+- Overall effort targets by terrain type (climb, flat, descent) — not segment-by-segment
+- Aid station timing with nutrition plan (when course data becomes available)
 - Updated monthly as fitness data accumulates
+
+**Note:** Segment-by-segment pacing requires course elevation profile data, which is not yet available. Initial implementation uses overall averages by terrain type. A `race_course.json` with segment data can be added later when course details are published.
 
 ### 6. Mental Coach (`coach/mental.py`)
 
@@ -216,7 +331,7 @@ Phase-appropriate psychological guidance.
 ```json
 {
   "name": "Emmanuel Diaz",
-  "age": 30,
+  "date_of_birth": "1995-12-15",
   "weight_kg": 70,
   "altitude_m": 2600,
   "hr_zones": {
@@ -245,6 +360,8 @@ Phase-appropriate psychological guidance.
 ```
 
 **`knowledge.json`** — coaching thresholds and rules (tunable without touching code)
+
+**Threshold ownership:** The existing `tracker/config.py` owns alert thresholds (HR drift, volume spike, etc.) used by the tracker's alert engine. `knowledge.json` owns coaching-specific thresholds (ACWR zones, nutrition targets, trend analysis). Where values overlap (e.g., HR drift = 10bpm), `knowledge.json` imports from `config.py` at load time to maintain a single source of truth. The coach never hardcodes a value that `config.py` already defines.
 ```json
 {
   "acwr_zones": {
@@ -320,6 +437,10 @@ User input is classified before routing:
 | Coaching question | "Should I push harder?" | Readiness + trends + adjustments → LLM narrates |
 | Knowledge question | "What to eat at aid stations?" | Nutrition module + knowledge.json → LLM narrates |
 | Off-topic | "Weather in Chihuahua?" | LLM responds naturally, stays in coaching lane |
+
+**Classification method:** Keyword matching with fallback. The classifier uses keyword patterns (e.g., "last week" / "this week" + metric name → data question; "should I" / "can I" → coaching question; nutrition/food/eat/drink keywords → knowledge question). Unmatched queries fall through to the LLM with full coaching context — the narrator handles them as general coaching questions. This keeps the classifier deterministic and avoids a second API call.
+
+**Note:** This means the narrator IS the only Claude API caller. The classifier is pure Python pattern matching.
 
 ---
 
@@ -412,6 +533,10 @@ Post-sync flow:
 3. Outputs `data/coaching/week_NN_coaching.json`
 4. LLM narrator generates `data/coaching/week_NN_narrative.md`
 
+**Trigger mechanism:** Manual CLI chaining: `python scripts/sync.py --week N && python coach.py report --week N`. The coach does NOT modify `sync.py` — the two commands are independent and composable. A combined convenience script (`scripts/sync_and_coach.py`) can be added later if desired. The FastAPI `/api/sync` endpoint (Phase 3) can optionally chain the coach report after sync completes.
+
+**LLM failure fallback:** If the Claude API call fails (rate limit, network error), the structured coaching JSON is still saved. The CLI outputs the raw JSON to terminal. The narrative can be regenerated later with `python coach.py report --week N --regenerate`.
+
 ---
 
 ## Implementation Phases
@@ -430,9 +555,11 @@ Post-sync flow:
 - Weekly narrative generation after sync
 
 ### Phase 3 — Web Interface
-- FastAPI backend (`/chat`, `/report`, `/status`)
+- FastAPI backend replaces the existing `dashboard/serve.py` (built-in `http.server`)
+- Migrates existing dashboard endpoints (`/api/weeks`, `/api/sync`) to FastAPI
+- Adds coach endpoints (`/chat`, `/report`, `/status`)
 - Single-file chat UI (same pattern as dashboard)
-- Deploy to Railway
+- Single Railway deployment serves both dashboard and coach
 
 ### Phase 4 — Domain Modules
 - `nutrition.py`, `pacing.py`, `mental.py`
