@@ -45,6 +45,7 @@ class GarminActivity:
     avg_pace_min_km: Optional[float]  # minutes per km as float
     elevation_gain_m: Optional[int]
     calories: Optional[int]
+    route_svg: Optional[str] = None   # SVG path d-attribute for route trace
 
 
 @dataclass
