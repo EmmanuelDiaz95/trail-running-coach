@@ -208,6 +208,7 @@ def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFA
             "dur": round(a.duration_seconds / 60),
             "sets": None,
             "reps": None,
+            "route": a.route_svg,
         }
         dash_activities.append(entry)
 
