@@ -3,14 +3,16 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from datetime import date, timedelta
 from getpass import getpass
 from pathlib import Path
 
 from garminconnect import Garmin
 
-from .config import ACTIVITIES_DIR, PROJECT_ROOT
+from .config import ACTIVITIES_DIR, PROJECT_ROOT, RUNNING_TYPES
 from .models import GarminActivity
+from .route import polyline_to_svg
 
 # Default profile ID
 DEFAULT_PROFILE = "default"
@@ -136,7 +138,21 @@ def _normalize_activity(raw: dict) -> GarminActivity:
         avg_pace_min_km=avg_pace,
         elevation_gain_m=raw.get("elevationGain"),
         calories=raw.get("calories"),
+        route_svg=raw.get("route_svg"),
     )
+
+
+def _fetch_route_svg(client: Garmin, activity_id: str) -> str | None:
+    """Fetch GPS polyline from Garmin and convert to SVG path."""
+    try:
+        details = client.get_activity_details(activity_id, maxpoly=500)
+        poly_dto = details.get("geoPolylineDTO") or {}
+        raw_points = poly_dto.get("polyline", [])
+        points = [(p["lat"], p["lon"]) for p in raw_points if "lat" in p and "lon" in p]
+        return polyline_to_svg(points)
+    except Exception as e:
+        print(f"[garmin] Warning: failed to fetch route for {activity_id}: {e}")
+        return None
 
 
 def sync_activities(start_date: date, end_date: date, profile_id: str = DEFAULT_PROFILE) -> list[GarminActivity]:
@@ -147,6 +163,16 @@ def sync_activities(start_date: date, end_date: date, profile_id: str = DEFAULT_
         start_date.isoformat(),
         end_date.isoformat(),
     )
+
+    # Fetch route SVG for running activities
+    for raw in raw_activities:
+        activity_type = (raw.get("activityType", {}).get("typeKey", "") or "").lower()
+        if activity_type in RUNNING_TYPES and raw.get("hasPolyline"):
+            activity_id = str(raw.get("activityId", ""))
+            raw["route_svg"] = _fetch_route_svg(client, activity_id)
+            time.sleep(0.5)  # Rate limit
+        else:
+            raw["route_svg"] = None
 
     activities = [_normalize_activity(a) for a in raw_activities]
 
