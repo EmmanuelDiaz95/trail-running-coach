@@ -148,3 +148,42 @@ class TestNarrator:
 
         # Should return fallback, not raise
         assert "error" in result.lower() or "unavailable" in result.lower()
+
+    @patch("coach.narrator.anthropic")
+    def test_answer_question_api_failure(self, mock_anthropic, sample_coaching_dict, sample_athlete):
+        mock_client = MagicMock()
+        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client.messages.create.side_effect = Exception("API error")
+
+        narrator = Narrator(api_key="test-key", athlete=sample_athlete)
+        result = narrator.answer_question(
+            question="Am I on track?",
+            category="coaching",
+            coaching_data=sample_coaching_dict,
+        )
+
+        # Should return fallback, not raise
+        assert "error" in result.lower() or "unavailable" in result.lower()
+
+    @patch("coach.narrator.anthropic")
+    def test_answer_question_coaching_category_has_distinct_guidance(
+        self, mock_anthropic, sample_coaching_dict, sample_athlete
+    ):
+        mock_client = MagicMock()
+        mock_anthropic.Anthropic.return_value = mock_client
+        mock_response = MagicMock()
+        mock_response.content = [MagicMock(text="You're ready to push next week.")]
+        mock_client.messages.create.return_value = mock_response
+
+        narrator = Narrator(api_key="test-key", athlete=sample_athlete)
+        narrator.answer_question(
+            question="Should I increase my volume?",
+            category="coaching",
+            coaching_data=sample_coaching_dict,
+        )
+
+        call_kwargs = mock_client.messages.create.call_args[1]
+        user_msgs = [m for m in call_kwargs["messages"] if m["role"] == "user"]
+        user_text = user_msgs[0]["content"]
+        # "readiness" appears in the coaching category guidance string specifically
+        assert "readiness" in user_text
