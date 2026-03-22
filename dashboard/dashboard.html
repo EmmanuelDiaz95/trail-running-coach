@@ -465,6 +465,7 @@
     border: 1px solid var(--border); border-radius: var(--radius);
     padding: 24px; scroll-snap-align: start;
     transition: border-color 0.3s ease, transform 0.25s ease; flex-shrink: 0;
+    position: relative; overflow: hidden;
   }
   .activity-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
   .activity-card__date {
@@ -1316,12 +1317,24 @@ function renderActivities() {
 
     const durLabel = isSt || !isRun ? ' &middot; ' + a.dur + ' min' : '';
 
-    html += '<div class="activity-card">'
+    let routeSvg = '';
+    if (isRun && a.route) {
+      routeSvg = '<svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid meet"'
+        + ' style="position:absolute;inset:10px;width:calc(100% - 20px);'
+        + 'height:calc(100% - 20px);opacity:0.08;z-index:0;" fill="none"'
+        + ' stroke="var(--copper)" stroke-width="2.5"'
+        + ' stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="' + a.route + '"/></svg>';
+    }
+
+    html += '<div class="activity-card">' + routeSvg
+      + '<div style="position:relative;z-index:1;">'
       + '<div class="activity-card__date">' + a.date + '</div>'
       + '<div class="activity-card__name">' + a.name + '</div>'
       + '<div class="activity-card__type"><span class="activity-card__type-dot ' + dotClass(a.type) + '"></span>'
       + typeLabel(a.type) + durLabel + '</div>'
-      + '<div class="activity-card__stats">' + stats + '</div></div>';
+      + '<div class="activity-card__stats">' + stats + '</div>'
+      + '</div></div>';
   });
 
   html += '</div>';
