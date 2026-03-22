@@ -24,8 +24,12 @@ def _get_narrator() -> Narrator | None:
     if not api_key:
         return None
     athlete_path = Path(__file__).resolve().parent / "athlete.json"
-    with open(athlete_path) as f:
-        athlete = json.load(f)
+    try:
+        with open(athlete_path) as f:
+            athlete = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Warning: could not load athlete profile ({e}). Narrator disabled.")
+        return None
     return Narrator(api_key=api_key, athlete=athlete)
 
 
@@ -122,7 +126,8 @@ def cmd_report(week_num: int | None = None, regenerate: bool = False, raw_json: 
     # Raw JSON mode
     if raw_json:
         print(json.dumps(coaching_data, indent=2, default=str))
-        print(f"\nSaved to {coaching_file}")
+        if not regenerate:
+            print(f"\nSaved to {coaching_file}")
         return
 
     # Try to narrate
@@ -186,7 +191,9 @@ _SUBCOMMANDS = {"status", "report", "ask", "-h", "--help"}
 def main():
     # Handle bare question BEFORE argparse — argparse with subparsers
     # would exit(2) on unrecognized first args like "how's my week?"
-    if len(sys.argv) > 1 and sys.argv[1] not in _SUBCOMMANDS:
+    if (len(sys.argv) > 1
+            and sys.argv[1] not in _SUBCOMMANDS
+            and not sys.argv[1].startswith("-")):
         cmd_ask(" ".join(sys.argv[1:]))
         return
 
