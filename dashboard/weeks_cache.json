@@ -330,58 +330,93 @@
       "series": "hills"
     },
     "actual": {
-      "distance_km": 0,
-      "vert_m": 0,
-      "long_run_km": 0,
-      "gym": 3,
-      "series": false
+      "distance_km": 34.0,
+      "vert_m": 823,
+      "long_run_km": 17.0,
+      "gym": 4,
+      "series": true
     },
-    "compliance": 15,
+    "compliance": 100,
     "activities": [
       {
-        "date": "Wed, Mar 18",
-        "name": "Strength",
-        "type": "strength",
-        "dist": null,
-        "pace": null,
-        "hr": 93.0,
-        "elev": null,
-        "cal": 306.0,
-        "dur": 71,
-        "sets": null,
-        "reps": null
+        "date": "2026-03-22",
+        "type": "trail_running",
+        "name": "Cuajimalpa de Morelos Trail Running",
+        "distance_km": 17.01,
+        "elevation_m": 632.0,
+        "avg_hr": 148.0,
+        "duration_min": 141.2,
+        "pace_min_km": 8.3
       },
       {
-        "date": "Tue, Mar 17",
-        "name": "Strength",
-        "type": "strength",
-        "dist": null,
-        "pace": null,
-        "hr": 91.0,
-        "elev": null,
-        "cal": 370.0,
-        "dur": 91,
-        "sets": null,
-        "reps": null
+        "date": "2026-03-21",
+        "type": "running",
+        "name": "Metepec Running",
+        "distance_km": 11.01,
+        "elevation_m": 38.0,
+        "avg_hr": 158.0,
+        "duration_min": 65.4,
+        "pace_min_km": 5.94
       },
       {
-        "date": "Mon, Mar 16",
+        "date": "2026-03-19",
+        "type": "strength_training",
         "name": "Strength",
-        "type": "strength",
-        "dist": null,
-        "pace": null,
-        "hr": 126.0,
-        "elev": null,
-        "cal": 494.0,
-        "dur": 61,
-        "sets": null,
-        "reps": null
+        "distance_km": 0.0,
+        "elevation_m": null,
+        "avg_hr": 102.0,
+        "duration_min": 66.3,
+        "pace_min_km": null
+      },
+      {
+        "date": "2026-03-19",
+        "type": "trail_running",
+        "name": "Metepec Trail Running",
+        "distance_km": 6.01,
+        "elevation_m": 153.0,
+        "avg_hr": 147.0,
+        "duration_min": 43.0,
+        "pace_min_km": 7.16
+      },
+      {
+        "date": "2026-03-18",
+        "type": "strength_training",
+        "name": "Strength",
+        "distance_km": 0.0,
+        "elevation_m": null,
+        "avg_hr": 93.0,
+        "duration_min": 70.6,
+        "pace_min_km": null
+      },
+      {
+        "date": "2026-03-17",
+        "type": "strength_training",
+        "name": "Strength",
+        "distance_km": 0.0,
+        "elevation_m": null,
+        "avg_hr": 91.0,
+        "duration_min": 91.4,
+        "pace_min_km": null
+      },
+      {
+        "date": "2026-03-16",
+        "type": "strength_training",
+        "name": "Strength",
+        "distance_km": 0.0,
+        "elevation_m": null,
+        "avg_hr": 126.0,
+        "duration_min": 60.8,
+        "pace_min_km": null
       }
     ],
     "alerts": [
       {
-        "level": "warning",
-        "text": "<strong>Missed Series:</strong> Series: planned hills not detected in activities"
+        "level": "WARNING",
+        "message": "Volume spike: 34.0km vs previous 30.1km (+13%)"
+      },
+      {
+        "level": "INFO",
+        "message": "Long run ratio: 17.0km is 50% of weekly 34.0km (threshold: 30%)"
       }
     ],
     "has_garmin_workout": true,
