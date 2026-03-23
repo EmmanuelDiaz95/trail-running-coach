@@ -620,42 +620,68 @@
   /* Push to Garmin button */
   .push-btn {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border: 1px solid var(--copper); border-radius: 8px;
+    padding: 4px 12px; border: 1px solid rgba(200,121,65,0.3); border-radius: 6px;
     background: transparent; color: var(--copper); cursor: pointer;
-    font-size: 0.85rem; font-family: inherit; transition: all 0.2s;
-    margin-top: 12px;
+    font-size: 0.78rem; font-family: inherit; transition: all 0.2s;
   }
   .push-btn:hover { background: var(--copper); color: var(--bg-deep); }
   .push-btn--pushing { opacity: 0.6; pointer-events: none; }
   .push-btn--sent { border-color: var(--forest); color: var(--forest); pointer-events: none; }
   .push-btn__icon { width: 16px; height: 16px; }
 
-  /* Workout preview card */
-  .workout-preview {
+  /* Action bar (collapsible workout preview + actions) */
+  .action-bar {
     background: var(--bg-card); border: 1px solid var(--border-accent);
-    border-radius: var(--radius); padding: 16px; margin-top: 12px;
+    border-radius: var(--radius); margin-bottom: 24px; overflow: hidden;
   }
-  .workout-preview__title {
-    font-size: 0.9rem; font-weight: 500; color: var(--copper-light);
-    margin-bottom: 10px;
+  .action-bar__header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; cursor: pointer; transition: background 0.2s;
   }
-  .workout-preview__steps {
+  .action-bar__header:hover { background: var(--bg-card-hover); }
+  .action-bar__left {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .action-bar__chevron {
+    color: var(--copper); font-size: 10px; transition: transform 0.25s ease;
+    display: inline-block;
+  }
+  .action-bar--open .action-bar__chevron { transform: rotate(180deg); }
+  .action-bar__title {
+    font-size: 0.85rem; font-weight: 500; color: var(--copper-light);
+  }
+  .action-bar__date {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text-tertiary); letter-spacing: 0.05em;
+  }
+  .action-bar__right {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .action-bar__body {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+  }
+  .action-bar--open .action-bar__body { max-height: 300px; }
+  .action-bar__content {
+    border-top: 1px solid var(--border); padding: 14px 16px;
+    background: rgba(200,121,65,0.02);
+  }
+  .action-bar__steps {
     display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem;
   }
-  .workout-preview__step {
+  .action-bar__step {
     display: flex; align-items: center; gap: 8px; color: var(--text-secondary);
   }
-  .workout-preview__step-tag {
+  .action-bar__step-tag {
     display: inline-block; min-width: 64px; padding: 2px 8px;
     border-radius: 4px; font-size: 0.75rem; font-weight: 500; text-align: center;
   }
-  .workout-preview__step-tag--wu { background: rgba(93,155,155,0.15); color: var(--teal); }
-  .workout-preview__step-tag--work { background: rgba(200,121,65,0.15); color: var(--copper-light); }
-  .workout-preview__step-tag--rec { background: rgba(61,139,94,0.15); color: var(--forest-light); }
-  .workout-preview__step-tag--cd { background: rgba(93,155,155,0.15); color: var(--teal); }
-  .workout-preview__step-tag--repeat { background: rgba(200,121,65,0.25); color: var(--copper); }
-  .workout-preview__step-detail { color: var(--text-primary); }
-  .workout-preview__step-hr { color: var(--text-muted); font-size: 0.75rem; }
+  .action-bar__step-tag--wu { background: rgba(93,155,155,0.15); color: var(--teal); }
+  .action-bar__step-tag--work { background: rgba(200,121,65,0.15); color: var(--copper-light); }
+  .action-bar__step-tag--rec { background: rgba(61,139,94,0.15); color: var(--forest-light); }
+  .action-bar__step-tag--cd { background: rgba(93,155,155,0.15); color: var(--teal); }
+  .action-bar__step-tag--repeat { background: rgba(200,121,65,0.25); color: var(--copper); }
+  .action-bar__step-detail { color: var(--text-primary); }
+  .action-bar__step-hr { color: var(--text-muted); font-size: 0.75rem; }
 
   .sync-toast {
     position: fixed; bottom: 100px; right: 28px; z-index: 50;
@@ -954,6 +980,8 @@
     <div class="section-title" id="recapTitle">Week Recap</div>
     <div class="stats-grid" id="statsGrid"></div>
 
+    <div id="actionBar"></div>
+
     <div class="activities-section" id="activitiesSection"></div>
 
     <div class="chart-section">
@@ -1215,65 +1243,87 @@ function renderStats() {
 // ═══════════════════════════════════════════════════════
 // RENDER: Activities
 // ═══════════════════════════════════════════════════════
-function renderActivities() {
+// ═══════════════════════════════════════════════════════
+// RENDER: Action Bar (collapsible workout preview + actions)
+// ═══════════════════════════════════════════════════════
+function renderActionBar() {
   const w = WEEKS[selectedWeek];
-  const section = document.getElementById('activitiesSection');
+  const bar = document.getElementById('actionBar');
 
-  function pushBtnHtml() {
-    if (!w.has_garmin_workout) return '';
+  if (!w.garmin_steps) {
+    bar.innerHTML = '';
+    return;
+  }
+
+  const gs = w.garmin_steps;
+
+  // Push button
+  let pushBtn = '';
+  if (w.has_garmin_workout) {
     const pushKey = 'pushed_w' + w.number;
     const wasPushed = localStorage.getItem(pushKey);
     if (wasPushed) {
-      return '<button class="push-btn push-btn--sent" disabled>'
+      pushBtn = '<button class="push-btn push-btn--sent" disabled>'
         + '<svg class="push-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>'
-        + 'Sent to watch</button>';
+        + 'Sent</button>';
+    } else {
+      pushBtn = '<button class="push-btn" data-week="' + w.number + '">'
+        + '<svg class="push-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7-7 7 7"/></svg>'
+        + 'Push to Garmin</button>';
     }
-    return '<button class="push-btn" data-week="' + w.number + '">'
-      + '<svg class="push-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7-7 7 7"/></svg>'
-      + 'Push to Garmin</button>';
   }
 
-  function workoutPreviewHtml() {
-    if (!w.garmin_steps) return '';
-    const gs = w.garmin_steps;
-    return '<div class="workout-preview">'
-      + '<div class="workout-preview__title">' + gs.description + (gs.date ? ' &middot; ' + gs.date : '') + '</div>'
-      + '<div class="workout-preview__steps">'
-      + '<div class="workout-preview__step">'
-      +   '<span class="workout-preview__step-tag workout-preview__step-tag--wu">Warm Up</span>'
-      +   '<span class="workout-preview__step-detail">' + gs.warmup + '</span>'
-      +   '<span class="workout-preview__step-hr">' + gs.warmup_hr + '</span>'
-      + '</div>'
-      + '<div class="workout-preview__step">'
-      +   '<span class="workout-preview__step-tag workout-preview__step-tag--repeat">' + gs.repeat + 'x Repeat</span>'
-      + '</div>'
-      + '<div class="workout-preview__step" style="padding-left:20px">'
-      +   '<span class="workout-preview__step-tag workout-preview__step-tag--work">Work</span>'
-      +   '<span class="workout-preview__step-detail">' + gs.work + ' &mdash; ' + gs.work_name + '</span>'
-      +   '<span class="workout-preview__step-hr">' + gs.work_hr + '</span>'
-      + '</div>'
-      + '<div class="workout-preview__step" style="padding-left:20px">'
-      +   '<span class="workout-preview__step-tag workout-preview__step-tag--rec">Recovery</span>'
-      +   '<span class="workout-preview__step-detail">' + gs.recovery + ' &mdash; ' + gs.recovery_name + '</span>'
-      +   '<span class="workout-preview__step-hr">' + gs.recovery_hr + '</span>'
-      + '</div>'
-      + '<div class="workout-preview__step">'
-      +   '<span class="workout-preview__step-tag workout-preview__step-tag--cd">Cool Down</span>'
-      +   '<span class="workout-preview__step-detail">' + gs.cooldown + '</span>'
-      +   '<span class="workout-preview__step-hr">' + gs.cooldown_hr + '</span>'
-      + '</div>'
-      + '</div>'
-      + pushBtnHtml()
-      + '</div>';
-  }
+  bar.innerHTML = '<div class="action-bar">'
+    + '<div class="action-bar__header" onclick="this.parentElement.classList.toggle(\'action-bar--open\')">'
+    +   '<div class="action-bar__left">'
+    +     '<span class="action-bar__chevron">&#9662;</span>'
+    +     '<span class="action-bar__title">' + gs.description + '</span>'
+    +     (gs.date ? '<span class="action-bar__date">' + gs.date + '</span>' : '')
+    +   '</div>'
+    +   '<div class="action-bar__right">' + pushBtn + '</div>'
+    + '</div>'
+    + '<div class="action-bar__body">'
+    +   '<div class="action-bar__content">'
+    +     '<div class="action-bar__steps">'
+    +       '<div class="action-bar__step">'
+    +         '<span class="action-bar__step-tag action-bar__step-tag--wu">Warm Up</span>'
+    +         '<span class="action-bar__step-detail">' + gs.warmup + '</span>'
+    +         '<span class="action-bar__step-hr">' + gs.warmup_hr + '</span>'
+    +       '</div>'
+    +       '<div class="action-bar__step">'
+    +         '<span class="action-bar__step-tag action-bar__step-tag--repeat">' + gs.repeat + 'x Repeat</span>'
+    +       '</div>'
+    +       '<div class="action-bar__step" style="padding-left:20px">'
+    +         '<span class="action-bar__step-tag action-bar__step-tag--work">Work</span>'
+    +         '<span class="action-bar__step-detail">' + gs.work + ' &mdash; ' + gs.work_name + '</span>'
+    +         '<span class="action-bar__step-hr">' + gs.work_hr + '</span>'
+    +       '</div>'
+    +       '<div class="action-bar__step" style="padding-left:20px">'
+    +         '<span class="action-bar__step-tag action-bar__step-tag--rec">Recovery</span>'
+    +         '<span class="action-bar__step-detail">' + gs.recovery + ' &mdash; ' + gs.recovery_name + '</span>'
+    +         '<span class="action-bar__step-hr">' + gs.recovery_hr + '</span>'
+    +       '</div>'
+    +       '<div class="action-bar__step">'
+    +         '<span class="action-bar__step-tag action-bar__step-tag--cd">Cool Down</span>'
+    +         '<span class="action-bar__step-detail">' + gs.cooldown + '</span>'
+    +         '<span class="action-bar__step-hr">' + gs.cooldown_hr + '</span>'
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function renderActivities() {
+  const w = WEEKS[selectedWeek];
+  const section = document.getElementById('activitiesSection');
 
   if (w.activities.length === 0) {
     section.innerHTML = '<div class="section-title">Activities <span class="tag tag--pending">Pending</span></div>'
       + '<div class="empty-state">'
       + '<div class="empty-state__icon">&#x1F3C3;</div>'
       + '<div class="empty-state__text"><strong>No activities recorded yet.</strong><br>'
-      + 'Sync with Garmin after completing workouts this week.</div></div>'
-      + workoutPreviewHtml();
+      + 'Sync with Garmin after completing workouts this week.</div></div>';
     return;
   }
 
@@ -1338,7 +1388,6 @@ function renderActivities() {
   });
 
   html += '</div>';
-  html += workoutPreviewHtml();
   section.innerHTML = html;
 }
 
@@ -1434,6 +1483,7 @@ function renderAlerts() {
 function renderAll() {
   renderSelector();
   renderStats();
+  renderActionBar();
   renderActivities();
   renderChart();
   renderAlerts();
@@ -1631,6 +1681,7 @@ document.addEventListener('click', async (e) => {
   const btn = e.target.closest('.push-btn');
   if (!btn || btn.classList.contains('push-btn--pushing') || btn.classList.contains('push-btn--sent')) return;
 
+  e.stopPropagation(); // Prevent accordion toggle
   const weekNum = btn.dataset.week;
   btn.classList.add('push-btn--pushing');
   btn.textContent = 'Pushing...';
