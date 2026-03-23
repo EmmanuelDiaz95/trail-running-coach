@@ -1257,9 +1257,9 @@ function renderActionBar() {
 
   const gs = w.garmin_steps;
 
-  // Push button
+  // Push button (only shown when running locally)
   let pushBtn = '';
-  if (w.has_garmin_workout) {
+  if (w.has_garmin_workout && isLocal) {
     const pushKey = 'pushed_w' + w.number;
     const wasPushed = localStorage.getItem(pushKey);
     if (wasPushed) {
@@ -1618,6 +1618,11 @@ async function loadWeeks() {
 loadProfiles().then(() => loadWeeks());
 
 // ═══════════════════════════════════════════════════════
+// LOCAL-ONLY DETECTION — disable sync/push on Railway
+// ═══════════════════════════════════════════════════════
+const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+// ═══════════════════════════════════════════════════════
 // SYNC BUTTON — calls /api/sync on the local server
 // ═══════════════════════════════════════════════════════
 const syncBtn = document.getElementById('syncBtn');
@@ -1631,8 +1636,14 @@ function showToast(msg, type) {
   toastTimer = setTimeout(() => { syncToast.className = 'sync-toast'; }, 4000);
 }
 
+if (!isLocal) {
+  syncBtn.style.opacity = '0.3';
+  syncBtn.style.pointerEvents = 'none';
+  syncBtn.title = 'Sync locally via CLI: python scripts/sync.py';
+}
+
 syncBtn.addEventListener('click', async () => {
-  if (syncBtn.classList.contains('sync-btn--syncing')) return;
+  if (!isLocal || syncBtn.classList.contains('sync-btn--syncing')) return;
   syncBtn.classList.add('sync-btn--syncing');
   showToast('Syncing with Garmin...', '');
 
