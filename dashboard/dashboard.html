@@ -1010,7 +1010,7 @@
 
   <footer class="footer">
     <p class="footer__text">
-      Tarahumara Ultra Tracker <span>&middot;</span> Last synced Mar 15, 2026 <span>&middot;</span> Garmin Connect
+      Tarahumara Ultra Tracker <span>&middot;</span> Last synced Mar 24, 2026 <span>&middot;</span> Garmin Connect
     </p>
   </footer>
 
@@ -1640,13 +1640,15 @@ function showToast(msg, type) {
 }
 
 if (!isLocal) {
-  syncBtn.style.opacity = '0.3';
-  syncBtn.style.pointerEvents = 'none';
-  syncBtn.title = 'Sync locally via CLI: python scripts/sync.py';
+  syncBtn.title = 'Sync via CLI: python scripts/push_data.py';
 }
 
 syncBtn.addEventListener('click', async () => {
-  if (!isLocal || syncBtn.classList.contains('sync-btn--syncing')) return;
+  if (syncBtn.classList.contains('sync-btn--syncing')) return;
+  if (!isLocal) {
+    showToast('Run <code>python scripts/push_data.py</code> locally to sync from Garmin.', 'error');
+    return;
+  }
   syncBtn.classList.add('sync-btn--syncing');
   showToast('Syncing with Garmin...', '');
 
