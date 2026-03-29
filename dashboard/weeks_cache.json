@@ -254,7 +254,7 @@
       {
         "date": "Wed, Mar 11",
         "name": "Running",
-        "type": "trail",
+        "type": "road",
         "dist": 5.01,
         "pace": "6:00",
         "hr": 153.0,
@@ -375,7 +375,7 @@
       {
         "date": "Sat, Mar 21",
         "name": "Running",
-        "type": "trail",
+        "type": "road",
         "dist": 11.01,
         "pace": "5:56",
         "hr": 158.0,
@@ -510,7 +510,7 @@
       {
         "date": "Sun, Mar 29",
         "name": "Running",
-        "type": "trail",
+        "type": "road",
         "dist": 12.02,
         "pace": "5:57",
         "hr": 152.0,
