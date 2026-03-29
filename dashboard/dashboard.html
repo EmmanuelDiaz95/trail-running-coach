@@ -1624,8 +1624,9 @@ function renderMonthlySummary() {
   var monthIdx = months.indexOf(selMonth);
   var monthName = fullMonths[monthIdx];
 
-  // Filter weeks overlapping this calendar month
+  // Filter weeks that overlap this calendar month AND have actual data
   var monthWeeks = WEEKS.filter(function(w) {
+    if (w.actual == null) return false;
     var startMonth = w.start.split(' ')[0];
     var endMonth = w.end.split(' ')[0];
     return (startMonth === selMonth || endMonth === selMonth) && w.year === selYear;
