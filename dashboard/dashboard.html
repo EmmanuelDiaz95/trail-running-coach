@@ -590,6 +590,7 @@
   }
   .activity-card__type-dot { width: 7px; height: 7px; border-radius: 50%; }
   .activity-card__type-dot--trail { background: var(--copper); }
+  .activity-card__type-dot--road { background: var(--forest); }
   .activity-card__type-dot--strength { background: var(--info-blue); }
   .activity-card__type-dot--cycling { background: var(--forest); }
   .activity-card__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1175,12 +1176,14 @@ function formatDelta(d, isAbs) {
 
 function dotClass(type) {
   if (type === 'trail') return 'activity-card__type-dot--trail';
+  if (type === 'road') return 'activity-card__type-dot--road';
   if (type === 'strength') return 'activity-card__type-dot--strength';
   return 'activity-card__type-dot--cycling';
 }
 
 function typeLabel(type) {
   if (type === 'trail') return 'Trail Running';
+  if (type === 'road') return 'Road Running';
   if (type === 'strength') return 'Strength';
   return 'Cross-Training';
 }
@@ -1456,7 +1459,7 @@ function renderActivities() {
     + '<div class="activities-scroll">';
 
   w.activities.forEach(a => {
-    const isRun = a.type === 'trail';
+    const isRun = a.type === 'trail' || a.type === 'road';
     const isSt = a.type === 'strength';
 
     let stats = '';
@@ -1655,7 +1658,7 @@ function renderMonthlySummary() {
             trailPaces.push({ sec: paceSec, dist: a.dist });
             trailDist += a.dist;
             trailRuns++;
-          } else if (a.type === 'running' || a.type === 'road') {
+          } else if (a.type === 'road') {
             roadPaces.push({ sec: paceSec, dist: a.dist });
             roadDist += a.dist;
             roadRuns++;

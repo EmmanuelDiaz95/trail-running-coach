@@ -81,8 +81,10 @@ def pace_str(duration_seconds: float, distance_km: float) -> str | None:
 
 
 def activity_type_for_dashboard(garmin_type: str) -> str:
-    if garmin_type in ('running', 'trail_running', 'treadmill_running'):
+    if garmin_type == 'trail_running':
         return 'trail'
+    if garmin_type in ('running', 'treadmill_running'):
+        return 'road'
     if garmin_type in ('strength_training', 'indoor_cardio'):
         return 'strength'
     return 'cycling'
