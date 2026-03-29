@@ -1,6 +1,6 @@
 {
-  "name": "Tarahumara Ultra Tracker",
-  "short_name": "Tarahumara",
+  "name": "Trail Running Tracker",
+  "short_name": "Trail Tracker",
   "description": "30-week ultra marathon training tracker",
   "start_url": "/dashboard.html",
   "display": "standalone",
