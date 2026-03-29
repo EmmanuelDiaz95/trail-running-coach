@@ -140,6 +140,110 @@
     opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
   }
 
+  /* ── Monthly Summary ── */
+  .month-summary {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px 28px 22px; margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+  .month-summary:empty { display: none; }
+  .month-summary__header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  }
+  .month-summary__title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
+    color: var(--text-primary); display: flex; align-items: center; gap: 10px;
+  }
+  .month-summary__title-icon { font-size: 0.85rem; opacity: 0.7; }
+  .month-summary__badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+  }
+  .month-summary__badge--ok {
+    background: rgba(61, 139, 94, 0.12); color: var(--forest-light);
+    border: 1px solid rgba(61, 139, 94, 0.2);
+  }
+  .month-summary__badge--warn {
+    background: rgba(160, 64, 48, 0.15); color: #e06050;
+    border: 1px solid rgba(160, 64, 48, 0.3);
+  }
+  .month-summary__grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .month-stat {
+    padding: 14px 16px; background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm); border: 1px solid rgba(28, 34, 48, 0.6);
+    transition: border-color 0.3s ease;
+  }
+  .month-stat:hover { border-color: var(--border-accent); }
+  .month-stat--alert { border-color: rgba(160, 64, 48, 0.3); background: rgba(160, 64, 48, 0.06); }
+  .month-stat--alert:hover { border-color: rgba(160, 64, 48, 0.45); }
+  .month-stat--alert .month-stat__label { color: #e06050; }
+  .month-stat__label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px;
+  }
+  .month-stat__value {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.45rem;
+    line-height: 1; color: var(--text-primary); margin-bottom: 4px;
+  }
+  .month-stat__value span {
+    font-size: 0.7rem; font-weight: 500; color: var(--text-secondary);
+    font-family: 'Outfit', sans-serif; margin-left: 2px;
+  }
+  .month-stat__sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.52rem;
+    color: var(--text-secondary); margin-bottom: 8px;
+  }
+  .month-stat__bar {
+    width: 100%; height: 4px; background: rgba(28, 34, 48, 0.8);
+    border-radius: 2px; overflow: hidden; margin-top: 10px;
+  }
+  .month-stat__bar-fill {
+    height: 100%; border-radius: 2px; width: 0; transition: width 1s ease;
+  }
+  .month-stat__bar-fill--on-track { background: linear-gradient(90deg, var(--forest), var(--forest-light)); }
+  .month-stat__bar-fill--ms-over { background: linear-gradient(90deg, var(--canyon-red), #c94040); }
+  .month-stat__bar-fill--copper { background: linear-gradient(90deg, var(--copper), var(--copper-light)); }
+  .month-stat__delta {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 6px;
+  }
+  .month-stat__delta--up { background: rgba(61, 139, 94, 0.12); color: var(--forest-light); }
+  .month-stat__delta--over { background: rgba(160, 64, 48, 0.18); color: #e06050; }
+  .month-stat--pace { grid-column: span 2; }
+  .month-stat--pace .month-stat__paces { display: flex; gap: 16px; margin-top: 4px; }
+  .pace-item { flex: 1; }
+  .pace-item__type {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.48rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+  }
+  .pace-item__dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+  .pace-item__dot--trail { background: var(--copper); }
+  .pace-item__dot--road { background: var(--forest); }
+  .pace-item__value {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem;
+    line-height: 1; color: var(--text-primary);
+  }
+  .pace-item__value span {
+    font-size: 0.6rem; font-weight: 500; color: var(--text-secondary);
+    font-family: 'Outfit', sans-serif; margin-left: 1px;
+  }
+  .pace-item__sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.48rem;
+    color: var(--text-tertiary); margin-top: 3px;
+  }
+  .pace-divider { width: 1px; background: var(--border); align-self: stretch; margin: 2px 0; }
+
+  @media (max-width: 768px) {
+    .month-summary { padding: 18px 16px 16px; }
+    .month-summary__grid { grid-template-columns: repeat(2, 1fr); }
+    .month-stat--pace { grid-column: 1 / -1; }
+  }
+
   /* ── Data tags (ACTUAL / PLANNED) ── */
   .tag {
     font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 600;
@@ -373,6 +477,7 @@
   .metric-card__delta--positive { background: rgba(61, 139, 94, 0.12); color: var(--forest-light); }
   .metric-card__delta--negative { background: rgba(196, 154, 58, 0.1); color: var(--desert-gold); }
   .metric-card__delta--neutral { background: rgba(90, 86, 78, 0.15); color: var(--text-secondary); }
+  .metric-card__delta--over { background: rgba(160, 64, 48, 0.18); color: #e06050; }
 
   .metric-card__label {
     font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
@@ -415,6 +520,9 @@
   .metric-card__bar-fill--vert { background: linear-gradient(90deg, var(--forest), var(--forest-light)); }
   .metric-card__bar-fill--long { background: linear-gradient(90deg, var(--desert-gold-dim), var(--desert-gold)); }
   .metric-card__bar-fill--gym { background: linear-gradient(90deg, var(--info-blue), #6a9ed0); }
+  .metric-card__bar-fill--over { background: linear-gradient(90deg, var(--canyon-red), #c94040); }
+  .metric-card--alert { border-color: rgba(160, 64, 48, 0.3); background: rgba(160, 64, 48, 0.06); }
+  .metric-card--alert .metric-card__label { color: #e06050; }
 
   .metric-card__empty-note {
     font-size: 0.72rem; color: var(--text-tertiary); font-style: italic; margin-top: 4px;
@@ -533,6 +641,10 @@
     background: linear-gradient(180deg, var(--copper-light), var(--copper));
     box-shadow: 0 0 12px rgba(200, 121, 65, 0.2);
   }
+  .chart-bar--over {
+    background: linear-gradient(180deg, #e06050, var(--canyon-red));
+    box-shadow: 0 0 12px rgba(160, 64, 48, 0.25);
+  }
   .chart-bar--selected { outline: 2px solid var(--copper); outline-offset: 2px; border-radius: 4px 4px 0 0; }
   .chart-bar-label {
     font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
@@ -573,6 +685,7 @@
   }
   .alert-card__icon--info { background: rgba(74, 126, 184, 0.12); color: var(--info-blue); }
   .alert-card__icon--warning { background: rgba(196, 154, 58, 0.12); color: var(--desert-gold); }
+  .alert-card__icon--danger { background: rgba(160, 64, 48, 0.15); color: #e06050; }
   .alert-card__text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; }
   .alert-card__text strong { color: var(--text-primary); font-weight: 500; }
 
@@ -955,6 +1068,9 @@
     <div class="progress-bar__label"><span>Week 2 of 30</span><span>Base Phase</span></div>
   </header>
 
+  <!-- ═══════════ MONTHLY SUMMARY ═══════════ -->
+  <div class="month-summary" id="monthSummary"></div>
+
   <!-- ═══════════ WEEK SELECTOR ═══════════ -->
   <div class="week-selector" id="weekSelector">
     <div class="week-selector__control">
@@ -1045,6 +1161,7 @@ function delta(actual, planned) {
 
 function deltaClass(d) {
   if (d == null) return '';
+  if (d > 10) return 'metric-card__delta--over';
   if (d > 1) return 'metric-card__delta--positive';
   if (d < -1) return 'metric-card__delta--negative';
   return 'metric-card__delta--neutral';
@@ -1158,6 +1275,10 @@ function renderStats() {
     const dStr = isGym ? formatDelta(d, true) : formatDelta(d, false);
     const dClass = deltaClass(d);
     const pct = actual != null ? Math.min((actual / planned) * 100, 100) : 0;
+    const isOver = d != null && d > 10;
+    const cardAlert = isOver ? ' metric-card--alert' : '';
+    const barClass = isOver ? 'over' : m.barClass;
+    const labelPrefix = isOver ? '&#9888; ' : '';
 
     let valuesHtml;
     if (hasActual) {
@@ -1179,15 +1300,15 @@ function renderStats() {
         + '<div class="metric-card__empty-note">Awaiting sync...</div>';
     }
 
-    metricsHtml += '<div class="metric-card">'
+    metricsHtml += '<div class="metric-card' + cardAlert + '">'
       + '<div class="metric-card__header">'
       + '<div class="metric-card__icon metric-card__icon--' + m.iconClass + '">' + m.icon + '</div>'
       + (dStr ? '<span class="metric-card__delta ' + dClass + '">' + dStr + '</span>' : '')
       + '</div>'
-      + '<div class="metric-card__label">' + m.label + '</div>'
+      + '<div class="metric-card__label">' + labelPrefix + m.label + '</div>'
       + valuesHtml
       + '<div class="metric-card__bar">'
-      + '<div class="metric-card__bar-fill metric-card__bar-fill--' + m.barClass + '" data-width="' + pct + '"></div>'
+      + '<div class="metric-card__bar-fill metric-card__bar-fill--' + barClass + '" data-width="' + pct + '"></div>'
       + '</div></div>';
   });
 
@@ -1416,7 +1537,9 @@ function renderChart() {
 
     if (w.actual) {
       const actualH = (w.actual.distance_km / maxDist * 100).toFixed(0);
-      barsHtml += '<div class="chart-bar chart-bar--actual" data-height="' + actualH + '" style="height:0">'
+      const overPlan = w.actual.distance_km > w.plan.distance_km * 1.1;
+      const barType = overPlan ? 'chart-bar--over' : 'chart-bar--actual';
+      barsHtml += '<div class="chart-bar ' + barType + '" data-height="' + actualH + '" style="height:0">'
         + '<span class="chart-bar-value">' + w.actual.distance_km + '</span></div>';
     }
 
@@ -1483,7 +1606,177 @@ function renderAlerts() {
 // ═══════════════════════════════════════════════════════
 // TRANSITION + FULL RENDER
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// RENDER: Monthly Summary
+// ═══════════════════════════════════════════════════════
+function renderMonthlySummary() {
+  var container = document.getElementById('monthSummary');
+  if (!container) return;
+
+  var sw = WEEKS[selectedWeek];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var selMonth = sw.start.split(' ')[0];
+  var selYear = sw.year;
+  var monthIdx = months.indexOf(selMonth);
+  var monthName = fullMonths[monthIdx];
+
+  // Filter weeks overlapping this calendar month
+  var monthWeeks = WEEKS.filter(function(w) {
+    var startMonth = w.start.split(' ')[0];
+    var endMonth = w.end.split(' ')[0];
+    return (startMonth === selMonth || endMonth === selMonth) && w.year === selYear;
+  });
+
+  // Aggregate
+  var planDist = 0, planVert = 0, actDist = 0, actVert = 0;
+  var totalDur = 0, totalActivities = 0, compSum = 0, compCount = 0;
+  var trailPaces = [], roadPaces = [], trailDist = 0, roadDist = 0, trailRuns = 0, roadRuns = 0;
+
+  monthWeeks.forEach(function(w) {
+    planDist += w.plan.distance_km;
+    planVert += w.plan.vert_m;
+    if (w.actual) {
+      actDist += w.actual.distance_km;
+      actVert += w.actual.vert_m;
+    }
+    if (w.compliance != null) {
+      compSum += w.compliance;
+      compCount++;
+    }
+    if (w.activities) {
+      w.activities.forEach(function(a) {
+        totalActivities++;
+        if (a.dur) totalDur += a.dur;
+        if (a.pace && a.dist) {
+          var parts = a.pace.split(':');
+          var paceSec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+          if (a.type === 'trail') {
+            trailPaces.push({ sec: paceSec, dist: a.dist });
+            trailDist += a.dist;
+            trailRuns++;
+          } else if (a.type === 'running' || a.type === 'road') {
+            roadPaces.push({ sec: paceSec, dist: a.dist });
+            roadDist += a.dist;
+            roadRuns++;
+          }
+        }
+      });
+    }
+  });
+
+  if (compCount === 0 && actDist === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  function avgPace(paces, totalD) {
+    if (paces.length === 0 || totalD === 0) return null;
+    var weightedSec = paces.reduce(function(sum, p) { return sum + p.sec * p.dist; }, 0) / totalD;
+    var m = Math.floor(weightedSec / 60);
+    var s = Math.round(weightedSec % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  var trailPace = avgPace(trailPaces, trailDist);
+  var roadPace = avgPace(roadPaces, roadDist);
+  var avgComp = compCount > 0 ? Math.round(compSum / compCount) : null;
+  var totalHrs = (totalDur / 60).toFixed(1);
+
+  var distDelta = planDist > 0 ? ((actDist - planDist) / planDist * 100) : 0;
+  var vertDelta = planVert > 0 ? ((actVert - planVert) / planVert * 100) : 0;
+  var distOver = distDelta > 10;
+  var vertOver = vertDelta > 10;
+  var alertCount = (distOver ? 1 : 0) + (vertOver ? 1 : 0);
+
+  var badgeClass = alertCount > 0 ? 'month-summary__badge--warn' : 'month-summary__badge--ok';
+  var badgeText = alertCount > 0
+    ? '&#9888; ' + alertCount + ' Alert' + (alertCount > 1 ? 's' : '')
+    : '&#10003; On Track';
+
+  function statBar(pct, isOver) {
+    var cls = isOver ? 'month-stat__bar-fill--ms-over' : 'month-stat__bar-fill--on-track';
+    var w = Math.min(pct, 100);
+    return '<div class="month-stat__bar"><div class="month-stat__bar-fill ' + cls + '" data-mwidth="' + w + '"></div></div>';
+  }
+  function statDelta(val, isOver) {
+    if (isOver) return '<span class="month-stat__delta month-stat__delta--over">&#9888; +' + val.toFixed(1) + '% over plan</span>';
+    if (val >= 0) return '<span class="month-stat__delta month-stat__delta--up">+' + val.toFixed(1) + '%</span>';
+    return '';
+  }
+
+  var html = '<div class="month-summary__header">'
+    + '<div class="month-summary__title"><span class="month-summary__title-icon">&#9670;</span>' + monthName + ' ' + selYear + '</div>'
+    + '<span class="month-summary__badge ' + badgeClass + '">' + badgeText + '</span>'
+    + '</div><div class="month-summary__grid">';
+
+  // Distance
+  var distPct = planDist > 0 ? (actDist / planDist * 100) : 0;
+  html += '<div class="month-stat' + (distOver ? ' month-stat--alert' : '') + '">'
+    + '<div class="month-stat__label">' + (distOver ? '&#9888; ' : '') + 'Distance</div>'
+    + '<div class="month-stat__value">' + actDist.toFixed(1) + ' <span>km</span></div>'
+    + '<div class="month-stat__sub">of ' + planDist + ' km planned</div>'
+    + statBar(distPct, distOver)
+    + statDelta(distDelta, distOver)
+    + '</div>';
+
+  // Elevation
+  var vertPct = planVert > 0 ? (actVert / planVert * 100) : 0;
+  html += '<div class="month-stat' + (vertOver ? ' month-stat--alert' : '') + '">'
+    + '<div class="month-stat__label">' + (vertOver ? '&#9888; ' : '') + 'Elevation</div>'
+    + '<div class="month-stat__value">' + actVert.toLocaleString() + ' <span>m</span></div>'
+    + '<div class="month-stat__sub">of ' + planVert.toLocaleString() + ' m planned</div>'
+    + statBar(vertPct, vertOver)
+    + statDelta(vertDelta, vertOver)
+    + '</div>';
+
+  // Avg Compliance
+  html += '<div class="month-stat">'
+    + '<div class="month-stat__label">Avg Compliance</div>'
+    + '<div class="month-stat__value">' + (avgComp != null ? avgComp : '—') + ' <span>%</span></div>'
+    + '<div class="month-stat__sub">across ' + compCount + ' week' + (compCount !== 1 ? 's' : '') + '</div>'
+    + statBar(avgComp || 0, false)
+    + (avgComp != null ? '<span class="month-stat__delta month-stat__delta--up">' + (avgComp >= 90 ? 'Excellent' : avgComp >= 70 ? 'Good' : 'Needs work') + '</span>' : '')
+    + '</div>';
+
+  // Training Hours
+  html += '<div class="month-stat">'
+    + '<div class="month-stat__label">Training Hours</div>'
+    + '<div class="month-stat__value">' + totalHrs + ' <span>hrs</span></div>'
+    + '<div class="month-stat__sub">' + totalActivities + ' sessions this month</div>'
+    + '</div>';
+
+  // Pace Breakdown
+  html += '<div class="month-stat month-stat--pace">'
+    + '<div class="month-stat__label">Avg Pace Breakdown</div>'
+    + '<div class="month-stat__paces">'
+    + '<div class="pace-item">'
+    + '<div class="pace-item__type"><span class="pace-item__dot pace-item__dot--trail"></span>Trail</div>'
+    + '<div class="pace-item__value">' + (trailPace || '—') + ' <span>/km</span></div>'
+    + '<div class="pace-item__sub">' + trailRuns + ' run' + (trailRuns !== 1 ? 's' : '') + ' &middot; ' + trailDist.toFixed(1) + ' km</div>'
+    + '</div>'
+    + '<div class="pace-divider"></div>'
+    + '<div class="pace-item">'
+    + '<div class="pace-item__type"><span class="pace-item__dot pace-item__dot--road"></span>Road</div>'
+    + '<div class="pace-item__value">' + (roadPace || '—') + ' <span>/km</span></div>'
+    + '<div class="pace-item__sub">' + roadRuns + ' run' + (roadRuns !== 1 ? 's' : '') + ' &middot; ' + roadDist.toFixed(1) + ' km</div>'
+    + '</div></div></div>';
+
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Animate bars
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      container.querySelectorAll('.month-stat__bar-fill').forEach(function(bar) {
+        bar.style.width = bar.dataset.mwidth + '%';
+      });
+    }, 50);
+  });
+}
+
 function renderAll() {
+  renderMonthlySummary();
   renderSelector();
   renderStats();
   renderActionBar();
