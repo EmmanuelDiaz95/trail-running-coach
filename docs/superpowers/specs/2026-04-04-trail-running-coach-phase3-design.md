@@ -34,6 +34,9 @@ Add a browser-based chat interface to the existing Tarahumara Ultra Tracker dash
 │    DELETE /api/coach/history                │
 │    GET  /api/coach/status                   │
 │                                             │
+│  Health:                                    │
+│    GET  /health                              │
+│                                             │
 │  Shared: Bearer token auth, rate limiting   │
 ├─────────────────────────────────────────────┤
 │  coach/    tracker/    dashboard/            │
@@ -219,10 +222,12 @@ Added to `requirements.txt`:
 ## Auth & Security
 
 - Bearer token auth via `API_KEY` env var (same as current serve.py)
-- Applied as FastAPI middleware to all `/api/*` routes
+- Applied as FastAPI dependency to protected routes (`/api/sync`, `/api/push-workout`, `/api/coach/chat`)
+- Read-only endpoints unprotected: `/api/weeks`, `/api/profiles`, `/api/coach/status`, `/api/coach/history`
 - Chat input sanitized before passing to classifier/narrator
 - ANTHROPIC_API_KEY required for coach endpoints; returns 503 if not set
 - Rate limiting: 10s cooldown on `/api/coach/chat`, 60s on `/api/sync` (preserved from serve.py)
+- In-memory dict rate limiting (sufficient for single-worker Railway deployment)
 
 ## Environment Variables
 
@@ -236,7 +241,11 @@ All existing env vars preserved. No new ones required:
 
 ## Deployment
 
-Single Railway service. Procfile changes from:
+**Branch strategy:** Development on `feature/phase3-web-interface` branch. Merge to `main` only after full smoke test. Production dashboard stays untouched until merge.
+
+**Railway config:** Single service, git-deploy from `main`. Current `runtime.txt` specifies Python 3.11.9 (Railway compatible with FastAPI).
+
+Procfile changes from:
 ```
 web: HOST=0.0.0.0 python dashboard/serve.py
 ```
@@ -245,7 +254,25 @@ to:
 web: uvicorn api.app:app --host 0.0.0.0 --port $PORT
 ```
 
-Auto-sync background thread moves from serve.py to FastAPI startup event.
+**Health check endpoint:** Add `GET /health` returning `{"status": "ok"}` for Railway's health check system.
+
+**Static file serving:** FastAPI `StaticFiles` mount with `html=True` serves `dashboard/` directory. Root `/` serves `dashboard.html` automatically.
+
+**Auto-sync background thread:** Moves from serve.py's `threading.Thread` to FastAPI's `lifespan` context manager for clean startup/shutdown.
+
+**Lifespan pattern:**
+```python
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    sync_thread = threading.Thread(target=_auto_sync, daemon=True)
+    sync_thread.start()
+    yield
+    # cleanup on shutdown
+
+app = FastAPI(lifespan=lifespan)
+```
 
 ## Tech Debt Note
 
