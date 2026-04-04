@@ -1619,7 +1619,11 @@ function renderMonthlySummary() {
   var sw = WEEKS[selectedWeek];
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var selMonth = sw.start.split(' ')[0];
+  var startMonth = sw.start.split(' ')[0];
+  var endMonth = sw.end.split(' ')[0];
+  var startDay = parseInt(sw.start.split(' ')[1], 10);
+  // When a week spans two months, pick the month with more days
+  var selMonth = (startMonth !== endMonth && startDay >= 29) ? endMonth : startMonth;
   var selYear = sw.year;
   var monthIdx = months.indexOf(selMonth);
   var monthName = fullMonths[monthIdx];
