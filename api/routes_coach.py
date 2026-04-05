@@ -9,9 +9,9 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-from tracker.plan_data import get_current_week, get_week, get_week_dates, days_to_race
+from tracker.plan_data import get_current_week, get_week, get_week_dates, days_to_race, load_plan
 from tracker.garmin_sync import load_cached_activities
-from tracker.analysis import build_week_actual
+from tracker.analysis import build_week_actual, compliance_score
 from tracker.data_loader import load_week_range
 from coach.engine import run_coaching
 from coach.classifier import classify_question
@@ -39,8 +39,67 @@ def _get_narrator() -> Optional[Narrator]:
     return Narrator(api_key=api_key, athlete=athlete)
 
 
+def _build_training_history(current_week: int) -> list[dict]:
+    """Build a summary of all completed weeks for full training context."""
+    summary = []
+    for wn in range(1, current_week + 1):
+        plan = get_week(wn)
+        if plan is None:
+            continue
+        start, end = get_week_dates(wn)
+        acts = load_cached_activities(start, end)
+        entry = {
+            "week": wn,
+            "phase": plan.phase,
+            "is_recovery": plan.is_recovery,
+            "plan": {
+                "distance_km": plan.distance_km,
+                "vert_m": plan.vert_m,
+                "long_run_km": plan.long_run_km,
+                "gym": plan.gym_sessions,
+                "series": plan.series_type,
+            },
+        }
+        if acts:
+            actual = build_week_actual(acts, wn)
+            score = compliance_score(plan, actual)
+            entry["actual"] = {
+                "distance_km": round(actual.total_distance_km, 1),
+                "vert_m": actual.total_vert_m,
+                "long_run_km": round(actual.longest_run_km, 1),
+                "gym": actual.gym_count,
+                "series": actual.series_detected,
+            }
+            entry["compliance"] = score
+        else:
+            entry["actual"] = None
+            entry["compliance"] = None
+        summary.append(entry)
+    return summary
+
+
+def _build_upcoming_plan(current_week: int, lookahead: int = 4) -> list[dict]:
+    """Build plan targets for upcoming weeks."""
+    upcoming = []
+    for wn in range(current_week + 1, min(current_week + lookahead + 1, 31)):
+        plan = get_week(wn)
+        if plan is None:
+            continue
+        upcoming.append({
+            "week": wn,
+            "phase": plan.phase,
+            "is_recovery": plan.is_recovery,
+            "distance_km": plan.distance_km,
+            "vert_m": plan.vert_m,
+            "long_run_km": plan.long_run_km,
+            "gym": plan.gym_sessions,
+            "series": plan.series_type,
+        })
+    return upcoming
+
+
 def _build_coaching_data() -> Optional[dict]:
-    """Build coaching data for the current week. Returns None if unavailable."""
+    """Build full coaching context: current week analysis + training history + upcoming plan."""
     week_num = get_current_week()
     if week_num is None:
         return None
@@ -55,7 +114,20 @@ def _build_coaching_data() -> Optional[dict]:
     lookback_start = max(1, week_num - 3)
     history = load_week_range(lookback_start, week_num)
     output = run_coaching(plan, current, history)
-    return output.to_dict()
+
+    data = output.to_dict()
+    data["training_history"] = _build_training_history(week_num)
+    data["upcoming_plan"] = _build_upcoming_plan(week_num)
+
+    # Load knowledge base for domain context
+    knowledge_path = PROJECT_ROOT / "knowledge.json"
+    if knowledge_path.exists():
+        try:
+            data["knowledge"] = json.loads(knowledge_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    return data
 
 
 @router.get("/status")

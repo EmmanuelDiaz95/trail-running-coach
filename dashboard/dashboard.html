@@ -1063,32 +1063,37 @@ body { margin-right: 350px; }
 }
 .coach-drawer__send:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* Mobile: chat goes full-screen overlay with toggle */
-.coach-fab {
-  display: none; /* hidden on desktop — panel always visible */
-  position: fixed; bottom: 90px; right: 16px; z-index: 50;
-  width: 46px; height: 46px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--copper), var(--terracotta));
-  border: none; cursor: pointer; color: #fff; font-size: 20px;
-  box-shadow: 0 4px 16px rgba(200, 121, 65, 0.35);
-  align-items: center; justify-content: center;
-}
-.coach-fab--hidden { display: none; }
+/* Desktop: hide close button and FAB (panel always visible) */
+.coach-fab { display: none; }
+.coach-drawer__close { display: none; }
 
+/* Mobile: chat becomes full-screen overlay with FAB toggle */
 @media (max-width: 768px) {
-  body { margin-right: 0; }
-  .coach-fab { display: flex; }
+  body { margin-right: 0 !important; }
+  .coach-fab {
+    display: flex; position: fixed; bottom: 90px; right: 16px; z-index: 50;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--copper), var(--terracotta));
+    border: none; cursor: pointer; color: #fff; font-size: 22px;
+    box-shadow: 0 4px 16px rgba(200, 121, 65, 0.35);
+    align-items: center; justify-content: center;
+  }
+  .coach-fab--hidden { display: none; }
   .coach-drawer {
     width: 100vw; right: -100vw;
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 100;
+    z-index: 200; box-shadow: none;
   }
   .coach-drawer--open { right: 0; }
-  .coach-drawer__header { position: relative; }
   .coach-drawer__close {
-    background: none; border: none; color: var(--text-muted);
-    font-size: 1.4rem; cursor: pointer; padding: 4px 8px; line-height: 1;
+    display: block; background: none; border: none; color: var(--text-muted);
+    font-size: 1.6rem; cursor: pointer; padding: 4px 8px; line-height: 1;
   }
+  .coach-drawer__close:hover { color: var(--text); }
+  .coach-drawer__messages { padding: 12px 14px 8px; }
+  .coach-drawer__input-area { padding: 10px 14px; }
+  .coach-msg { font-size: 0.9rem; max-width: 85%; }
+  .sync-btn { right: 16px !important; }
 }
 </style>
 </head>
