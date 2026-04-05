@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 # Ensure project root is on sys.path
@@ -46,6 +47,11 @@ app.include_router(coach_router)
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/dashboard.html")
 
 
 # Static files — serves dashboard.html at root
