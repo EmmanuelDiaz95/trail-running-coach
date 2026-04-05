@@ -2210,8 +2210,15 @@ document.addEventListener('click', async (e) => {
       body: JSON.stringify({ question: question }),
     }).then(function(response) {
       if (!response.ok) {
-        return response.json().then(function(err) {
-          throw new Error(err.detail || 'Request failed');
+        return response.text().then(function(text) {
+          try {
+            var err = JSON.parse(text);
+            throw new Error(err.detail || 'Request failed');
+          } catch(e) {
+            if (e.message && !e.message.includes('Unexpected token'))
+              throw e;
+            throw new Error('Server error (' + response.status + '). Check Railway logs.');
+          }
         });
       }
       var reader = response.body.getReader();
