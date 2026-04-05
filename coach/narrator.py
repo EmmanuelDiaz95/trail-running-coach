@@ -52,7 +52,7 @@ class Narrator:
     It receives pre-digested CoachingOutput JSON — never raw activity data.
     """
 
-    def __init__(self, api_key: str, athlete: dict, model: str = "claude-sonnet-4-5-20250514"):
+    def __init__(self, api_key: str, athlete: dict, model: str = "claude-haiku-4-5-20251001"):
         self._client = anthropic.Anthropic(api_key=api_key)
         self._system_prompt = build_system_prompt(athlete)
         self._model = model

@@ -90,7 +90,7 @@ class TestNarrator:
         assert result == "Great first week, Emmanuel!"
         mock_client.messages.create.assert_called_once()
         call_kwargs = mock_client.messages.create.call_args[1]
-        assert call_kwargs["model"] == "claude-sonnet-4-5-20250514"
+        assert call_kwargs["model"] == "claude-haiku-4-5-20251001"
         assert any("coach" in m.get("content", "").lower() for m in [{"content": call_kwargs["system"]}])
 
     @patch("coach.narrator.anthropic")
