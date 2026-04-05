@@ -23,6 +23,7 @@ from dashboard.serve import (
     DASHBOARD_DIR,
 )
 from api.routes_dashboard import router as dashboard_router
+from api.routes_coach import router as coach_router
 
 
 @asynccontextmanager
@@ -39,6 +40,7 @@ app = FastAPI(title="Tarahumara Ultra Tracker", lifespan=lifespan)
 
 # API routes (must be registered BEFORE static files mount)
 app.include_router(dashboard_router)
+app.include_router(coach_router)
 
 
 @app.get("/health")
