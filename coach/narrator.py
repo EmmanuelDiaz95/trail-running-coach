@@ -109,6 +109,46 @@ class Narrator:
         )
         return self._call_api(user_message)
 
+    def stream_answer(
+        self,
+        question: str,
+        category: str,
+        coaching_data: dict,
+    ):
+        """Yield tokens from Claude streaming API.
+
+        Same inputs as answer_question(), but yields individual text deltas
+        for SSE forwarding. Falls back to a single error token on failure.
+        """
+        category_guidance = {
+            "data": "The athlete is asking a data question. Answer concisely with the specific numbers from the coaching data. Don't editorialize unless the numbers warrant a brief note.",
+            "coaching": "The athlete is asking for coaching advice. Use the readiness, trends, and adjustment data to give a thoughtful recommendation. Be direct.",
+            "knowledge": "The athlete is asking a knowledge question about training, nutrition, recovery, or injury. Draw on your coaching expertise to answer. Remember your hard constraints — no medical advice.",
+            "general": "The athlete is asking a general question. Answer naturally, staying in your role as their trail running coach.",
+        }
+
+        guidance = category_guidance.get(category, category_guidance["general"])
+
+        user_message = (
+            f"QUESTION TYPE: {category}\n"
+            f"GUIDANCE: {guidance}\n\n"
+            f"ATHLETE'S QUESTION: {question}\n\n"
+            f"CURRENT COACHING DATA:\n{json.dumps(coaching_data, indent=2, default=str)}"
+        )
+
+        try:
+            with self._client.messages.stream(
+                model=self._model,
+                max_tokens=1024,
+                system=self._system_prompt,
+                messages=[{"role": "user", "content": user_message}],
+            ) as stream:
+                for event in stream:
+                    if event.type == "content_block_delta" and hasattr(event.delta, "text"):
+                        yield event.delta.text
+        except Exception as e:
+            yield f"Coach narrative unavailable (error: {e})."
+
     def _call_api(self, user_message: str) -> str:
         """Make a single Claude API call with error handling.
 
