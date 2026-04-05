@@ -718,7 +718,7 @@
 
   /* ── Sync Button ── */
   .sync-btn {
-    position: fixed; bottom: 28px; right: 28px; z-index: 50;
+    position: fixed; bottom: 28px; right: 378px; z-index: 50;
     width: 60px; height: 60px; border-radius: 50%;
     background: linear-gradient(135deg, var(--copper), var(--terracotta));
     border: none; cursor: pointer; color: #fff;
@@ -1000,31 +1000,15 @@
     .metric-card__value-num--actual { font-size: 1.3rem; }
   }
 
-/* ── Coach Chat Drawer ── */
-.coach-fab {
-  position: fixed; bottom: 100px; right: 28px; z-index: 50;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--copper), var(--terracotta));
-  border: none; cursor: pointer; color: #fff;
-  box-shadow: 0 4px 16px rgba(200, 121, 65, 0.35);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  font-size: 22px;
-}
-.coach-fab:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(200, 121, 65, 0.5);
-}
-.coach-fab--hidden { display: none; }
-
+/* ── Coach Chat Panel (always visible on right) ── */
 .coach-drawer {
-  position: fixed; top: 0; right: -380px; width: 370px; height: 100vh;
+  position: fixed; top: 0; right: 0; width: 350px; height: 100vh;
   background: var(--bg); border-left: 1px solid var(--border);
-  z-index: 100; display: flex; flex-direction: column;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: -4px 0 30px rgba(0,0,0,0.4);
+  z-index: 40; display: flex; flex-direction: column;
 }
-.coach-drawer--open { right: 0; }
+
+/* Push dashboard content left to make room for chat panel */
+body { margin-right: 350px; }
 
 .coach-drawer__header {
   padding: 16px 20px; border-bottom: 1px solid var(--border);
@@ -1034,11 +1018,6 @@
   font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
   color: var(--copper); letter-spacing: 0.02em;
 }
-.coach-drawer__close {
-  background: none; border: none; color: var(--text-muted);
-  font-size: 1.4rem; cursor: pointer; padding: 4px 8px; line-height: 1;
-}
-.coach-drawer__close:hover { color: var(--text); }
 
 .coach-drawer__messages {
   flex: 1; overflow-y: auto; padding: 16px 16px 8px;
@@ -1081,9 +1060,32 @@
 }
 .coach-drawer__send:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Mobile: chat goes full-screen overlay with toggle */
+.coach-fab {
+  display: none; /* hidden on desktop — panel always visible */
+  position: fixed; bottom: 90px; right: 16px; z-index: 50;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--copper), var(--terracotta));
+  border: none; cursor: pointer; color: #fff; font-size: 20px;
+  box-shadow: 0 4px 16px rgba(200, 121, 65, 0.35);
+  align-items: center; justify-content: center;
+}
+.coach-fab--hidden { display: none; }
+
 @media (max-width: 768px) {
-  .coach-drawer { width: 100vw; right: -100vw; }
-  .coach-fab { bottom: 90px; right: 16px; width: 46px; height: 46px; font-size: 20px; }
+  body { margin-right: 0; }
+  .coach-fab { display: flex; }
+  .coach-drawer {
+    width: 100vw; right: -100vw;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+  }
+  .coach-drawer--open { right: 0; }
+  .coach-drawer__header { position: relative; }
+  .coach-drawer__close {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.4rem; cursor: pointer; padding: 4px 8px; line-height: 1;
+  }
 }
 </style>
 </head>
@@ -2150,21 +2152,20 @@ document.addEventListener('click', async (e) => {
   var input = document.getElementById('coachInput');
   var sendBtn = document.getElementById('coachSend');
   var messagesEl = document.getElementById('coachMessages');
-  var isOpen = false;
   var isStreaming = false;
 
+  // Mobile toggle (FAB + close button for small screens)
   function toggleDrawer() {
-    isOpen = !isOpen;
-    drawer.classList.toggle('coach-drawer--open', isOpen);
+    var isOpen = drawer.classList.toggle('coach-drawer--open');
     fab.classList.toggle('coach-fab--hidden', isOpen);
-    if (isOpen) {
-      input.focus();
-      if (messagesEl.children.length === 0) loadHistory();
-    }
+    if (isOpen) input.focus();
   }
 
   fab.addEventListener('click', toggleDrawer);
   closeBtn.addEventListener('click', toggleDrawer);
+
+  // Load history on page load (panel is always visible on desktop)
+  loadHistory();
 
   function appendMessage(text, type) {
     var msg = document.createElement('div');
