@@ -98,6 +98,75 @@ def _build_upcoming_plan(current_week: int, lookahead: int = 4) -> list[dict]:
     return upcoming
 
 
+def _build_coaching_data_from_cache(week_num: int) -> Optional[dict]:
+    """Fallback: build coaching context from weeks_cache.json when raw activities aren't available."""
+    cache_path = PROJECT_ROOT / "dashboard" / "weeks_cache.json"
+    if not cache_path.exists():
+        return None
+    try:
+        weeks = json.loads(cache_path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
+
+    if not weeks:
+        return None
+
+    # Find current week in cache
+    current = None
+    for w in weeks:
+        if w.get("number") == week_num:
+            current = w
+            break
+
+    plan = get_week(week_num)
+
+    # Build a coaching-data-shaped dict from the cache
+    data = {
+        "week_number": week_num,
+        "generated_at": "from cache",
+        "phase": current["phase"] if current else (plan.phase if plan else "unknown"),
+        "is_recovery_week": current.get("recovery", False) if current else False,
+        "days_to_race": days_to_race(),
+        "compliance_score": current.get("compliance") if current else None,
+        "compliance_breakdown": {},
+        "readiness": None,
+        "trends": [],
+        "adjustments": [],
+        "alerts": current.get("alerts", []) if current else [],
+    }
+
+    if current and current.get("actual"):
+        data["compliance_breakdown"] = {
+            "plan": current.get("plan", {}),
+            "actual": current["actual"],
+        }
+
+    # Full training history from cache
+    data["training_history"] = []
+    for w in weeks:
+        entry = {
+            "week": w["number"],
+            "phase": w.get("phase", ""),
+            "is_recovery": w.get("recovery", False),
+            "plan": w.get("plan", {}),
+            "actual": w.get("actual"),
+            "compliance": w.get("compliance"),
+        }
+        data["training_history"].append(entry)
+
+    data["upcoming_plan"] = _build_upcoming_plan(week_num)
+
+    # Load knowledge base
+    knowledge_path = PROJECT_ROOT / "knowledge.json"
+    if knowledge_path.exists():
+        try:
+            data["knowledge"] = json.loads(knowledge_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    return data
+
+
 def _build_coaching_data() -> Optional[dict]:
     """Build full coaching context: current week analysis + training history + upcoming plan."""
     week_num = get_current_week()
@@ -108,8 +177,9 @@ def _build_coaching_data() -> Optional[dict]:
         return None
     start, end = get_week_dates(week_num)
     activities = load_cached_activities(start, end)
-    if activities is None:
-        return None
+    if not activities:
+        # Fallback to weeks_cache.json (e.g. on Railway where raw activities aren't available)
+        return _build_coaching_data_from_cache(week_num)
     current = build_week_actual(activities, week_num)
     lookback_start = max(1, week_num - 3)
     history = load_week_range(lookback_start, week_num)
