@@ -211,9 +211,13 @@ def coach_chat(request_body: dict):
 
     _last_chat_time[rate_key] = time.time()
 
+    # Load recent conversation history for continuity
+    recent = load_history(limit=20)
+    chat_history = recent.get("messages", [])
+
     def event_stream():
         full_response = []
-        for token in narrator.stream_answer(question, category, coaching_data):
+        for token in narrator.stream_answer(question, category, coaching_data, history=chat_history):
             full_response.append(token)
             yield f"data: {json.dumps({'token': token})}\n\n"
 

@@ -137,11 +137,16 @@ class Narrator:
         question: str,
         category: str,
         coaching_data: dict,
+        history: list[dict] | None = None,
     ):
         """Yield tokens from Claude streaming API.
 
         Same inputs as answer_question(), but yields individual text deltas
         for SSE forwarding. Falls back to a single error token on failure.
+
+        Args:
+            history: Recent conversation exchanges from load_history().
+                     Each entry has 'question' and 'response' keys.
         """
         category_guidance = {
             "data": "The athlete is asking a data question. Answer concisely with the specific numbers from the coaching data. Don't editorialize unless the numbers warrant a brief note.",
@@ -152,19 +157,27 @@ class Narrator:
 
         guidance = category_guidance.get(category, category_guidance["general"])
 
+        # Build messages array with conversation history
+        messages: list[dict] = []
+        if history:
+            for msg in history:
+                messages.append({"role": "user", "content": msg["question"]})
+                messages.append({"role": "assistant", "content": msg["response"]})
+
         user_message = (
             f"QUESTION TYPE: {category}\n"
             f"GUIDANCE: {guidance}\n\n"
             f"ATHLETE'S QUESTION: {question}\n\n"
             f"CURRENT COACHING DATA:\n{json.dumps(coaching_data, indent=2, default=str)}"
         )
+        messages.append({"role": "user", "content": user_message})
 
         try:
             with self._client.messages.stream(
                 model=self._model,
                 max_tokens=1024,
                 system=self._system_prompt,
-                messages=[{"role": "user", "content": user_message}],
+                messages=messages,
             ) as stream:
                 for event in stream:
                     if event.type == "content_block_delta" and hasattr(event.delta, "text"):
