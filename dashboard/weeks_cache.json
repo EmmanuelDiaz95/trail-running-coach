@@ -789,8 +789,22 @@
         "text": "<strong>Missed Series:</strong> Series: planned tempo not detected in activities"
       }
     ],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x6min @ 6:20-6:40/km",
+      "date": "2026-04-03",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "6:00",
+      "work_name": "Tempo 6:20-6:40/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 6,
@@ -924,8 +938,22 @@
         "text": "<strong>Long Run Ratio:</strong> Long run ratio: 17.1km is 49% of weekly 35.1km (threshold: 30%)"
       }
     ],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 5x4min",
+      "date": "2026-04-10",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 5,
+      "work": "4:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "155-170 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 7,
@@ -945,8 +973,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x8min @ 6:20-6:40/km",
+      "date": "2026-04-17",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "8:00",
+      "work_name": "Tempo 6:20-6:40/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:30",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 8,
@@ -966,8 +1008,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 6x1min @ 6:10-6:30",
+      "date": "2026-04-24",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "1:00",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "158-168 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 9,
@@ -987,8 +1043,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "4x6min @ 6:15-6:35/km",
+      "date": "2026-05-01",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 4,
+      "work": "6:00",
+      "work_name": "Tempo 6:15-6:35/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 10,
@@ -1008,8 +1078,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 6x4min",
+      "date": "2026-05-08",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "4:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "155-170 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 11,
@@ -1029,8 +1113,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "4x8min @ 6:15-6:35/km",
+      "date": "2026-05-15",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 4,
+      "work": "8:00",
+      "work_name": "Tempo 6:15-6:35/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:30",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 12,
@@ -1050,8 +1148,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 6x75s @ 6:00-6:20",
+      "date": "2026-05-22",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "1:15",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "158-168 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 13,
@@ -1071,8 +1183,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x10min @ 6:00-6:20/km",
+      "date": "2026-05-29",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "10:00",
+      "work_name": "Tempo 6:00-6:20/km",
+      "work_hr": "155-168 bpm",
+      "recovery": "2:30",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 14,
@@ -1092,8 +1218,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 6x5min",
+      "date": "2026-06-05",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "5:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "158-172 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 15,
@@ -1113,8 +1253,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x12min @ 6:00-6:20/km",
+      "date": "2026-06-12",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "12:00",
+      "work_name": "Tempo 6:00-6:20/km",
+      "work_hr": "155-168 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 16,
@@ -1134,8 +1288,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 8x1min @ 5:50-6:10",
+      "date": "2026-06-19",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 8,
+      "work": "1:00",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "160-170 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 17,
@@ -1155,8 +1323,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 7x4min",
+      "date": "2026-06-26",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 7,
+      "work": "4:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "158-172 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<148 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 18,
@@ -1176,8 +1358,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "4x10min @ 5:50-6:10/km",
+      "date": "2026-07-03",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 4,
+      "work": "10:00",
+      "work_name": "Tempo 5:50-6:10/km",
+      "work_hr": "158-170 bpm",
+      "recovery": "2:30",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 19,
@@ -1197,8 +1393,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 6x6min",
+      "date": "2026-07-10",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 6,
+      "work": "6:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "158-175 bpm",
+      "recovery": "3:30",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<148 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 20,
@@ -1218,8 +1428,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 8x75s @ 5:50-6:10",
+      "date": "2026-07-17",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 8,
+      "work": "1:15",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "160-170 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 21,
@@ -1239,8 +1463,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x15min @ 5:50-6:10/km",
+      "date": "2026-07-24",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "15:00",
+      "work_name": "Tempo 5:50-6:10/km",
+      "work_hr": "158-170 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 22,
@@ -1260,8 +1498,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 8x4min",
+      "date": "2026-07-31",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 8,
+      "work": "4:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "160-175 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<148 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 23,
@@ -1281,8 +1533,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "4x12min @ 5:50-6:10/km",
+      "date": "2026-08-07",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 4,
+      "work": "12:00",
+      "work_name": "Tempo 5:50-6:10/km",
+      "work_hr": "158-170 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 24,
@@ -1302,8 +1568,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 8x1min @ 5:45-6:05",
+      "date": "2026-08-14",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 8,
+      "work": "1:00",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "160-170 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<142 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 25,
@@ -1323,8 +1603,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Hill repeats 7x5min",
+      "date": "2026-08-21",
+      "warmup": "1.5 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 7,
+      "work": "5:00",
+      "work_name": "UPHILL 5-7%, strong push",
+      "work_hr": "160-175 bpm",
+      "recovery": "3:30",
+      "recovery_name": "Jog/walk down, full recovery",
+      "recovery_hr": "<148 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 26,
@@ -1344,8 +1638,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x15min @ 5:45-6:05/km",
+      "date": "2026-08-28",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "15:00",
+      "work_name": "Tempo 5:45-6:05/km",
+      "work_hr": "160-172 bpm",
+      "recovery": "3:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<145 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 27,
@@ -1386,8 +1694,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "3x5min @ 6:00-6:20/km",
+      "date": "2026-09-11",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 3,
+      "work": "5:00",
+      "work_name": "Tempo 6:00-6:20/km",
+      "work_hr": "155-165 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "1.5 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 29,
@@ -1407,8 +1729,22 @@
     "compliance": null,
     "activities": [],
     "alerts": [],
-    "has_garmin_workout": false,
-    "garmin_steps": null
+    "has_garmin_workout": true,
+    "garmin_steps": {
+      "description": "Fartlek 5x1min @ 6:00-6:20",
+      "date": "2026-09-18",
+      "warmup": "2.0 km",
+      "warmup_hr": "115-130 bpm",
+      "repeat": 5,
+      "work": "1:00",
+      "work_name": "Fast burst, fun effort",
+      "work_hr": "158-168 bpm",
+      "recovery": "2:00",
+      "recovery_name": "Easy jog recovery",
+      "recovery_hr": "<140 bpm",
+      "cooldown": "2.0 km",
+      "cooldown_hr": "115-130 bpm"
+    }
   },
   {
     "number": 30,
