@@ -21,13 +21,68 @@
       "gym_sessions": 3,
       "series_type": null,
       "workouts": [
-        {"day": "monday", "date": "2026-03-02", "type": "gym", "description": "Full body 60min", "distance_km": null, "vert_m": null},
-        {"day": "tuesday", "date": "2026-03-03", "type": "run", "description": "6km easy", "distance_km": 6, "vert_m": 65, "target_pace": "7:30-8:00", "target_hr": "125-140"},
-        {"day": "wednesday", "date": "2026-03-04", "type": "gym", "description": "Upper body + core 60min", "distance_km": null, "vert_m": null},
-        {"day": "thursday", "date": "2026-03-05", "type": "run", "description": "6km easy", "distance_km": 6, "vert_m": 65, "target_pace": "7:30-8:00", "target_hr": "125-140"},
-        {"day": "friday", "date": "2026-03-06", "type": "gym", "description": "Lower body + power 60min", "distance_km": null, "vert_m": null},
-        {"day": "saturday", "date": "2026-03-07", "type": "rest", "description": "Rest", "distance_km": null, "vert_m": null},
-        {"day": "sunday", "date": "2026-03-08", "type": "long_run", "description": "14km trail", "distance_km": 14, "vert_m": 275, "target_pace": "7:45-8:15 → 7:15-7:30", "target_hr": "125-155"}
+        {
+          "day": "monday",
+          "date": "2026-03-02",
+          "type": "gym",
+          "description": "Full body 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-03-03",
+          "type": "run",
+          "description": "6km easy",
+          "distance_km": 6,
+          "vert_m": 65,
+          "target_pace": "7:30-8:00",
+          "target_hr": "125-140"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-03-04",
+          "type": "gym",
+          "description": "Upper body + core 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "thursday",
+          "date": "2026-03-05",
+          "type": "run",
+          "description": "6km easy",
+          "distance_km": 6,
+          "vert_m": 65,
+          "target_pace": "7:30-8:00",
+          "target_hr": "125-140"
+        },
+        {
+          "day": "friday",
+          "date": "2026-03-06",
+          "type": "gym",
+          "description": "Lower body + power 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-03-07",
+          "type": "rest",
+          "description": "Rest",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "sunday",
+          "date": "2026-03-08",
+          "type": "long_run",
+          "description": "14km trail",
+          "distance_km": 14,
+          "vert_m": 275,
+          "target_pace": "7:45-8:15 → 7:15-7:30",
+          "target_hr": "125-155"
+        }
       ]
     },
     {
@@ -42,13 +97,98 @@
       "gym_sessions": 3,
       "series_type": "tempo",
       "workouts": [
-        {"day": "monday", "date": "2026-03-09", "type": "rest", "description": "Rest or light gym", "distance_km": null, "vert_m": null},
-        {"day": "tuesday", "date": "2026-03-10", "type": "gym", "description": "Full body 60min", "distance_km": null, "vert_m": null},
-        {"day": "wednesday", "date": "2026-03-11", "type": "run", "description": "6km easy", "distance_km": 6, "vert_m": 80, "target_pace": "7:30-8:00", "target_hr": "125-140"},
-        {"day": "thursday", "date": "2026-03-12", "type": "gym", "description": "Upper body + core 60min", "distance_km": null, "vert_m": null},
-        {"day": "friday", "date": "2026-03-13", "type": "series", "description": "Tempo 3x5min @ 6:30-6:45/km", "distance_km": 8, "vert_m": 110, "target_pace": "6:30-6:45", "target_hr": "155-165", "series_type": "tempo", "garmin_steps": {"warmup": {"end_condition": "distance", "value": 2.0, "hr_low": 115, "hr_high": 130}, "repeat": 3, "work": {"end_condition": "time", "value_seconds": 300, "hr_low": 155, "hr_high": 165, "name": "Tempo 6:30-6:45/km"}, "recovery": {"end_condition": "time", "value_seconds": 120, "hr_low": 0, "hr_high": 140, "name": "Easy jog recovery"}, "cooldown": {"end_condition": "distance", "value": 1.5, "hr_low": 115, "hr_high": 130}}},
-        {"day": "saturday", "date": "2026-03-14", "type": "rest", "description": "Rest", "distance_km": null, "vert_m": null},
-        {"day": "sunday", "date": "2026-03-15", "type": "long_run", "description": "15km trail", "distance_km": 15, "vert_m": 325, "target_pace": "7:45 → 7:15", "target_hr": "130-155"}
+        {
+          "day": "monday",
+          "date": "2026-03-09",
+          "type": "rest",
+          "description": "Rest or light gym",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-03-10",
+          "type": "gym",
+          "description": "Full body 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-03-11",
+          "type": "run",
+          "description": "6km easy",
+          "distance_km": 6,
+          "vert_m": 80,
+          "target_pace": "7:30-8:00",
+          "target_hr": "125-140"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-03-12",
+          "type": "gym",
+          "description": "Upper body + core 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "friday",
+          "date": "2026-03-13",
+          "type": "series",
+          "description": "Tempo 3x5min @ 6:30-6:45/km",
+          "distance_km": 8,
+          "vert_m": 110,
+          "target_pace": "6:30-6:45",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 300,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:30-6:45/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        },
+        {
+          "day": "saturday",
+          "date": "2026-03-14",
+          "type": "rest",
+          "description": "Rest",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "sunday",
+          "date": "2026-03-15",
+          "type": "long_run",
+          "description": "15km trail",
+          "distance_km": 15,
+          "vert_m": 325,
+          "target_pace": "7:45 → 7:15",
+          "target_hr": "130-155"
+        }
       ]
     },
     {
@@ -63,13 +203,98 @@
       "gym_sessions": 3,
       "series_type": "hills",
       "workouts": [
-        {"day": "monday", "date": "2026-03-16", "type": "rest", "description": "Rest or light gym", "distance_km": null, "vert_m": null},
-        {"day": "tuesday", "date": "2026-03-17", "type": "gym", "description": "Lower body HEAVY 60min", "distance_km": null, "vert_m": null},
-        {"day": "wednesday", "date": "2026-03-18", "type": "run", "description": "6km easy", "distance_km": 6, "vert_m": 65, "target_pace": "7:45-8:15", "target_hr": "125-140"},
-        {"day": "thursday", "date": "2026-03-19", "type": "gym", "description": "Upper body + power 60min", "distance_km": null, "vert_m": null},
-        {"day": "friday", "date": "2026-03-20", "type": "series", "description": "Hill repeats 5x4min uphill", "distance_km": 8, "vert_m": 200, "target_pace": "uphill effort", "target_hr": "155-170", "series_type": "hills", "garmin_steps": {"warmup": {"end_condition": "distance", "value": 1.5, "hr_low": 115, "hr_high": 130}, "repeat": 5, "work": {"end_condition": "time", "value_seconds": 240, "hr_low": 155, "hr_high": 170, "name": "UPHILL 5-7%, strong push"}, "recovery": {"end_condition": "time", "value_seconds": 180, "hr_low": 0, "hr_high": 145, "name": "Jog/walk down, full recovery"}, "cooldown": {"end_condition": "distance", "value": 1.5, "hr_low": 115, "hr_high": 130}}},
-        {"day": "saturday", "date": "2026-03-21", "type": "rest", "description": "Rest", "distance_km": null, "vert_m": null},
-        {"day": "sunday", "date": "2026-03-22", "type": "long_run", "description": "16km trail - PEAK Marzo", "distance_km": 16, "vert_m": 375, "target_pace": "7:45-8:15 → 7:15-7:30", "target_hr": "135-155"}
+        {
+          "day": "monday",
+          "date": "2026-03-16",
+          "type": "rest",
+          "description": "Rest or light gym",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-03-17",
+          "type": "gym",
+          "description": "Lower body HEAVY 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-03-18",
+          "type": "run",
+          "description": "6km easy",
+          "distance_km": 6,
+          "vert_m": 65,
+          "target_pace": "7:45-8:15",
+          "target_hr": "125-140"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-03-19",
+          "type": "gym",
+          "description": "Upper body + power 60min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "friday",
+          "date": "2026-03-20",
+          "type": "series",
+          "description": "Hill repeats 5x4min uphill",
+          "distance_km": 8,
+          "vert_m": 200,
+          "target_pace": "uphill effort",
+          "target_hr": "155-170",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 5,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 240,
+              "hr_low": 155,
+              "hr_high": 170,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        },
+        {
+          "day": "saturday",
+          "date": "2026-03-21",
+          "type": "rest",
+          "description": "Rest",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "sunday",
+          "date": "2026-03-22",
+          "type": "long_run",
+          "description": "16km trail - PEAK Marzo",
+          "distance_km": 16,
+          "vert_m": 375,
+          "target_pace": "7:45-8:15 → 7:15-7:30",
+          "target_hr": "135-155"
+        }
       ]
     },
     {
@@ -84,13 +309,98 @@
       "gym_sessions": 2,
       "series_type": "fartlek",
       "workouts": [
-        {"day": "monday", "date": "2026-03-23", "type": "rest", "description": "Rest", "distance_km": null, "vert_m": null},
-        {"day": "tuesday", "date": "2026-03-24", "type": "gym", "description": "Gym LIGHT 45min", "distance_km": null, "vert_m": null},
-        {"day": "wednesday", "date": "2026-03-25", "type": "run", "description": "5km super easy", "distance_km": 5, "vert_m": 50, "target_pace": "8:00-8:30", "target_hr": "120-135"},
-        {"day": "thursday", "date": "2026-03-26", "type": "gym", "description": "Gym LIGHT 45min", "distance_km": null, "vert_m": null},
-        {"day": "friday", "date": "2026-03-27", "type": "series", "description": "Fartlek 6x1min @ 6:15-6:30", "distance_km": 7, "vert_m": 100, "target_pace": "6:15-6:30", "target_hr": "160-170", "series_type": "fartlek", "garmin_steps": {"warmup": {"end_condition": "distance", "value": 2.0, "hr_low": 115, "hr_high": 130}, "repeat": 6, "work": {"end_condition": "time", "value_seconds": 60, "hr_low": 160, "hr_high": 170, "name": "Fast 6:15-6:30, fun effort"}, "recovery": {"end_condition": "time", "value_seconds": 120, "hr_low": 0, "hr_high": 140, "name": "Easy jog recovery"}, "cooldown": {"end_condition": "distance", "value": 2.0, "hr_low": 115, "hr_high": 130}}},
-        {"day": "saturday", "date": "2026-03-28", "type": "rest", "description": "Rest", "distance_km": null, "vert_m": null},
-        {"day": "sunday", "date": "2026-03-29", "type": "run", "description": "12km moderate trail", "distance_km": 12, "vert_m": 225, "target_pace": "7:30-8:00", "target_hr": "130-145"}
+        {
+          "day": "monday",
+          "date": "2026-03-23",
+          "type": "rest",
+          "description": "Rest",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-03-24",
+          "type": "gym",
+          "description": "Gym LIGHT 45min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-03-25",
+          "type": "run",
+          "description": "5km super easy",
+          "distance_km": 5,
+          "vert_m": 50,
+          "target_pace": "8:00-8:30",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-03-26",
+          "type": "gym",
+          "description": "Gym LIGHT 45min",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "friday",
+          "date": "2026-03-27",
+          "type": "series",
+          "description": "Fartlek 6x1min @ 6:15-6:30",
+          "distance_km": 7,
+          "vert_m": 100,
+          "target_pace": "6:15-6:30",
+          "target_hr": "160-170",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 60,
+              "hr_low": 160,
+              "hr_high": 170,
+              "name": "Fast 6:15-6:30, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        },
+        {
+          "day": "saturday",
+          "date": "2026-03-28",
+          "type": "rest",
+          "description": "Rest",
+          "distance_km": null,
+          "vert_m": null
+        },
+        {
+          "day": "sunday",
+          "date": "2026-03-29",
+          "type": "run",
+          "description": "12km moderate trail",
+          "distance_km": 12,
+          "vert_m": 225,
+          "target_pace": "7:30-8:00",
+          "target_hr": "130-145"
+        }
       ]
     },
     {
@@ -104,7 +414,48 @@
       "long_run_km": 16,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-04-03",
+          "type": "series",
+          "description": "3x6min @ 6:20-6:40/km",
+          "distance_km": 7,
+          "vert_m": 84,
+          "target_pace": "6:20-6:40/km",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 360,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:20-6:40/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 6,
@@ -117,7 +468,48 @@
       "long_run_km": 17,
       "gym_sessions": 3,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-04-10",
+          "type": "series",
+          "description": "Hill repeats 5x4min",
+          "distance_km": 8,
+          "vert_m": 200,
+          "target_pace": "effort-based",
+          "target_hr": "155-170",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 5,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 240,
+              "hr_low": 155,
+              "hr_high": 170,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 7,
@@ -130,7 +522,48 @@
       "long_run_km": 18,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-04-17",
+          "type": "series",
+          "description": "3x8min @ 6:20-6:40/km",
+          "distance_km": 8,
+          "vert_m": 96,
+          "target_pace": "6:20-6:40/km",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 480,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:20-6:40/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 150,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 8,
@@ -143,7 +576,48 @@
       "long_run_km": 14,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-04-24",
+          "type": "series",
+          "description": "Fartlek 6x1min @ 6:10-6:30",
+          "distance_km": 7,
+          "vert_m": 84,
+          "target_pace": "6:10-6:30",
+          "target_hr": "158-168",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 60,
+              "hr_low": 158,
+              "hr_high": 168,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 9,
@@ -156,7 +630,48 @@
       "long_run_km": 19,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-05-01",
+          "type": "series",
+          "description": "4x6min @ 6:15-6:35/km",
+          "distance_km": 8,
+          "vert_m": 96,
+          "target_pace": "6:15-6:35/km",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 4,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 360,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:15-6:35/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 10,
@@ -169,7 +684,48 @@
       "long_run_km": 20,
       "gym_sessions": 3,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-05-08",
+          "type": "series",
+          "description": "Hill repeats 6x4min",
+          "distance_km": 9,
+          "vert_m": 240,
+          "target_pace": "effort-based",
+          "target_hr": "155-170",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 240,
+              "hr_low": 155,
+              "hr_high": 170,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 11,
@@ -182,7 +738,48 @@
       "long_run_km": 21,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-05-15",
+          "type": "series",
+          "description": "4x8min @ 6:15-6:35/km",
+          "distance_km": 10,
+          "vert_m": 120,
+          "target_pace": "6:15-6:35/km",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 4,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 480,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:15-6:35/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 150,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 12,
@@ -195,7 +792,48 @@
       "long_run_km": 16,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-05-22",
+          "type": "series",
+          "description": "Fartlek 6x75s @ 6:00-6:20",
+          "distance_km": 7,
+          "vert_m": 84,
+          "target_pace": "6:00-6:20",
+          "target_hr": "158-168",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 75,
+              "hr_low": 158,
+              "hr_high": 168,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 13,
@@ -208,7 +846,48 @@
       "long_run_km": 22,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-05-29",
+          "type": "series",
+          "description": "3x10min @ 6:00-6:20/km",
+          "distance_km": 9,
+          "vert_m": 108,
+          "target_pace": "6:00-6:20/km",
+          "target_hr": "155-168",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 600,
+              "hr_low": 155,
+              "hr_high": 168,
+              "name": "Tempo 6:00-6:20/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 150,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 14,
@@ -221,7 +900,48 @@
       "long_run_km": 24,
       "gym_sessions": 3,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-06-05",
+          "type": "series",
+          "description": "Hill repeats 6x5min",
+          "distance_km": 10,
+          "vert_m": 240,
+          "target_pace": "effort-based",
+          "target_hr": "158-172",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 300,
+              "hr_low": 158,
+              "hr_high": 172,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 15,
@@ -234,7 +954,48 @@
       "long_run_km": 26,
       "gym_sessions": 3,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-06-12",
+          "type": "series",
+          "description": "3x12min @ 6:00-6:20/km",
+          "distance_km": 10,
+          "vert_m": 120,
+          "target_pace": "6:00-6:20/km",
+          "target_hr": "155-168",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 720,
+              "hr_low": 155,
+              "hr_high": 168,
+              "name": "Tempo 6:00-6:20/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 16,
@@ -247,7 +1008,48 @@
       "long_run_km": 18,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-06-19",
+          "type": "series",
+          "description": "Fartlek 8x1min @ 5:50-6:10",
+          "distance_km": 8,
+          "vert_m": 96,
+          "target_pace": "5:50-6:10",
+          "target_hr": "160-170",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 8,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 60,
+              "hr_low": 160,
+              "hr_high": 170,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 17,
@@ -260,7 +1062,48 @@
       "long_run_km": 28,
       "gym_sessions": 3,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-06-26",
+          "type": "series",
+          "description": "Hill repeats 7x4min",
+          "distance_km": 10,
+          "vert_m": 280,
+          "target_pace": "effort-based",
+          "target_hr": "158-172",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 7,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 240,
+              "hr_low": 158,
+              "hr_high": 172,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 148,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 18,
@@ -273,7 +1116,48 @@
       "long_run_km": 30,
       "gym_sessions": 2,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-07-03",
+          "type": "series",
+          "description": "4x10min @ 5:50-6:10/km",
+          "distance_km": 11,
+          "vert_m": 132,
+          "target_pace": "5:50-6:10/km",
+          "target_hr": "158-170",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 4,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 600,
+              "hr_low": 158,
+              "hr_high": 170,
+              "name": "Tempo 5:50-6:10/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 150,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 19,
@@ -286,7 +1170,48 @@
       "long_run_km": 32,
       "gym_sessions": 2,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-07-10",
+          "type": "series",
+          "description": "Hill repeats 6x6min",
+          "distance_km": 11,
+          "vert_m": 240,
+          "target_pace": "effort-based",
+          "target_hr": "158-175",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 6,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 360,
+              "hr_low": 158,
+              "hr_high": 175,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 210,
+              "hr_low": 0,
+              "hr_high": 148,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 20,
@@ -299,7 +1224,48 @@
       "long_run_km": 22,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-07-17",
+          "type": "series",
+          "description": "Fartlek 8x75s @ 5:50-6:10",
+          "distance_km": 8,
+          "vert_m": 96,
+          "target_pace": "5:50-6:10",
+          "target_hr": "160-170",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 8,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 75,
+              "hr_low": 160,
+              "hr_high": 170,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 21,
@@ -312,7 +1278,48 @@
       "long_run_km": 35,
       "gym_sessions": 2,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-07-24",
+          "type": "series",
+          "description": "3x15min @ 5:50-6:10/km",
+          "distance_km": 12,
+          "vert_m": 144,
+          "target_pace": "5:50-6:10/km",
+          "target_hr": "158-170",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 900,
+              "hr_low": 158,
+              "hr_high": 170,
+              "name": "Tempo 5:50-6:10/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 22,
@@ -325,7 +1332,48 @@
       "long_run_km": 38,
       "gym_sessions": 2,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-07-31",
+          "type": "series",
+          "description": "Hill repeats 8x4min",
+          "distance_km": 11,
+          "vert_m": 320,
+          "target_pace": "effort-based",
+          "target_hr": "160-175",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 8,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 240,
+              "hr_low": 160,
+              "hr_high": 175,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 148,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 23,
@@ -338,7 +1386,48 @@
       "long_run_km": 40,
       "gym_sessions": 2,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-08-07",
+          "type": "series",
+          "description": "4x12min @ 5:50-6:10/km",
+          "distance_km": 13,
+          "vert_m": 156,
+          "target_pace": "5:50-6:10/km",
+          "target_hr": "158-170",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 4,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 720,
+              "hr_low": 158,
+              "hr_high": 170,
+              "name": "Tempo 5:50-6:10/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 24,
@@ -351,7 +1440,48 @@
       "long_run_km": 25,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-08-14",
+          "type": "series",
+          "description": "Fartlek 8x1min @ 5:45-6:05",
+          "distance_km": 8,
+          "vert_m": 96,
+          "target_pace": "5:45-6:05",
+          "target_hr": "160-170",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 8,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 60,
+              "hr_low": 160,
+              "hr_high": 170,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 142,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 25,
@@ -364,7 +1494,48 @@
       "long_run_km": 42,
       "gym_sessions": 2,
       "series_type": "hills",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-08-21",
+          "type": "series",
+          "description": "Hill repeats 7x5min",
+          "distance_km": 11,
+          "vert_m": 280,
+          "target_pace": "effort-based",
+          "target_hr": "160-175",
+          "series_type": "hills",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 7,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 300,
+              "hr_low": 160,
+              "hr_high": 175,
+              "name": "UPHILL 5-7%, strong push"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 210,
+              "hr_low": 0,
+              "hr_high": 148,
+              "name": "Jog/walk down, full recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 26,
@@ -377,7 +1548,48 @@
       "long_run_km": 42,
       "gym_sessions": 2,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-08-28",
+          "type": "series",
+          "description": "3x15min @ 5:45-6:05/km",
+          "distance_km": 12,
+          "vert_m": 144,
+          "target_pace": "5:45-6:05/km",
+          "target_hr": "160-172",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 900,
+              "hr_low": 160,
+              "hr_high": 172,
+              "name": "Tempo 5:45-6:05/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 180,
+              "hr_low": 0,
+              "hr_high": 145,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 27,
@@ -403,7 +1615,48 @@
       "long_run_km": 22,
       "gym_sessions": 2,
       "series_type": "tempo",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-09-11",
+          "type": "series",
+          "description": "3x5min @ 6:00-6:20/km",
+          "distance_km": 7,
+          "vert_m": 84,
+          "target_pace": "6:00-6:20/km",
+          "target_hr": "155-165",
+          "series_type": "tempo",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 3,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 300,
+              "hr_low": 155,
+              "hr_high": 165,
+              "name": "Tempo 6:00-6:20/km"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 1.5,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 29,
@@ -416,7 +1669,48 @@
       "long_run_km": 16,
       "gym_sessions": 2,
       "series_type": "fartlek",
-      "workouts": []
+      "workouts": [
+        {
+          "day": "friday",
+          "date": "2026-09-18",
+          "type": "series",
+          "description": "Fartlek 5x1min @ 6:00-6:20",
+          "distance_km": 6,
+          "vert_m": 72,
+          "target_pace": "6:00-6:20",
+          "target_hr": "158-168",
+          "series_type": "fartlek",
+          "garmin_steps": {
+            "warmup": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            },
+            "repeat": 5,
+            "work": {
+              "end_condition": "time",
+              "value_seconds": 60,
+              "hr_low": 158,
+              "hr_high": 168,
+              "name": "Fast burst, fun effort"
+            },
+            "recovery": {
+              "end_condition": "time",
+              "value_seconds": 120,
+              "hr_low": 0,
+              "hr_high": 140,
+              "name": "Easy jog recovery"
+            },
+            "cooldown": {
+              "end_condition": "distance",
+              "value": 2.0,
+              "hr_low": 115,
+              "hr_high": 130
+            }
+          }
+        }
+      ]
     },
     {
       "week_number": 30,
