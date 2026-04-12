@@ -1223,7 +1223,7 @@ body { margin-right: 350px; }
 
   <footer class="footer">
     <p class="footer__text">
-      Trail Running Tracker <span>&middot;</span> Last synced Mar 24, 2026 <span>&middot;</span> Garmin Connect
+      Trail Running Tracker <span>&middot;</span> <span id="lastSyncDate">Last synced —</span> <span>&middot;</span> Garmin Connect
     </p>
   </footer>
 
@@ -1999,11 +1999,18 @@ async function loadProfiles() {
   }
 }
 
+function updateLastSynced(dateStr) {
+  const el = document.getElementById('lastSyncDate');
+  if (el && dateStr) el.textContent = 'Last synced ' + dateStr;
+}
+
 async function loadWeeks() {
   try {
     const profileParam = activeProfile !== 'default' ? '?profile=' + activeProfile : '';
     const res = await fetch('/api/weeks' + profileParam);
-    const data = await res.json();
+    const payload = await res.json();
+    const data = payload.weeks || payload;
+    if (payload.last_synced) updateLastSynced(payload.last_synced);
     if (Array.isArray(data) && data.length > 0) {
       WEEKS = data;
       let bestIdx = 0;
@@ -2091,6 +2098,8 @@ syncBtn.addEventListener('click', async () => {
     // Update the WEEKS entry with fresh data
     WEEKS[selectedWeek] = data;
     transitionRender();
+
+    if (data.synced_at) updateLastSynced(data.synced_at);
 
     const acts = data.activities ? data.activities.length : 0;
     const score = data.compliance != null ? data.compliance + '%' : 'no data';

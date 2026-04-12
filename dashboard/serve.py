@@ -8,7 +8,7 @@ import os
 import sys
 import time
 import threading
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -28,6 +28,16 @@ API_KEY = os.environ.get("API_KEY", "")
 SYNC_COOLDOWN_SECONDS = 60
 AUTO_SYNC_INTERVAL = int(os.environ.get("AUTO_SYNC_INTERVAL", 86400))  # default: 24h
 _last_sync_time: dict[str, float] = {}  # key: "profile:week"
+
+
+def _get_cache_last_synced(profile_id: str = DEFAULT_PROFILE) -> str | None:
+    """Return the last-synced timestamp from the cache file's mtime."""
+    suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+    cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+    if cache_path.exists():
+        mtime = cache_path.stat().st_mtime
+        return datetime.fromtimestamp(mtime).strftime("%b %-d, %Y %-I:%M %p")
+    return None
 
 
 def _load_profiles() -> list[dict]:
@@ -395,6 +405,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             _last_sync_time[rate_key] = time.time()
             print(f"[sync] Week {week_num} [{profile_id}]: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
             _update_weeks_cache(week_num, result, profile_id)
+            result["synced_at"] = datetime.now().strftime("%b %-d, %Y %-I:%M %p")
             self._send_json(result)
 
     def _handle_push_workout(self, parsed):
@@ -450,7 +461,10 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 print(f"[weeks] No live data, using static cache for '{profile_id}'")
                 results = json.loads(cache_path.read_text())
         print(f"[weeks] Loaded {len(results)} weeks")
-        self._send_json(results)
+        self._send_json({
+            "weeks": results,
+            "last_synced": _get_cache_last_synced(profile_id),
+        })
 
     def log_message(self, format, *args):
         try:

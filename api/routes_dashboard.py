@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Header, HTTPException, Query
@@ -11,6 +12,7 @@ from dashboard.serve import (
     build_all_weeks_json,
     build_week_json,
     _update_weeks_cache,
+    _get_cache_last_synced,
     _load_profiles,
     DASHBOARD_DIR,
     SYNC_COOLDOWN_SECONDS,
@@ -51,7 +53,7 @@ def get_weeks(profile: str = Query(DEFAULT_PROFILE)):
         cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
         if cache_path.exists():
             results = json.loads(cache_path.read_text())
-    return results
+    return {"weeks": results, "last_synced": _get_cache_last_synced(profile_id)}
 
 
 @router.post("/api/sync")
@@ -88,6 +90,7 @@ def sync_week(
 
     _last_sync_time[rate_key] = time.time()
     _update_weeks_cache(week_num, result, profile_id)
+    result["synced_at"] = datetime.now().strftime("%b %-d, %Y %-I:%M %p")
     return result
 
 

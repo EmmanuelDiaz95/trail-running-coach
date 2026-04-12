@@ -35,8 +35,10 @@ def test_get_weeks(client):
         resp = client.get("/api/weeks")
         assert resp.status_code == 200
         data = resp.json()
-        assert isinstance(data, list)
-        assert data[0]["number"] == 1
+        assert "weeks" in data
+        assert isinstance(data["weeks"], list)
+        assert data["weeks"][0]["number"] == 1
+        assert "last_synced" in data
 
 
 def test_sync_requires_auth_when_configured(client):
