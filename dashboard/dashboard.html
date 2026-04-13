@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Trail Running Tracker</title>
+<title>Trail Running Coach</title>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -84,16 +84,24 @@
   /* ── Hero Header ── */
   .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; }
 
-  .hero__eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--copper); margin-bottom: 12px;
+  .hero__top {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+    margin-bottom: 28px; flex-wrap: wrap;
+  }
+
+  .hero__identity {
+    flex: 1; min-width: 260px;
     opacity: 0; animation: fadeUp 0.6s ease forwards;
   }
 
+  .hero__eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--copper); margin-bottom: 10px;
+  }
+
   .hero__title {
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem, 5vw, 3.4rem);
-    line-height: 1.05; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 10px;
-    opacity: 0; animation: fadeUp 0.6s ease 0.08s forwards;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.05; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 4px;
   }
 
   .hero__title span {
@@ -101,34 +109,72 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
 
-  .hero__meta {
-    font-size: 0.87rem; color: var(--text-secondary); font-weight: 400; margin-bottom: 28px;
-    opacity: 0; animation: fadeUp 0.6s ease 0.15s forwards;
-  }
-  .hero__meta strong { color: var(--text-primary); font-weight: 500; }
-  .hero__meta .sep {
-    display: inline-block; width: 3px; height: 3px; border-radius: 50%;
-    background: var(--copper-dim); margin: 0 10px; vertical-align: middle;
+  .hero__subtitle {
+    font-size: 0.82rem; color: var(--text-secondary); font-weight: 300;
   }
 
-  .countdown {
-    display: flex; gap: 20px; margin-bottom: 28px;
-    opacity: 0; animation: fadeUp 0.6s ease 0.22s forwards;
+  /* ── Race Mission Card ── */
+  .race-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; min-width: 280px; position: relative; overflow: hidden;
+    opacity: 0; animation: fadeUp 0.6s ease 0.1s forwards;
   }
-  .countdown__block { text-align: center; }
-  .countdown__number {
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 2.2rem;
-    line-height: 1; color: var(--text-primary); min-width: 56px; display: block;
+
+  .race-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--copper), var(--terracotta), var(--copper-dim));
   }
-  .countdown__label {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 6px;
+
+  .race-card__header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+  }
+
+  .race-card__name {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem;
+    color: var(--text-primary); letter-spacing: -0.01em;
+  }
+
+  .race-card__countdown {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500;
+    color: var(--copper-light); letter-spacing: 0.05em;
+  }
+
+  .race-card__stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    background: var(--border); border-radius: var(--radius-sm); overflow: hidden;
+  }
+
+  .race-card__stat {
+    background: var(--bg-card); padding: 10px 12px; text-align: center;
+  }
+
+  .race-card__stat:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .race-card__stat:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+  .race-card__stat-value {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;
+    color: var(--text-primary); line-height: 1; display: block;
+  }
+
+  .race-card__stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.55rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 4px;
+  }
+
+  .race-card__date {
+    font-family: 'Outfit', sans-serif; font-size: 0.68rem; color: var(--text-tertiary);
+    margin-top: 10px; text-align: right;
+  }
+
+  .race-card__date strong {
+    color: var(--text-secondary); font-weight: 500;
   }
 
   .progress-bar {
     width: 100%; height: 6px; background: var(--border); border-radius: 3px;
     overflow: hidden; margin-bottom: 8px;
-    opacity: 0; animation: fadeUp 0.6s ease 0.3s forwards;
+    opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards;
   }
   .progress-bar__fill {
     height: 100%; background: linear-gradient(90deg, var(--copper), var(--copper-light));
@@ -137,7 +183,7 @@
   .progress-bar__label {
     font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-tertiary);
     display: flex; justify-content: space-between;
-    opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
+    opacity: 0; animation: fadeUp 0.6s ease 0.25s forwards;
   }
 
   /* ── Monthly Summary ── */
@@ -847,10 +893,10 @@
     html { font-size: 18px; }
     .container { padding: 0 20px 80px; }
     .hero { padding: 28px 0 0; margin-bottom: 24px; }
+    .hero__top { gap: 16px; }
     .hero__title { font-size: 1.7rem; }
-    .hero__meta { font-size: 0.82rem; margin-bottom: 20px; }
-    .countdown { gap: 14px; margin-bottom: 20px; }
-    .countdown__number { font-size: 1.5rem; }
+    .race-card { min-width: 240px; }
+    .race-card__stat-value { font-size: 0.92rem; }
     .stats-grid { grid-template-columns: 1fr; gap: 16px; }
     .compliance-ring { width: 160px; height: 160px; }
     .compliance-ring__number { font-size: 2.6rem; }
@@ -874,16 +920,18 @@
     html { font-size: 16px; }
     .container { padding: 0 14px 70px; }
     .hero { padding: calc(20px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 18px; }
-    .hero__eyebrow { font-size: 0.65rem; margin-bottom: 8px; letter-spacing: 0.15em; }
+    .hero__eyebrow { font-size: 0.58rem; margin-bottom: 6px; letter-spacing: 0.15em; }
     .profile-switcher { margin-bottom: 12px; gap: 4px; flex-wrap: wrap; }
     .profile-switcher__label { font-size: 0.58rem; }
     .profile-switcher__tab { font-size: 0.6rem; padding: 5px 10px; }
-    .hero__title { font-size: 1.5rem; margin-bottom: 6px; }
-    .hero__meta { font-size: 0.78rem; margin-bottom: 16px; }
-    .hero__meta .sep { margin: 0 6px; }
-    .countdown { gap: 10px; margin-bottom: 16px; }
-    .countdown__number { font-size: 1.3rem; min-width: 40px; }
-    .countdown__label { font-size: 0.62rem; }
+    .hero__top { flex-direction: column; gap: 14px; }
+    .hero__title { font-size: 1.35rem; margin-bottom: 4px; }
+    .hero__subtitle { font-size: 0.75rem; }
+    .race-card { min-width: unset; }
+    .race-card__stats { grid-template-columns: repeat(3, 1fr); }
+    .race-card__stat { padding: 8px 10px; }
+    .race-card__stat-value { font-size: 0.88rem; }
+    .race-card__stat-label { font-size: 0.5rem; }
     .progress-bar__label { font-size: 0.65rem; }
 
     /* Week selector — bigger touch targets */
@@ -992,8 +1040,8 @@
   @media (max-width: 360px) {
     html { font-size: 15px; }
     .container { padding: 0 12px 70px; }
-    .hero__title { font-size: 1.35rem; }
-    .countdown__number { font-size: 1.15rem; }
+    .hero__title { font-size: 1.2rem; }
+    .race-card__stat-value { font-size: 0.82rem; }
     .compliance-ring { width: 110px; height: 110px; }
     .compliance-ring__number { font-size: 1.9rem; }
     .activity-card { min-width: calc(100vw - 38px); max-width: calc(100vw - 38px); }
@@ -1063,6 +1111,29 @@ body { margin-right: 350px; }
 }
 .coach-drawer__send:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* ── Collapse toggle (desktop) ── */
+.coach-drawer__toggle {
+  background: none; border: none; color: var(--text-muted); cursor: pointer;
+  font-size: 1.1rem; padding: 4px 8px; line-height: 1; transition: color 0.2s, transform 0.3s;
+  display: flex; align-items: center;
+}
+.coach-drawer__toggle:hover { color: var(--text); }
+
+.coach-drawer--collapsed {
+  width: 44px !important;
+}
+.coach-drawer--collapsed .coach-drawer__header {
+  flex-direction: column; padding: 14px 10px; gap: 8px;
+}
+.coach-drawer--collapsed .coach-drawer__title {
+  writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.82rem; letter-spacing: 0.06em;
+}
+.coach-drawer--collapsed .coach-drawer__toggle { transform: rotate(180deg); }
+.coach-drawer--collapsed .coach-drawer__messages,
+.coach-drawer--collapsed .coach-drawer__input-area { display: none; }
+
+body.coach-collapsed { margin-right: 44px; }
+
 /* Desktop: hide close button and FAB (panel always visible) */
 .coach-fab { display: none; }
 .coach-drawer__close { display: none; }
@@ -1131,34 +1202,36 @@ body { margin-right: 350px; }
 
   <!-- ═══════════ HERO (static) ═══════════ -->
   <header class="hero">
-    <div class="hero__eyebrow">30-Week Training Program</div>
     <div class="profile-switcher" id="profileSwitcher">
       <span class="profile-switcher__label">Athlete:</span>
       <div class="profile-switcher__tabs" id="profileTabs"></div>
     </div>
-    <h1 class="hero__title">Ultra Trail <span>Tarahumara</span></h1>
-    <p class="hero__meta">
-      Sierra Tarahumara, Chihuahua
-      <span class="sep"></span><strong>59km</strong>
-      <span class="sep"></span><strong>2,400m</strong> D+
-      <span class="sep"></span>Oct 2, 2026
-    </p>
-    <div class="countdown">
-      <div class="countdown__block">
-        <span class="countdown__number" id="cd-days">207</span>
-        <span class="countdown__label">Days</span>
+    <div class="hero__top">
+      <div class="hero__identity">
+        <div class="hero__eyebrow">Trail Running Coach</div>
+        <h1 class="hero__title">Your <span>Trail</span> Coach</h1>
+        <p class="hero__subtitle">30-week ultra training program</p>
       </div>
-      <div class="countdown__block">
-        <span class="countdown__number" id="cd-hours">00</span>
-        <span class="countdown__label">Hours</span>
-      </div>
-      <div class="countdown__block">
-        <span class="countdown__number" id="cd-mins">00</span>
-        <span class="countdown__label">Mins</span>
-      </div>
-      <div class="countdown__block">
-        <span class="countdown__number" id="cd-secs">00</span>
-        <span class="countdown__label">Secs</span>
+      <div class="race-card">
+        <div class="race-card__header">
+          <span class="race-card__name">Ultra Trail Tarahumara</span>
+          <span class="race-card__countdown"><span id="cd-days">173</span>d <span id="cd-hours">00</span>h <span id="cd-mins">00</span>m</span>
+        </div>
+        <div class="race-card__stats">
+          <div class="race-card__stat">
+            <span class="race-card__stat-value">59</span>
+            <span class="race-card__stat-label">km</span>
+          </div>
+          <div class="race-card__stat">
+            <span class="race-card__stat-value">2,400</span>
+            <span class="race-card__stat-label">m D+</span>
+          </div>
+          <div class="race-card__stat">
+            <span class="race-card__stat-value" id="cd-secs">173</span>
+            <span class="race-card__stat-label">days left</span>
+          </div>
+        </div>
+        <div class="race-card__date">Sierra Tarahumara &middot; <strong>Oct 2, 2026</strong></div>
       </div>
     </div>
     <div class="progress-bar"><div class="progress-bar__fill"></div></div>
@@ -1233,6 +1306,7 @@ body { margin-right: 350px; }
 <button class="coach-fab" id="coachFab" title="Ask your coach">&#x1F4AC;</button>
 <div class="coach-drawer" id="coachDrawer">
   <div class="coach-drawer__header">
+    <button class="coach-drawer__toggle" id="coachToggle" title="Minimize chat">&#x276F;</button>
     <span class="coach-drawer__title">Coach</span>
     <button class="coach-drawer__close" id="coachClose">&times;</button>
   </div>
@@ -1957,10 +2031,11 @@ function updateCountdown() {
   const now = new Date();
   const diff = race - now;
   if (diff <= 0) return;
-  document.getElementById('cd-days').textContent = Math.floor(diff / 864e5);
+  const days = Math.floor(diff / 864e5);
+  document.getElementById('cd-days').textContent = days;
   document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
   document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
-  document.getElementById('cd-secs').textContent = String(Math.floor((diff % 6e4) / 1e3)).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = days;
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
@@ -2172,6 +2247,7 @@ document.addEventListener('click', async (e) => {
   var fab = document.getElementById('coachFab');
   var drawer = document.getElementById('coachDrawer');
   var closeBtn = document.getElementById('coachClose');
+  var toggleBtn = document.getElementById('coachToggle');
   var input = document.getElementById('coachInput');
   var sendBtn = document.getElementById('coachSend');
   var messagesEl = document.getElementById('coachMessages');
@@ -2184,8 +2260,16 @@ document.addEventListener('click', async (e) => {
     if (isOpen) input.focus();
   }
 
+  // Desktop collapse/expand
+  function toggleCollapse() {
+    var collapsed = drawer.classList.toggle('coach-drawer--collapsed');
+    document.body.classList.toggle('coach-collapsed', collapsed);
+    if (!collapsed) input.focus();
+  }
+
   fab.addEventListener('click', toggleDrawer);
   closeBtn.addEventListener('click', toggleDrawer);
+  toggleBtn.addEventListener('click', toggleCollapse);
 
   // Load history on page load (panel is always visible on desktop)
   loadHistory();
