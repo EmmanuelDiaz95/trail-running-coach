@@ -454,12 +454,15 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         profile_id = self._validate_profile(params)
         print(f"[weeks] Loading all weeks for profile '{profile_id}'...")
         results = build_all_weeks_json(do_sync=False, profile_id=profile_id)
-        # Fallback to static cache if no activity data was found
-        if all(w.get("actual") is None for w in results):
-            cache_path = DASHBOARD_DIR / f"weeks_cache{'_' + profile_id if profile_id != DEFAULT_PROFILE else ''}.json"
-            if cache_path.exists():
-                print(f"[weeks] No live data, using static cache for '{profile_id}'")
-                results = json.loads(cache_path.read_text())
+        # Merge with static cache: fill in weeks missing actual data
+        suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+        cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+        if cache_path.exists():
+            cached = json.loads(cache_path.read_text())
+            cached_by_num = {w["number"]: w for w in cached}
+            for i, w in enumerate(results):
+                if w.get("actual") is None and w["number"] in cached_by_num:
+                    results[i] = cached_by_num[w["number"]]
         print(f"[weeks] Loaded {len(results)} weeks")
         self._send_json({
             "weeks": results,

@@ -47,12 +47,15 @@ def get_profiles():
 def get_weeks(profile: str = Query(DEFAULT_PROFILE)):
     profile_id = _validate_profile(profile)
     results = build_all_weeks_json(do_sync=False, profile_id=profile_id)
-    # Fallback to static cache if no live data
-    if all(w.get("actual") is None for w in results):
-        suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
-        cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
-        if cache_path.exists():
-            results = json.loads(cache_path.read_text())
+    # Merge with static cache: fill in weeks missing actual data
+    suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+    cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+    if cache_path.exists():
+        cached = json.loads(cache_path.read_text())
+        cached_by_num = {w["number"]: w for w in cached}
+        for i, w in enumerate(results):
+            if w.get("actual") is None and w["number"] in cached_by_num:
+                results[i] = cached_by_num[w["number"]]
     return {"weeks": results, "last_synced": _get_cache_last_synced(profile_id)}
 
 
