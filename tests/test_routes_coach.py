@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -10,22 +11,45 @@ from fastapi.testclient import TestClient
 from api.app import app
 
 
+# In-memory store for mocking db conversation functions
+_conv_store: list[dict] = []
+
+
+def _mock_save_conversation(question, category, response, week):
+    entry = {
+        "id": len(_conv_store) + 1,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "question": question,
+        "category": category,
+        "response": response,
+        "week": week,
+    }
+    _conv_store.append(entry)
+    return entry
+
+
+def _mock_get_conversations(limit=50):
+    return list(_conv_store[-limit:])
+
+
+def _mock_clear_conversations():
+    _conv_store.clear()
+
+
 @pytest.fixture
 def client():
     return TestClient(app)
 
 
 @pytest.fixture
-def conv_dir(tmp_path):
-    d = tmp_path / "conversations"
-    d.mkdir()
-    original = os.environ.get("CONVERSATIONS_DIR")
-    os.environ["CONVERSATIONS_DIR"] = str(d)
-    yield d
-    if original is None:
-        os.environ.pop("CONVERSATIONS_DIR", None)
-    else:
-        os.environ["CONVERSATIONS_DIR"] = original
+def mock_conv_db():
+    """Mock tracker.db conversation functions used by api.conversation."""
+    _conv_store.clear()
+    with patch("api.conversation.db") as mock:
+        mock.save_conversation = MagicMock(side_effect=_mock_save_conversation)
+        mock.get_conversations = MagicMock(side_effect=_mock_get_conversations)
+        mock.clear_conversations = MagicMock(side_effect=_mock_clear_conversations)
+        yield mock
 
 
 def test_coach_status(client):
@@ -55,13 +79,13 @@ def test_coach_status(client):
     assert data["readiness"]["score"] == 6
 
 
-def test_coach_history_empty(client, conv_dir):
+def test_coach_history_empty(client, mock_conv_db):
     resp = client.get("/api/coach/history")
     assert resp.status_code == 200
     assert resp.json()["messages"] == []
 
 
-def test_coach_clear_history(client, conv_dir):
+def test_coach_clear_history(client, mock_conv_db):
     from api.conversation import save_message
     save_message("test", "general", "response", 5)
 
@@ -73,7 +97,7 @@ def test_coach_clear_history(client, conv_dir):
     assert resp.json()["messages"] == []
 
 
-def test_coach_chat_returns_sse(client, conv_dir):
+def test_coach_chat_returns_sse(client, mock_conv_db):
     def fake_stream(*args, **kwargs):
         yield "Hello "
         yield "coach!"

@@ -29,12 +29,16 @@ from api.routes_coach import router as coach_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start auto-sync background thread on startup."""
+    """Initialize DB pool and start auto-sync background thread on startup."""
+    from tracker import db
+    db.init_db()
+    print("[lifespan] Database initialized")
     sync_thread = threading.Thread(target=_auto_sync, daemon=True)
     sync_thread.start()
     print("[lifespan] Auto-sync thread started")
     yield
     print("[lifespan] Shutting down")
+    db.close_pool()
 
 
 app = FastAPI(title="Tarahumara Ultra Tracker", lifespan=lifespan)
