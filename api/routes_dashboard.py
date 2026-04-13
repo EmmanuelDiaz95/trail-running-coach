@@ -47,15 +47,25 @@ def get_profiles():
 def get_weeks(profile: str = Query(DEFAULT_PROFILE)):
     profile_id = _validate_profile(profile)
     results = build_all_weeks_json(do_sync=False, profile_id=profile_id)
-    # Merge with static cache: fill in weeks missing actual data
-    suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
-    cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
-    if cache_path.exists():
-        cached = json.loads(cache_path.read_text())
-        cached_by_num = {w["number"]: w for w in cached}
-        for i, w in enumerate(results):
-            if w.get("actual") is None and w["number"] in cached_by_num:
-                results[i] = cached_by_num[w["number"]]
+    # Fallback: fill in weeks missing actual data from DB snapshots
+    if any(w.get("actual") is None for w in results):
+        try:
+            from tracker import db
+            snapshots = db.get_week_snapshots(profile_id)
+            snap_by_num = {s["data"]["number"]: s["data"] for s in snapshots if "number" in s.get("data", {})}
+            for i, w in enumerate(results):
+                if w.get("actual") is None and w["number"] in snap_by_num:
+                    results[i] = snap_by_num[w["number"]]
+        except Exception:
+            # Fallback to file cache
+            suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+            cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+            if cache_path.exists():
+                cached = json.loads(cache_path.read_text())
+                cached_by_num = {w["number"]: w for w in cached}
+                for i, w in enumerate(results):
+                    if w.get("actual") is None and w["number"] in cached_by_num:
+                        results[i] = cached_by_num[w["number"]]
     return {"weeks": results, "last_synced": _get_cache_last_synced(profile_id)}
 
 

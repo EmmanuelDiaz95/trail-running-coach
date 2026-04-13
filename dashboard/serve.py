@@ -31,7 +31,18 @@ _last_sync_time: dict[str, float] = {}  # key: "profile:week"
 
 
 def _get_cache_last_synced(profile_id: str = DEFAULT_PROFILE) -> str | None:
-    """Return the last-synced timestamp from the cache file's mtime."""
+    """Return the last-synced timestamp from the database or cache file mtime."""
+    try:
+        from tracker import db
+        snapshots = db.get_week_snapshots(profile_id)
+        if snapshots:
+            latest = max(s["updated_at"] for s in snapshots)
+            from datetime import datetime as dt
+            ts = dt.fromisoformat(latest)
+            return ts.strftime("%b %-d, %Y %-I:%M %p")
+    except Exception:
+        pass
+    # Fallback to file mtime
     suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
     cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
     if cache_path.exists():
@@ -236,28 +247,33 @@ def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFA
 
 
 def _update_weeks_cache(week_num: int, week_data: dict, profile_id: str = DEFAULT_PROFILE):
-    """Update the static weeks cache file with fresh data for one week."""
-    suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
-    cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+    """Update the week snapshot in the database."""
     try:
-        if cache_path.exists():
-            weeks = json.loads(cache_path.read_text())
-        else:
-            weeks = []
-        # Find and replace the week, or append
-        replaced = False
-        for i, w in enumerate(weeks):
-            if w.get("number") == week_num:
-                weeks[i] = week_data
-                replaced = True
-                break
-        if not replaced:
-            weeks.append(week_data)
-            weeks.sort(key=lambda w: w.get("number", 0))
-        cache_path.write_text(json.dumps(weeks, indent=2))
-        print(f"[cache] Updated week {week_num} in static cache")
+        from tracker import db
+        db.upsert_week_snapshot(week_num, profile_id, week_data)
+        print(f"[cache] Updated week {week_num} snapshot in database")
     except Exception as e:
-        print(f"[cache] Failed to update cache: {e}")
+        print(f"[cache] Failed to update snapshot: {e}")
+        # Fallback to file cache
+        suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+        cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+        try:
+            if cache_path.exists():
+                weeks = json.loads(cache_path.read_text())
+            else:
+                weeks = []
+            replaced = False
+            for i, w in enumerate(weeks):
+                if w.get("number") == week_num:
+                    weeks[i] = week_data
+                    replaced = True
+                    break
+            if not replaced:
+                weeks.append(week_data)
+                weeks.sort(key=lambda w: w.get("number", 0))
+            cache_path.write_text(json.dumps(weeks, indent=2))
+        except Exception:
+            pass
 
 
 def build_all_weeks_json(do_sync: bool = False, profile_id: str = DEFAULT_PROFILE) -> list[dict]:
@@ -454,19 +470,30 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         profile_id = self._validate_profile(params)
         print(f"[weeks] Loading all weeks for profile '{profile_id}'...")
         results = build_all_weeks_json(do_sync=False, profile_id=profile_id)
-        # Merge with static cache: fill in weeks missing actual data
-        suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
-        cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
-        if cache_path.exists():
-            cached = json.loads(cache_path.read_text())
-            cached_by_num = {w["number"]: w for w in cached}
-            for i, w in enumerate(results):
-                if w.get("actual") is None and w["number"] in cached_by_num:
-                    results[i] = cached_by_num[w["number"]]
+        # Fallback: fill in weeks missing actual data from DB snapshots
+        if any(w.get("actual") is None for w in results):
+            try:
+                from tracker import db
+                snapshots = db.get_week_snapshots(profile_id)
+                snap_by_num = {s["data"]["number"]: s["data"] for s in snapshots if "number" in s.get("data", {})}
+                for i, w in enumerate(results):
+                    if w.get("actual") is None and w["number"] in snap_by_num:
+                        results[i] = snap_by_num[w["number"]]
+            except Exception:
+                # Fallback to file cache
+                suffix = f"_{profile_id}" if profile_id != DEFAULT_PROFILE else ""
+                cache_path = DASHBOARD_DIR / f"weeks_cache{suffix}.json"
+                if cache_path.exists():
+                    cached = json.loads(cache_path.read_text())
+                    cached_by_num = {w["number"]: w for w in cached}
+                    for i, w in enumerate(results):
+                        if w.get("actual") is None and w["number"] in cached_by_num:
+                            results[i] = cached_by_num[w["number"]]
+        last_synced = _get_cache_last_synced(profile_id)
         print(f"[weeks] Loaded {len(results)} weeks")
         self._send_json({
             "weeks": results,
-            "last_synced": _get_cache_last_synced(profile_id),
+            "last_synced": last_synced,
         })
 
     def log_message(self, format, *args):
