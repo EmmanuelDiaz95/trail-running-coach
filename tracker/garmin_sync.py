@@ -275,7 +275,7 @@ def sync_daily_health(target_date: date, profile_id: str = DEFAULT_PROFILE) -> d
         if hrv:
             summary = hrv.get("hrvSummary", {})
             health["hrv_weekly_avg"] = summary.get("weeklyAvg")
-            health["hrv_last_night"] = summary.get("lastNight")
+            health["hrv_last_night"] = summary.get("lastNightAvg")
             health["raw_json"]["hrv"] = hrv
     except Exception as e:
         print(f"[health] HRV data failed: {e}")
@@ -303,7 +303,9 @@ def sync_daily_health(target_date: date, profile_id: str = DEFAULT_PROFILE) -> d
     try:
         readiness = client.get_training_readiness(date_str)
         if readiness:
-            health["training_readiness"] = readiness.get("score")
+            # API returns a list — grab the first entry
+            entry = readiness[0] if isinstance(readiness, list) else readiness
+            health["training_readiness"] = entry.get("score")
             health["raw_json"]["training_readiness"] = readiness
     except Exception as e:
         print(f"[health] Training readiness failed: {e}")
