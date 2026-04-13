@@ -81,7 +81,9 @@ def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
             # Save refreshed tokens back
             client.garth.dump(str(token_dir))
             return client
-        except Exception:
+        except Exception as e:
+            if "429" in str(e) or "Too Many" in str(e):
+                raise RuntimeError(f"Garmin rate-limited, retry later: {e}")
             pass  # tokens expired, fall through to password auth
 
     email = _profile_env("GARMIN_EMAIL", profile_id)
