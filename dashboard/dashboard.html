@@ -2037,6 +2037,12 @@ async function loadWeeks() {
       + 'Start the dashboard server:<br><code style="color:var(--copper-light)">python dashboard/serve.py</code></div></div>';
   }
 }
+// One-time cleanup: clear stale pushed_w* flags from failed pushes
+if (!localStorage.getItem('push_fix_v2')) {
+  for (let i = 1; i <= 30; i++) localStorage.removeItem('pushed_w' + i);
+  localStorage.setItem('push_fix_v2', '1');
+}
+
 loadProfiles().then(() => loadWeeks());
 
 // ═══════════════════════════════════════════════════════
@@ -2139,14 +2145,14 @@ document.addEventListener('click', async (e) => {
       return;
     }
 
-    if (data.error) {
-      showToast('<strong>Push failed:</strong> ' + data.error, 'error');
+    if (!res.ok || data.error || data.detail) {
+      showToast('<strong>Push failed:</strong> ' + (data.error || data.detail || 'Unknown error'), 'error');
       btn.classList.remove('push-btn--pushing');
       btn.textContent = 'Push to Garmin';
       return;
     }
 
-    // Success
+    // Success — clear any stale sent state first, then mark
     localStorage.setItem('pushed_w' + weekNum, '1');
     btn.classList.remove('push-btn--pushing');
     btn.classList.add('push-btn--sent');
