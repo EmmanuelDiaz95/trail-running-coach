@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from tracker.plan_data import get_current_week, get_week, get_week_dates, days_to_race, load_plan
@@ -21,8 +21,18 @@ from api.conversation import save_message, load_history, clear_history
 router = APIRouter(prefix="/api/coach")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+API_KEY = os.environ.get("API_KEY", "")
 CHAT_COOLDOWN_SECONDS = 10
+PLAN_UPDATE_COOLDOWN_SECONDS = 5
 _last_chat_time: dict[str, float] = {}
+
+
+def _check_auth(authorization: Optional[str]) -> None:
+    """Require Bearer token if API_KEY is configured."""
+    if not API_KEY:
+        return
+    if not authorization or authorization != f"Bearer {API_KEY}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 def _get_narrator() -> Optional[Narrator]:
@@ -226,12 +236,13 @@ def coach_status():
 
 
 @router.get("/history")
-def get_history(limit: int = Query(50), before: Optional[str] = Query(None)):
-    return load_history(limit=limit, before=before)
+def get_history(limit: int = Query(50)):
+    return load_history(limit=limit)
 
 
 @router.delete("/history")
-def delete_history():
+def delete_history(authorization: Optional[str] = Header(None)):
+    _check_auth(authorization)
     clear_history()
     return {"status": "ok"}
 
@@ -291,7 +302,8 @@ def coach_chat(request_body: dict):
 
 
 @router.post("/plan/update")
-def update_plan(request_body: dict):
+def update_plan(request_body: dict, authorization: Optional[str] = Header(None)):
+    _check_auth(authorization)
     from tracker import db
 
     week = request_body.get("week")
@@ -299,8 +311,22 @@ def update_plan(request_body: dict):
     new_value = request_body.get("new_value")
     reason = request_body.get("reason", "")
 
-    if not week or not field or new_value is None:
-        raise HTTPException(status_code=400, detail="week, field, and new_value are required")
+    # Input validation
+    if not isinstance(week, int) or week < 1 or week > 30:
+        raise HTTPException(status_code=400, detail="week must be an integer between 1 and 30")
+    if not isinstance(field, str) or not field:
+        raise HTTPException(status_code=400, detail="field must be a non-empty string")
+    if new_value is None:
+        raise HTTPException(status_code=400, detail="new_value is required")
+
+    # Rate limiting
+    rate_key = "plan_update"
+    now = time.time()
+    last = _last_chat_time.get(rate_key, 0)
+    if now - last < PLAN_UPDATE_COOLDOWN_SECONDS:
+        remaining = int(PLAN_UPDATE_COOLDOWN_SECONDS - (now - last))
+        raise HTTPException(status_code=429, detail=f"Please wait {remaining}s")
+    _last_chat_time[rate_key] = now
 
     current = db.get_week_plan(week)
     if current is None:

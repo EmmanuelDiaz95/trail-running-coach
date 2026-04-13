@@ -8,7 +8,7 @@ def save_message(question: str, category: str, response: str, week: int) -> dict
     return db.save_conversation(question, category, response, week)
 
 
-def load_history(limit: int = 50, before: str | None = None) -> dict:
+def load_history(limit: int = 50) -> dict:
     """Load conversation history from the database.
 
     Returns {"messages": [...], "has_more": bool}.
