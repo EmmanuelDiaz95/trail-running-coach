@@ -526,6 +526,13 @@ def _auto_sync():
                         print(f"[auto-sync] Week {current_week} [{pid}]: {result.get('compliance', '—')}% compliance, {len(result.get('activities', []))} activities")
                 except Exception as e:
                     print(f"[auto-sync] Error for '{pid}': {e}")
+                # Sync daily health for today
+                try:
+                    from tracker.garmin_sync import sync_daily_health
+                    from datetime import date as date_type
+                    sync_daily_health(date_type.today(), profile_id=pid)
+                except Exception as e:
+                    print(f"[auto-sync] Health sync failed for '{pid}': {e}")
         print(f"[auto-sync] Next sync in {AUTO_SYNC_INTERVAL}s")
         time.sleep(AUTO_SYNC_INTERVAL)
 
