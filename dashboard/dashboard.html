@@ -2256,6 +2256,7 @@ document.addEventListener('click', async (e) => {
   var sendBtn = document.getElementById('coachSend');
   var messagesEl = document.getElementById('coachMessages');
   var isStreaming = false;
+  var sessionHistory = []; // in-memory only, cleared on reload
 
   // Mobile toggle (FAB + close button for small screens)
   function toggleDrawer() {
@@ -2275,8 +2276,7 @@ document.addEventListener('click', async (e) => {
   closeBtn.addEventListener('click', toggleDrawer);
   toggleBtn.addEventListener('click', toggleCollapse);
 
-  // Load history on page load (panel is always visible on desktop)
-  loadHistory();
+  // History starts fresh on each page load; DB keeps the record.
 
   function appendMessage(text, type) {
     var msg = document.createElement('div');
@@ -2315,7 +2315,7 @@ document.addEventListener('click', async (e) => {
     fetch('/api/coach/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: question }),
+      body: JSON.stringify({ question: question, session_history: sessionHistory }),
     }).then(function(response) {
       if (!response.ok) {
         return response.text().then(function(text) {
@@ -2336,6 +2336,7 @@ document.addEventListener('click', async (e) => {
       function read() {
         reader.read().then(function(result) {
           if (result.done) {
+            if (fullText) sessionHistory.push({ question: question, response: fullText });
             isStreaming = false;
             sendBtn.disabled = false;
             return;

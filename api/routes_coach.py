@@ -273,9 +273,8 @@ def coach_chat(request_body: dict):
 
     _last_chat_time[rate_key] = time.time()
 
-    # Load recent conversation history for continuity
-    recent = load_history(limit=20)
-    chat_history = recent.get("messages", [])
+    # Use session history from the client (cleared on page reload)
+    chat_history = request_body.get("session_history", [])
 
     def event_stream():
         full_response = []
