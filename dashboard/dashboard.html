@@ -2170,8 +2170,8 @@ syncBtn.addEventListener('click', async () => {
       return;
     }
 
-    if (data.error) {
-      showToast('<strong>Sync failed:</strong> ' + data.error, 'error');
+    if (!res.ok || data.error || data.detail) {
+      showToast('<strong>Sync failed:</strong> ' + (data.error || data.detail || 'Unknown error'), 'error');
       syncBtn.classList.remove('sync-btn--syncing');
       return;
     }

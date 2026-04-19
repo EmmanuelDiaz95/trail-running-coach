@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi.responses import JSONResponse
 
 from dashboard.serve import (
     build_all_weeks_json,
@@ -99,7 +100,7 @@ def sync_week(
 
     result = build_week_json(week_num, do_sync=True, profile_id=profile_id)
     if "error" in result:
-        raise HTTPException(status_code=500, detail="Garmin sync failed. Check server logs.")
+        return JSONResponse(status_code=500, content={"error": result["error"]})
 
     _last_sync_time[rate_key] = time.time()
     _update_weeks_cache(week_num, result, profile_id)
