@@ -2159,7 +2159,10 @@ syncBtn.addEventListener('click', async () => {
     const apiKey = localStorage.getItem('tarahumara_api_key');
     if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
     const profileParam = activeProfile !== 'default' ? '&profile=' + activeProfile : '';
-    const res = await fetch('/api/sync?week=' + weekNum + profileParam, { method: 'POST', headers });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    const res = await fetch('/api/sync?week=' + weekNum + profileParam, { method: 'POST', headers, signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
 
     if (res.status === 401) {
@@ -2186,7 +2189,8 @@ syncBtn.addEventListener('click', async () => {
     const score = data.compliance != null ? data.compliance + '%' : 'no data';
     showToast('<strong>Synced!</strong> ' + acts + ' activities, ' + score + ' compliance', 'success');
   } catch (e) {
-    showToast('<strong>Sync failed:</strong> server not reachable. Run <code>serve.py</code>', 'error');
+    const msg = e.name === 'AbortError' ? 'Sync timed out (30s). Garmin may be slow or unreachable.' : 'Server not reachable.';
+    showToast('<strong>Sync failed:</strong> ' + msg, 'error');
   }
 
   syncBtn.classList.remove('sync-btn--syncing');

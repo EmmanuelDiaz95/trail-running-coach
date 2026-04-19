@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from datetime import datetime
 from typing import Optional
 
@@ -98,7 +99,11 @@ def sync_week(
         remaining = int(SYNC_COOLDOWN_SECONDS - (now - last))
         raise HTTPException(status_code=429, detail=f"Please wait {remaining}s before syncing again")
 
-    result = build_week_json(week_num, do_sync=True, profile_id=profile_id)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        try:
+            result = pool.submit(build_week_json, week_num, True, profile_id).result(timeout=25)
+        except FuturesTimeoutError:
+            return JSONResponse(status_code=504, content={"error": "Garmin sync timed out (25s). Try again later."})
     if "error" in result:
         return JSONResponse(status_code=500, content={"error": result["error"]})
 
