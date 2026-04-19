@@ -2121,9 +2121,9 @@ if (!localStorage.getItem('push_fix_v2')) {
 loadProfiles().then(() => loadWeeks());
 
 // ═══════════════════════════════════════════════════════
-// LOCAL-ONLY DETECTION — disable sync/push on Railway
+// LOCAL-ONLY DETECTION
 // ═══════════════════════════════════════════════════════
-const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const isLocal = true; // API has auth + rate limiting; sync allowed everywhere
 
 // ═══════════════════════════════════════════════════════
 // SYNC BUTTON — calls /api/sync on the local server
