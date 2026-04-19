@@ -49,11 +49,14 @@ def _seed_tokens_from_env(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
         return
     oauth1_path = token_dir / "oauth1_token.json"
     oauth2_path = token_dir / "oauth2_token.json"
-    if oauth1_path.exists() and oauth2_path.exists():
-        return  # already seeded
     token_dir.mkdir(parents=True, exist_ok=True)
-    oauth1_path.write_text(base64.b64decode(oauth1_b64).decode())
-    oauth2_path.write_text(base64.b64decode(oauth2_b64).decode())
+    new_oauth1 = base64.b64decode(oauth1_b64).decode()
+    new_oauth2 = base64.b64decode(oauth2_b64).decode()
+    # Overwrite if content changed (e.g. tokens refreshed via env vars)
+    if oauth1_path.exists() and oauth1_path.read_text() == new_oauth1:
+        return  # already up to date
+    oauth1_path.write_text(new_oauth1)
+    oauth2_path.write_text(new_oauth2)
     print(f"[garmin] Seeded tokens from environment (profile: {profile_id})")
 
 
