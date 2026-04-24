@@ -68,7 +68,12 @@ def get_weeks(profile: str = Query(DEFAULT_PROFILE)):
                 for i, w in enumerate(results):
                     if w.get("actual") is None and w["number"] in cached_by_num:
                         results[i] = cached_by_num[w["number"]]
-    return {"weeks": results, "last_synced": _get_cache_last_synced(profile_id)}
+    from tracker.plan_data import get_current_week
+    return {
+        "weeks": results,
+        "last_synced": _get_cache_last_synced(profile_id),
+        "current_week": get_current_week(),
+    }
 
 
 @router.post("/api/sync")

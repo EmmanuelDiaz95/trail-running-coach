@@ -2089,8 +2089,13 @@ async function loadWeeks() {
     if (Array.isArray(data) && data.length > 0) {
       WEEKS = data;
       let bestIdx = 0;
-      for (let i = 0; i < WEEKS.length; i++) {
-        if (WEEKS[i].actual) bestIdx = i;
+      if (payload.current_week) {
+        const idx = WEEKS.findIndex(w => w.number === payload.current_week);
+        if (idx >= 0) bestIdx = idx;
+      } else {
+        for (let i = 0; i < WEEKS.length; i++) {
+          if (WEEKS[i].actual) bestIdx = i;
+        }
       }
       selectedWeek = bestIdx;
       const currentNum = WEEKS[bestIdx].number;
