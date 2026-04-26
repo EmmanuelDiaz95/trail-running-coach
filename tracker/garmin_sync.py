@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time
 from datetime import date, timedelta
 from getpass import getpass
@@ -16,6 +17,12 @@ from .route import polyline_to_svg
 
 # Default profile ID
 DEFAULT_PROFILE = "default"
+
+# In-memory client cache to avoid re-running OAuth on every request.
+# OAuth2 tokens have ~1h TTL; cache expires slightly under that.
+_CLIENT_TTL_SECONDS = 50 * 60
+_client_cache: dict[str, tuple[Garmin, float]] = {}
+_cache_lock = threading.Lock()
 
 
 def _load_env():
@@ -40,24 +47,64 @@ def _profile_env(key: str, profile_id: str) -> str | None:
     return os.environ.get(key)
 
 
-def _seed_tokens_from_env(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
-    """Write OAuth tokens from env vars to disk (for Railway/cloud deploys)."""
+def _load_tokens_from_db(profile_id: str) -> tuple[str | None, str | None]:
+    """Read OAuth tokens from Postgres. Returns (None, None) if DB unavailable or no row."""
+    try:
+        from tracker import db
+        tokens = db.get_garmin_tokens(profile_id)
+        if tokens:
+            return tokens["oauth1"], tokens["oauth2"]
+    except Exception as e:
+        print(f"[garmin] Warning: failed to load tokens from DB: {e}")
+    return None, None
+
+
+def _load_tokens_from_env(profile_id: str) -> tuple[str | None, str | None]:
+    """Read OAuth tokens from base64-encoded env vars."""
     import base64
     oauth1_b64 = _profile_env("GARMIN_OAUTH1", profile_id)
     oauth2_b64 = _profile_env("GARMIN_OAUTH2", profile_id)
     if not oauth1_b64 or not oauth2_b64:
+        return None, None
+    try:
+        return base64.b64decode(oauth1_b64).decode(), base64.b64decode(oauth2_b64).decode()
+    except Exception as e:
+        print(f"[garmin] Warning: failed to decode env tokens: {e}")
+        return None, None
+
+
+def _seed_tokens(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
+    """Seed OAuth tokens to disk for garth to load. Priority: DB > env vars."""
+    oauth1, oauth2 = _load_tokens_from_db(profile_id)
+    source = "db"
+    if not oauth1 or not oauth2:
+        oauth1, oauth2 = _load_tokens_from_env(profile_id)
+        source = "env"
+    if not oauth1 or not oauth2:
         return
+
     oauth1_path = token_dir / "oauth1_token.json"
     oauth2_path = token_dir / "oauth2_token.json"
+    if (oauth1_path.exists() and oauth1_path.read_text() == oauth1
+            and oauth2_path.exists() and oauth2_path.read_text() == oauth2):
+        return  # disk already current
     token_dir.mkdir(parents=True, exist_ok=True)
-    new_oauth1 = base64.b64decode(oauth1_b64).decode()
-    new_oauth2 = base64.b64decode(oauth2_b64).decode()
-    # Overwrite if content changed (e.g. tokens refreshed via env vars)
-    if oauth1_path.exists() and oauth1_path.read_text() == new_oauth1:
-        return  # already up to date
-    oauth1_path.write_text(new_oauth1)
-    oauth2_path.write_text(new_oauth2)
-    print(f"[garmin] Seeded tokens from environment (profile: {profile_id})")
+    oauth1_path.write_text(oauth1)
+    oauth2_path.write_text(oauth2)
+    print(f"[garmin] Seeded tokens from {source} (profile: {profile_id})")
+
+
+def _persist_tokens_to_db(token_dir: Path, profile_id: str):
+    """Save current disk tokens to Postgres so future cold starts skip OAuth exchange."""
+    try:
+        from tracker import db
+        oauth1_path = token_dir / "oauth1_token.json"
+        oauth2_path = token_dir / "oauth2_token.json"
+        if not (oauth1_path.exists() and oauth2_path.exists()):
+            return
+        db.save_garmin_tokens(profile_id, oauth1_path.read_text(), oauth2_path.read_text())
+    except Exception as e:
+        print(f"[garmin] Warning: failed to persist tokens to DB: {e}")
 
 
 def _get_token_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
@@ -69,25 +116,38 @@ def _get_token_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
 
 
 def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
-    """Authenticate with Garmin Connect for a specific profile."""
+    """Authenticate with Garmin Connect for a specific profile.
+
+    Reuses an in-memory client across calls within the same process to avoid
+    repeatedly hitting Garmin's OAuth exchange endpoint (which rate-limits aggressively).
+    """
+    with _cache_lock:
+        cached = _client_cache.get(profile_id)
+        if cached and (time.time() - cached[1]) < _CLIENT_TTL_SECONDS:
+            return cached[0]
+        client = _build_client(profile_id)
+        _client_cache[profile_id] = (client, time.time())
+        return client
+
+
+def _build_client(profile_id: str) -> Garmin:
+    """Authenticate with Garmin. Caller must hold _cache_lock."""
     _load_env()
     token_dir = _get_token_dir(profile_id)
     token_dir.mkdir(parents=True, exist_ok=True)
-
-    # Seed tokens from env vars if available (Railway deploy)
-    _seed_tokens_from_env(token_dir, profile_id)
+    _seed_tokens(token_dir, profile_id)
 
     if (token_dir / "oauth1_token.json").exists():
         try:
             client = Garmin()
             client.login(str(token_dir))
-            # Save refreshed tokens back
             client.garth.dump(str(token_dir))
+            _persist_tokens_to_db(token_dir, profile_id)
             return client
         except Exception as e:
             if "429" in str(e) or "Too Many" in str(e):
                 raise RuntimeError(f"Garmin rate-limited, retry later: {e}")
-            pass  # tokens expired, fall through to password auth
+            # tokens expired, fall through to password auth
 
     email = _profile_env("GARMIN_EMAIL", profile_id)
     password = _profile_env("GARMIN_PASSWORD", profile_id)
@@ -99,6 +159,7 @@ def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
     client = Garmin(email, password)
     client.login()
     client.garth.dump(str(token_dir))
+    _persist_tokens_to_db(token_dir, profile_id)
     return client
 
 

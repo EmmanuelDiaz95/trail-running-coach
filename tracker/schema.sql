@@ -95,3 +95,10 @@ CREATE TABLE IF NOT EXISTS plan_changes (
 );
 
 CREATE INDEX IF NOT EXISTS idx_plan_changes_week ON plan_changes (week_number, profile_id);
+
+CREATE TABLE IF NOT EXISTS garmin_tokens (
+    profile_id      TEXT PRIMARY KEY DEFAULT 'default',
+    oauth1_token    TEXT NOT NULL,
+    oauth2_token    TEXT NOT NULL,
+    updated_at      TIMESTAMPTZ DEFAULT NOW()
+);

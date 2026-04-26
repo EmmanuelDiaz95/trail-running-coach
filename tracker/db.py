@@ -356,6 +356,36 @@ def update_plan_field(week_number: int, profile_id: str, field: str,
         conn.commit()
 
 
+def get_garmin_tokens(profile_id: str = "default") -> dict | None:
+    """Load Garmin OAuth tokens for a profile, or None if not stored."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT oauth1_token, oauth2_token, updated_at "
+                "FROM garmin_tokens WHERE profile_id = %s",
+                (profile_id,),
+            )
+            row = cur.fetchone()
+            if row is None:
+                return None
+            return {"oauth1": row[0], "oauth2": row[1], "updated_at": row[2]}
+
+
+def save_garmin_tokens(profile_id: str, oauth1: str, oauth2: str):
+    """Upsert Garmin OAuth tokens for a profile."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO garmin_tokens (profile_id, oauth1_token, oauth2_token)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (profile_id) DO UPDATE SET
+                    oauth1_token = EXCLUDED.oauth1_token,
+                    oauth2_token = EXCLUDED.oauth2_token,
+                    updated_at = NOW()
+            """, (profile_id, oauth1, oauth2))
+        conn.commit()
+
+
 def get_plan_changes(week_number: int, profile_id: str = "default", limit: int = 20) -> list[dict]:
     """Get plan change history for a week, newest first."""
     with get_conn() as conn:
