@@ -304,27 +304,57 @@ def test_training_plan():
         db.close_pool()
 
 
-def test_garmin_rate_limit_roundtrip():
-    """set_garmin_rate_limit_until persists; get_garmin_rate_limit_until returns it."""
+def test_garmin_rate_limit_upsert_without_token_row():
+    """set_garmin_rate_limit creates a row even when no tokens exist yet."""
     from datetime import datetime, timezone, timedelta
     try:
         db.init_db()
         with db.get_conn() as conn:
             _cleanup_test_garmin_tokens(conn)
 
-        # No row → setter returns False, getter returns None
-        assert db.set_garmin_rate_limit_until("test", datetime.now(timezone.utc)) is False
-        assert db.get_garmin_rate_limit_until("test") is None
+        # No row → state returns defaults
+        state = db.get_garmin_rate_limit_state("test")
+        assert state == {"until": None, "failures": 0}
 
-        # Seed token row, then record a rate limit
-        db.save_garmin_tokens("test", "oauth1-blob", "oauth2-blob")
+        # Set cooldown without seeding tokens first
         until = datetime.now(timezone.utc) + timedelta(minutes=15)
-        assert db.set_garmin_rate_limit_until("test", until) is True
+        db.set_garmin_rate_limit("test", until, failures=2)
 
-        got = db.get_garmin_rate_limit_until("test")
-        assert got is not None
-        # Allow sub-second drift from psycopg2 serialization
-        assert abs((got - until).total_seconds()) < 1.0
+        state = db.get_garmin_rate_limit_state("test")
+        assert state["failures"] == 2
+        assert state["until"] is not None
+        assert abs((state["until"] - until).total_seconds()) < 1.0
+
+        # clear_garmin_rate_limit resets both fields
+        db.clear_garmin_rate_limit("test")
+        state = db.get_garmin_rate_limit_state("test")
+        assert state == {"until": None, "failures": 0}
+
+        with db.get_conn() as conn:
+            _cleanup_test_garmin_tokens(conn)
+    finally:
+        db.close_pool()
+
+
+def test_garmin_rate_limit_preserves_existing_tokens():
+    """Recording a cooldown on an existing token row doesn't wipe the tokens."""
+    from datetime import datetime, timezone, timedelta
+    try:
+        db.init_db()
+        with db.get_conn() as conn:
+            _cleanup_test_garmin_tokens(conn)
+
+        db.save_garmin_tokens("test", "oauth1-blob", "oauth2-blob")
+        until = datetime.now(timezone.utc) + timedelta(hours=1)
+        db.set_garmin_rate_limit("test", until, failures=3)
+
+        tokens = db.get_garmin_tokens("test")
+        assert tokens is not None
+        assert tokens["oauth1"] == "oauth1-blob"
+        assert tokens["oauth2"] == "oauth2-blob"
+
+        state = db.get_garmin_rate_limit_state("test")
+        assert state["failures"] == 3
 
         with db.get_conn() as conn:
             _cleanup_test_garmin_tokens(conn)

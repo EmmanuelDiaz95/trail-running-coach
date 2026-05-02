@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from tracker import garmin_sync
-from tracker.garmin_sync import GarminRateLimited, _is_rate_limit_error
+from tracker.garmin_sync import GarminRateLimited, _is_rate_limit_error, _backoff_seconds
 
 
 @pytest.fixture(autouse=True)
@@ -62,7 +62,8 @@ def test_check_rate_limit_passes_when_db_cooldown_expired():
 
 def test_record_rate_limit_sets_memory_and_db():
     original = Exception("429 Too Many Requests")
-    with patch("tracker.db.set_garmin_rate_limit_until") as mock_set:
+    with patch("tracker.db.get_garmin_rate_limit_state", return_value={"until": None, "failures": 0}), \
+         patch("tracker.db.set_garmin_rate_limit") as mock_set:
         exc = garmin_sync._record_rate_limit("default", original)
 
     assert isinstance(exc, GarminRateLimited)
@@ -72,6 +73,36 @@ def test_record_rate_limit_sets_memory_and_db():
     args, _ = mock_set.call_args
     assert args[0] == "default"
     assert isinstance(args[1], datetime)
+    assert args[2] == 1  # first failure
+
+
+def test_record_rate_limit_increments_failure_count():
+    """Each consecutive 429 increments the persisted failure count."""
+    original = Exception("429")
+    with patch("tracker.db.get_garmin_rate_limit_state", return_value={"until": None, "failures": 3}), \
+         patch("tracker.db.set_garmin_rate_limit") as mock_set:
+        garmin_sync._record_rate_limit("default", original)
+
+    args, _ = mock_set.call_args
+    assert args[2] == 4
+
+
+def test_backoff_seconds_doubles_per_failure_then_caps():
+    assert _backoff_seconds(1) == 15 * 60
+    assert _backoff_seconds(2) == 30 * 60
+    assert _backoff_seconds(3) == 60 * 60
+    assert _backoff_seconds(4) == 2 * 3600
+    assert _backoff_seconds(5) == 4 * 3600
+    # Caps at 12h regardless of how high the failure count goes
+    assert _backoff_seconds(20) == 12 * 3600
+
+
+def test_clear_rate_limit_resets_memory_and_db():
+    garmin_sync._rate_limit_until["default"] = time.time() + 600
+    with patch("tracker.db.clear_garmin_rate_limit") as mock_clear:
+        garmin_sync._clear_rate_limit("default")
+    assert "default" not in garmin_sync._rate_limit_until
+    mock_clear.assert_called_once_with("default")
 
 
 def test_get_client_short_circuits_on_active_rate_limit():

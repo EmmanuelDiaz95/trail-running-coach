@@ -386,29 +386,56 @@ def save_garmin_tokens(profile_id: str, oauth1: str, oauth2: str):
         conn.commit()
 
 
-def get_garmin_rate_limit_until(profile_id: str = "default"):
-    """Return the timestamp until which Garmin auth should not be retried, or None."""
+def get_garmin_rate_limit_state(profile_id: str = "default") -> dict:
+    """Return {'until': datetime|None, 'failures': int} for a profile."""
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT rate_limited_until FROM garmin_tokens WHERE profile_id = %s",
+                "SELECT rate_limited_until, rate_limit_failures "
+                "FROM garmin_tokens WHERE profile_id = %s",
                 (profile_id,),
             )
             row = cur.fetchone()
-            return row[0] if row else None
+            if row is None:
+                return {"until": None, "failures": 0}
+            return {"until": row[0], "failures": row[1] or 0}
 
 
-def set_garmin_rate_limit_until(profile_id: str, until) -> bool:
-    """Record a rate-limit cooldown timestamp. Returns False if no token row exists yet."""
+def get_garmin_rate_limit_until(profile_id: str = "default"):
+    """Compatibility shim: return only the cooldown timestamp."""
+    return get_garmin_rate_limit_state(profile_id)["until"]
+
+
+def set_garmin_rate_limit(profile_id: str, until, failures: int) -> None:
+    """Upsert rate-limit cooldown state. Creates a row if needed (tokens may be NULL)."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO garmin_tokens (profile_id, rate_limited_until, rate_limit_failures)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (profile_id) DO UPDATE SET
+                    rate_limited_until = EXCLUDED.rate_limited_until,
+                    rate_limit_failures = EXCLUDED.rate_limit_failures
+            """, (profile_id, until, failures))
+        conn.commit()
+
+
+def clear_garmin_rate_limit(profile_id: str) -> None:
+    """Reset cooldown + failure count after a successful auth."""
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE garmin_tokens SET rate_limited_until = %s WHERE profile_id = %s",
-                (until, profile_id),
+                "UPDATE garmin_tokens SET rate_limited_until = NULL, rate_limit_failures = 0 "
+                "WHERE profile_id = %s",
+                (profile_id,),
             )
-            updated = cur.rowcount > 0
         conn.commit()
-        return updated
+
+
+def set_garmin_rate_limit_until(profile_id: str, until) -> bool:
+    """Compatibility shim used by older tests."""
+    set_garmin_rate_limit(profile_id, until, 1)
+    return True
 
 
 def get_plan_changes(week_number: int, profile_id: str = "default", limit: int = 20) -> list[dict]:

@@ -26,8 +26,17 @@ _cache_lock = threading.Lock()
 
 # Circuit breaker: when Garmin returns 429 on the OAuth exchange endpoint,
 # Garmin keeps the cooldown active longer the more we hit it. Stop hitting it.
-_RATE_LIMIT_BACKOFF_SECONDS = 15 * 60
+# Backoff schedule (per consecutive failure): 15m, 30m, 1h, 2h, 4h, 8h, 12h cap.
+_RATE_LIMIT_BASE_SECONDS = 15 * 60
+_RATE_LIMIT_MAX_SECONDS = 12 * 3600
 _rate_limit_until: dict[str, float] = {}  # profile_id -> epoch seconds
+
+
+def _backoff_seconds(failures: int) -> int:
+    """Exponential backoff: 15m * 2^(failures-1), capped at 12h."""
+    if failures < 1:
+        failures = 1
+    return min(_RATE_LIMIT_BASE_SECONDS * (2 ** (failures - 1)), _RATE_LIMIT_MAX_SECONDS)
 
 
 class GarminRateLimited(RuntimeError):
@@ -155,16 +164,37 @@ def _check_rate_limit(profile_id: str) -> None:
 
 
 def _record_rate_limit(profile_id: str, original: Exception) -> GarminRateLimited:
-    """Set in-memory + DB cooldown after observing a 429. Returns the exception to raise."""
-    until_epoch = time.time() + _RATE_LIMIT_BACKOFF_SECONDS
+    """Set in-memory + DB cooldown with exponential backoff. Returns the exception to raise."""
+    failures = 1
+    try:
+        from tracker import db
+        state = db.get_garmin_rate_limit_state(profile_id)
+        failures = (state["failures"] or 0) + 1
+    except Exception as e:
+        print(f"[garmin] Warning: failed to read rate-limit state from DB: {e}")
+
+    backoff = _backoff_seconds(failures)
+    until_epoch = time.time() + backoff
     _rate_limit_until[profile_id] = until_epoch
+    print(f"[garmin] Recorded 429 (failure #{failures}), cooldown {backoff}s ({backoff // 60}m)")
+
     try:
         from tracker import db
         until_dt = datetime.fromtimestamp(until_epoch, tz=timezone.utc)
-        db.set_garmin_rate_limit_until(profile_id, until_dt)
+        db.set_garmin_rate_limit(profile_id, until_dt, failures)
     except Exception as e:
         print(f"[garmin] Warning: failed to persist rate-limit to DB: {e}")
     return GarminRateLimited(until_epoch, original)
+
+
+def _clear_rate_limit(profile_id: str) -> None:
+    """Reset cooldown + failure count after a successful auth."""
+    _rate_limit_until.pop(profile_id, None)
+    try:
+        from tracker import db
+        db.clear_garmin_rate_limit(profile_id)
+    except Exception as e:
+        print(f"[garmin] Warning: failed to clear rate-limit in DB: {e}")
 
 
 def _is_rate_limit_error(e: Exception) -> bool:
@@ -201,6 +231,7 @@ def _build_client(profile_id: str) -> Garmin:
             client.login(str(token_dir))
             client.garth.dump(str(token_dir))
             _persist_tokens_to_db(token_dir, profile_id)
+            _clear_rate_limit(profile_id)
             return client
         except Exception as e:
             if _is_rate_limit_error(e):
@@ -223,6 +254,7 @@ def _build_client(profile_id: str) -> Garmin:
         raise
     client.garth.dump(str(token_dir))
     _persist_tokens_to_db(token_dir, profile_id)
+    _clear_rate_limit(profile_id)
     return client
 
 

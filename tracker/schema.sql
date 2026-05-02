@@ -104,3 +104,7 @@ CREATE TABLE IF NOT EXISTS garmin_tokens (
 );
 
 ALTER TABLE garmin_tokens ADD COLUMN IF NOT EXISTS rate_limited_until TIMESTAMPTZ;
+ALTER TABLE garmin_tokens ADD COLUMN IF NOT EXISTS rate_limit_failures SMALLINT NOT NULL DEFAULT 0;
+-- Allow rows that record cooldown state before any successful auth has persisted tokens.
+ALTER TABLE garmin_tokens ALTER COLUMN oauth1_token DROP NOT NULL;
+ALTER TABLE garmin_tokens ALTER COLUMN oauth2_token DROP NOT NULL;
