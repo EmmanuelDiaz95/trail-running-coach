@@ -110,6 +110,17 @@ def sync_week(
         except FuturesTimeoutError:
             return JSONResponse(status_code=504, content={"error": "Garmin sync timed out (25s). Try again later."})
     if "error" in result:
+        if result.get("rate_limited"):
+            retry_after = int(result.get("retry_after", 0))
+            return JSONResponse(
+                status_code=429,
+                headers={"Retry-After": str(retry_after)},
+                content={
+                    "error": result["error"],
+                    "rate_limited": True,
+                    "retry_after": retry_after,
+                },
+            )
         return JSONResponse(status_code=500, content={"error": result["error"]})
 
     _last_sync_time[rate_key] = time.time()

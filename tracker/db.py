@@ -386,6 +386,31 @@ def save_garmin_tokens(profile_id: str, oauth1: str, oauth2: str):
         conn.commit()
 
 
+def get_garmin_rate_limit_until(profile_id: str = "default"):
+    """Return the timestamp until which Garmin auth should not be retried, or None."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT rate_limited_until FROM garmin_tokens WHERE profile_id = %s",
+                (profile_id,),
+            )
+            row = cur.fetchone()
+            return row[0] if row else None
+
+
+def set_garmin_rate_limit_until(profile_id: str, until) -> bool:
+    """Record a rate-limit cooldown timestamp. Returns False if no token row exists yet."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE garmin_tokens SET rate_limited_until = %s WHERE profile_id = %s",
+                (until, profile_id),
+            )
+            updated = cur.rowcount > 0
+        conn.commit()
+        return updated
+
+
 def get_plan_changes(week_number: int, profile_id: str = "default", limit: int = 20) -> list[dict]:
     """Get plan change history for a week, newest first."""
     with get_conn() as conn:

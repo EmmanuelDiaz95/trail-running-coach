@@ -5,7 +5,7 @@ import os
 import sys
 import threading
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from getpass import getpass
 from pathlib import Path
 
@@ -23,6 +23,23 @@ DEFAULT_PROFILE = "default"
 _CLIENT_TTL_SECONDS = 50 * 60
 _client_cache: dict[str, tuple[Garmin, float]] = {}
 _cache_lock = threading.Lock()
+
+# Circuit breaker: when Garmin returns 429 on the OAuth exchange endpoint,
+# Garmin keeps the cooldown active longer the more we hit it. Stop hitting it.
+_RATE_LIMIT_BACKOFF_SECONDS = 15 * 60
+_rate_limit_until: dict[str, float] = {}  # profile_id -> epoch seconds
+
+
+class GarminRateLimited(RuntimeError):
+    """Raised when Garmin auth is in cooldown after a 429 from /oauth-service/oauth/exchange."""
+
+    def __init__(self, until_epoch: float, original: Exception | None = None):
+        self.until_epoch = until_epoch
+        self.retry_after = max(0, int(until_epoch - time.time()))
+        msg = f"Garmin rate-limited, retry in {self.retry_after}s"
+        if original is not None:
+            msg = f"{msg}: {original}"
+        super().__init__(msg)
 
 
 def _load_env():
@@ -115,6 +132,46 @@ def _get_token_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
     return base
 
 
+def _check_rate_limit(profile_id: str) -> None:
+    """Raise GarminRateLimited if profile is in cooldown. Caller must hold _cache_lock."""
+    now = time.time()
+    until = _rate_limit_until.get(profile_id, 0.0)
+    if now < until:
+        raise GarminRateLimited(until)
+
+    try:
+        from tracker import db
+        db_until = db.get_garmin_rate_limit_until(profile_id)
+    except Exception as e:
+        print(f"[garmin] Warning: failed to read rate-limit from DB: {e}")
+        return
+
+    if db_until is None:
+        return
+    db_until_epoch = db_until.timestamp()
+    if now < db_until_epoch:
+        _rate_limit_until[profile_id] = db_until_epoch
+        raise GarminRateLimited(db_until_epoch)
+
+
+def _record_rate_limit(profile_id: str, original: Exception) -> GarminRateLimited:
+    """Set in-memory + DB cooldown after observing a 429. Returns the exception to raise."""
+    until_epoch = time.time() + _RATE_LIMIT_BACKOFF_SECONDS
+    _rate_limit_until[profile_id] = until_epoch
+    try:
+        from tracker import db
+        until_dt = datetime.fromtimestamp(until_epoch, tz=timezone.utc)
+        db.set_garmin_rate_limit_until(profile_id, until_dt)
+    except Exception as e:
+        print(f"[garmin] Warning: failed to persist rate-limit to DB: {e}")
+    return GarminRateLimited(until_epoch, original)
+
+
+def _is_rate_limit_error(e: Exception) -> bool:
+    s = str(e)
+    return "429" in s or "Too Many" in s
+
+
 def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
     """Authenticate with Garmin Connect for a specific profile.
 
@@ -125,6 +182,7 @@ def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
         cached = _client_cache.get(profile_id)
         if cached and (time.time() - cached[1]) < _CLIENT_TTL_SECONDS:
             return cached[0]
+        _check_rate_limit(profile_id)
         client = _build_client(profile_id)
         _client_cache[profile_id] = (client, time.time())
         return client
@@ -145,8 +203,8 @@ def _build_client(profile_id: str) -> Garmin:
             _persist_tokens_to_db(token_dir, profile_id)
             return client
         except Exception as e:
-            if "429" in str(e) or "Too Many" in str(e):
-                raise RuntimeError(f"Garmin rate-limited, retry later: {e}")
+            if _is_rate_limit_error(e):
+                raise _record_rate_limit(profile_id, e)
             # tokens expired, fall through to password auth
 
     email = _profile_env("GARMIN_EMAIL", profile_id)
@@ -156,8 +214,13 @@ def _build_client(profile_id: str) -> Garmin:
             raise RuntimeError(f"Garmin credentials required for profile '{profile_id}' in headless mode")
         email = email or input(f"Garmin email ({profile_id}): ")
         password = password or getpass(f"Garmin password ({profile_id}): ")
-    client = Garmin(email, password)
-    client.login()
+    try:
+        client = Garmin(email, password)
+        client.login()
+    except Exception as e:
+        if _is_rate_limit_error(e):
+            raise _record_rate_limit(profile_id, e)
+        raise
     client.garth.dump(str(token_dir))
     _persist_tokens_to_db(token_dir, profile_id)
     return client

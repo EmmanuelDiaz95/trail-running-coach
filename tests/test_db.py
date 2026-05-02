@@ -61,6 +61,13 @@ def _cleanup_test_plan(conn):
     conn.commit()
 
 
+def _cleanup_test_garmin_tokens(conn):
+    """Remove garmin_tokens row inserted by tests."""
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM garmin_tokens WHERE profile_id = 'test'")
+    conn.commit()
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -293,5 +300,33 @@ def test_training_plan():
 
         with db.get_conn() as conn:
             _cleanup_test_plan(conn)
+    finally:
+        db.close_pool()
+
+
+def test_garmin_rate_limit_roundtrip():
+    """set_garmin_rate_limit_until persists; get_garmin_rate_limit_until returns it."""
+    from datetime import datetime, timezone, timedelta
+    try:
+        db.init_db()
+        with db.get_conn() as conn:
+            _cleanup_test_garmin_tokens(conn)
+
+        # No row → setter returns False, getter returns None
+        assert db.set_garmin_rate_limit_until("test", datetime.now(timezone.utc)) is False
+        assert db.get_garmin_rate_limit_until("test") is None
+
+        # Seed token row, then record a rate limit
+        db.save_garmin_tokens("test", "oauth1-blob", "oauth2-blob")
+        until = datetime.now(timezone.utc) + timedelta(minutes=15)
+        assert db.set_garmin_rate_limit_until("test", until) is True
+
+        got = db.get_garmin_rate_limit_until("test")
+        assert got is not None
+        # Allow sub-second drift from psycopg2 serialization
+        assert abs((got - until).total_seconds()) < 1.0
+
+        with db.get_conn() as conn:
+            _cleanup_test_garmin_tokens(conn)
     finally:
         db.close_pool()

@@ -779,6 +779,7 @@
   .sync-btn:active { transform: scale(0.95); }
   .sync-btn--syncing { pointer-events: none; }
   .sync-btn--syncing .sync-btn__icon { animation: spin 1s linear infinite; }
+  .sync-btn--cooldown { pointer-events: none; opacity: 0.35; }
   .sync-btn__icon { width: 26px; height: 26px; }
 
   /* Push to Garmin button */
@@ -2136,6 +2137,8 @@ const isLocal = true; // API has auth + rate limiting; sync allowed everywhere
 const syncBtn = document.getElementById('syncBtn');
 const syncToast = document.getElementById('syncToast');
 let toastTimer = null;
+let syncCooldownUntil = 0;
+let cooldownInterval = null;
 
 function showToast(msg, type) {
   syncToast.className = 'sync-toast sync-toast--visible' + (type ? ' sync-toast--' + type : '');
@@ -2144,12 +2147,45 @@ function showToast(msg, type) {
   toastTimer = setTimeout(() => { syncToast.className = 'sync-toast'; }, 4000);
 }
 
+function formatRemaining(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m > 0 ? m + 'm ' + sec + 's' : sec + 's';
+}
+
+function startCooldown(seconds) {
+  syncCooldownUntil = Date.now() + seconds * 1000;
+  syncBtn.classList.add('sync-btn--cooldown');
+  syncBtn.classList.remove('sync-btn--syncing');
+  if (cooldownInterval) clearInterval(cooldownInterval);
+  const tick = () => {
+    const remaining = Math.ceil((syncCooldownUntil - Date.now()) / 1000);
+    if (remaining <= 0) {
+      clearInterval(cooldownInterval);
+      cooldownInterval = null;
+      syncBtn.classList.remove('sync-btn--cooldown');
+      syncToast.className = 'sync-toast';
+      return;
+    }
+    clearTimeout(toastTimer);
+    syncToast.className = 'sync-toast sync-toast--visible sync-toast--error';
+    syncToast.innerHTML = '<strong>Garmin rate-limited.</strong> Retry in ' + formatRemaining(remaining) + '.';
+  };
+  tick();
+  cooldownInterval = setInterval(tick, 1000);
+}
+
 if (!isLocal) {
   syncBtn.title = 'Sync via CLI: python scripts/push_data.py';
 }
 
 syncBtn.addEventListener('click', async () => {
   if (syncBtn.classList.contains('sync-btn--syncing')) return;
+  if (Date.now() < syncCooldownUntil) {
+    const remaining = Math.ceil((syncCooldownUntil - Date.now()) / 1000);
+    showToast('<strong>Garmin rate-limited.</strong> Retry in ' + formatRemaining(remaining) + '.', 'error');
+    return;
+  }
   if (!isLocal) {
     showToast('Run <code>python scripts/push_data.py</code> locally to sync from Garmin.', 'error');
     return;
@@ -2175,6 +2211,11 @@ syncBtn.addEventListener('click', async () => {
       if (key) { localStorage.setItem('tarahumara_api_key', key); showToast('Key saved. Tap sync again.', ''); }
       else { showToast('Sync requires an API key.', 'error'); }
       syncBtn.classList.remove('sync-btn--syncing');
+      return;
+    }
+
+    if (res.status === 429 && data && data.rate_limited && typeof data.retry_after === 'number') {
+      startCooldown(data.retry_after);
       return;
     }
 

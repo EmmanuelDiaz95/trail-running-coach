@@ -102,3 +102,5 @@ CREATE TABLE IF NOT EXISTS garmin_tokens (
     oauth2_token    TEXT NOT NULL,
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE garmin_tokens ADD COLUMN IF NOT EXISTS rate_limited_until TIMESTAMPTZ;

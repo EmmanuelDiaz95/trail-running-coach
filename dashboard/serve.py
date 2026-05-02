@@ -18,7 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from tracker.plan_data import get_current_week, get_week, get_week_dates, load_plan
-from tracker.garmin_sync import sync_activities, load_cached_activities, DEFAULT_PROFILE
+from tracker.garmin_sync import sync_activities, load_cached_activities, DEFAULT_PROFILE, GarminRateLimited
 from tracker.analysis import build_week_actual, compliance_score
 from tracker.alerts import generate_alerts
 from tracker.workout_builder import has_garmin_workout, push_workout, _load_series_workout
@@ -152,6 +152,12 @@ def build_week_json(week_num: int, do_sync: bool = False, profile_id: str = DEFA
     if do_sync:
         try:
             activities = sync_activities(start, end, profile_id)
+        except GarminRateLimited as e:
+            return {
+                "error": f"Garmin sync failed: {e}",
+                "rate_limited": True,
+                "retry_after": e.retry_after,
+            }
         except Exception as e:
             return {"error": f"Garmin sync failed: {str(e)}"}
     else:
@@ -416,7 +422,13 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
         if "error" in result:
             print(f"[sync] Failed: {result['error']}")
-            self._send_json({"error": "Garmin sync failed. Check server logs."}, 500)
+            if result.get("rate_limited"):
+                self._send_json(
+                    {"error": result["error"], "rate_limited": True, "retry_after": result["retry_after"]},
+                    429,
+                )
+            else:
+                self._send_json({"error": "Garmin sync failed. Check server logs."}, 500)
         else:
             _last_sync_time[rate_key] = time.time()
             print(f"[sync] Week {week_num} [{profile_id}]: {result.get('compliance', '—')}% compliance, {len(result['activities'])} activities")
