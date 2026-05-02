@@ -142,25 +142,29 @@ def _get_token_dir(profile_id: str = DEFAULT_PROFILE) -> Path:
 
 
 def _check_rate_limit(profile_id: str) -> None:
-    """Raise GarminRateLimited if profile is in cooldown. Caller must hold _cache_lock."""
-    now = time.time()
-    until = _rate_limit_until.get(profile_id, 0.0)
-    if now < until:
-        raise GarminRateLimited(until)
+    """Raise GarminRateLimited if profile is in cooldown. Caller must hold _cache_lock.
 
+    Uses the later of in-memory and DB cooldowns so that a longer cooldown set by
+    another worker (or by an out-of-band escalation) cannot be undercut by stale
+    in-memory state.
+    """
+    now = time.time()
+    mem_until = _rate_limit_until.get(profile_id, 0.0)
+
+    db_until_epoch = 0.0
     try:
         from tracker import db
         db_until = db.get_garmin_rate_limit_until(profile_id)
+        if db_until is not None:
+            db_until_epoch = db_until.timestamp()
     except Exception as e:
         print(f"[garmin] Warning: failed to read rate-limit from DB: {e}")
-        return
 
-    if db_until is None:
-        return
-    db_until_epoch = db_until.timestamp()
-    if now < db_until_epoch:
-        _rate_limit_until[profile_id] = db_until_epoch
-        raise GarminRateLimited(db_until_epoch)
+    effective_until = max(mem_until, db_until_epoch)
+    if effective_until > mem_until:
+        _rate_limit_until[profile_id] = effective_until
+    if now < effective_until:
+        raise GarminRateLimited(effective_until)
 
 
 def _record_rate_limit(profile_id: str, original: Exception) -> GarminRateLimited:

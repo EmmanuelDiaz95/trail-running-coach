@@ -32,14 +32,27 @@ def test_check_rate_limit_raises_when_in_memory_cooldown_active():
     until = time.time() + 600
     garmin_sync._rate_limit_until["default"] = until
 
-    with patch("tracker.db.get_garmin_rate_limit_until") as mock_get:
+    with patch("tracker.db.get_garmin_rate_limit_until", return_value=None):
         with pytest.raises(GarminRateLimited) as exc_info:
             garmin_sync._check_rate_limit("default")
-        # In-memory hit short-circuits — DB is not consulted
-        mock_get.assert_not_called()
 
     assert exc_info.value.retry_after > 0
     assert exc_info.value.retry_after <= 600
+
+
+def test_check_rate_limit_uses_later_of_memory_and_db():
+    """When DB cooldown is longer than memory, raise with the DB value."""
+    mem_until = time.time() + 60  # 1 min in memory
+    db_until = datetime.now(timezone.utc) + timedelta(hours=6)
+    garmin_sync._rate_limit_until["default"] = mem_until
+
+    with patch("tracker.db.get_garmin_rate_limit_until", return_value=db_until):
+        with pytest.raises(GarminRateLimited) as exc_info:
+            garmin_sync._check_rate_limit("default")
+
+    # Should reflect the 6h DB cooldown, not the 1min memory one
+    assert exc_info.value.retry_after > 60 * 60  # > 1h
+    assert garmin_sync._rate_limit_until["default"] == pytest.approx(db_until.timestamp(), abs=1.0)
 
 
 def test_check_rate_limit_loads_from_db_when_memory_clear():
