@@ -1,4 +1,6 @@
-In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. I built my own training tracker to keep me honest.
+First real web app I've built. First Garmin API integration. First time I've worked with an LLM.
+
+All in one project: a training tracker for my first ultra. In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. Built it to keep me honest.
 
 It syncs every workout from my Garmin, compares what I actually did against the 30-week plan, and gives me a weekly compliance score. Six rules watch for things like HR drift, volume spikes, or skipped long runs and call them out before things go sideways.
 

@@ -77,8 +77,12 @@ Match the dashboard's typographic style if possible (IBM Plex Mono).
 
 ## Post copy
 
+See `post.txt` in this folder for the canonical, copy-pasteable version. Reproduced here for review:
+
 ```
-In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. I built my own training tracker to keep me honest.
+First real web app I've built. First Garmin API integration. First time I've worked with an LLM.
+
+All in one project: a training tracker for my first ultra. In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. Built it to keep me honest.
 
 It syncs every workout from my Garmin, compares what I actually did against the 30-week plan, and gives me a weekly compliance score. Six rules watch for things like HR drift, volume spikes, or skipped long runs and call them out before things go sideways.
 
@@ -89,7 +93,7 @@ About 30 days from idea to production. Solo build. It tracks me every day until 
 #UltraTrail #BuildInPublic
 ```
 
-Word count: ~175. First line fits above the LinkedIn "see more" fold.
+Word count: ~205. The "firsts" opening sits above the LinkedIn "see more" fold and creates an immediate hook for the audience to swipe the carousel.
 
 ## Hashtags
 
