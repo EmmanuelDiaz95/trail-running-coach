@@ -204,6 +204,13 @@
     color: var(--text-primary); display: flex; align-items: center; gap: 10px;
   }
   .month-summary__title-icon { font-size: 0.85rem; opacity: 0.7; }
+  .month-summary__nav {
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    font-size: 0.7rem; padding: 4px 8px; line-height: 1;
+    transition: color 0.2s, transform 0.15s;
+  }
+  .month-summary__nav:hover:not(:disabled) { color: var(--copper-light); transform: scale(1.15); }
+  .month-summary__nav:disabled { opacity: 0.25; cursor: default; }
   .month-summary__header-right { display: flex; align-items: center; gap: 10px; }
   .month-summary__toggle {
     background: none; border: 1px solid var(--border); color: var(--text-muted);
@@ -1917,8 +1924,29 @@ function renderMonthlySummary() {
     return '';
   }
 
+  // Compute prev/next month navigation: only months that have at least one week with actual data
+  var monthIndex = {};
+  WEEKS.forEach(function(w, i) {
+    if (w.actual == null) return;
+    var sM = w.start.split(' ')[0];
+    var eM = w.end.split(' ')[0];
+    var effM = (sM !== eM) ? eM : sM;
+    var key = effM + ' ' + w.year;
+    if (!(key in monthIndex)) monthIndex[key] = i;
+  });
+  var monthKeys = Object.keys(monthIndex).sort(function(a, b) { return monthIndex[a] - monthIndex[b]; });
+  var curMonthKey = selMonth + ' ' + selYear;
+  var curMonthPos = monthKeys.indexOf(curMonthKey);
+  var hasPrevMonth = curMonthPos > 0;
+  var hasNextMonth = curMonthPos >= 0 && curMonthPos < monthKeys.length - 1;
+
   var html = '<div class="month-summary__header">'
-    + '<div class="month-summary__title"><span class="month-summary__title-icon">&#9670;</span>' + monthName + ' ' + selYear + '</div>'
+    + '<div class="month-summary__title">'
+    + '<span class="month-summary__title-icon">&#9670;</span>'
+    + '<button class="month-summary__nav" id="monthPrev" aria-label="Previous month"' + (hasPrevMonth ? '' : ' disabled') + '>&#9664;</button>'
+    + '<span>' + monthName + ' ' + selYear + '</span>'
+    + '<button class="month-summary__nav" id="monthNext" aria-label="Next month"' + (hasNextMonth ? '' : ' disabled') + '>&#9654;</button>'
+    + '</div>'
     + '<div class="month-summary__header-right">'
     + '<span class="month-summary__badge ' + badgeClass + '">' + badgeText + '</span>'
     + '<button class="month-summary__toggle" id="monthSummaryToggle" aria-label="Minimize" title="Minimize">&#9650;</button>'
@@ -1991,6 +2019,22 @@ function renderMonthlySummary() {
       monthToggle.setAttribute('title', nowCollapsed ? 'Expand' : 'Minimize');
       monthToggle.setAttribute('aria-label', nowCollapsed ? 'Expand' : 'Minimize');
       try { localStorage.setItem('monthSummaryCollapsed', nowCollapsed ? '1' : '0'); } catch (e) {}
+    });
+  }
+
+  // Wire up month prev/next navigation
+  var monthPrev = container.querySelector('#monthPrev');
+  var monthNext = container.querySelector('#monthNext');
+  if (monthPrev && hasPrevMonth) {
+    monthPrev.addEventListener('click', function() {
+      selectedWeek = monthIndex[monthKeys[curMonthPos - 1]];
+      transitionRender();
+    });
+  }
+  if (monthNext && hasNextMonth) {
+    monthNext.addEventListener('click', function() {
+      selectedWeek = monthIndex[monthKeys[curMonthPos + 1]];
+      transitionRender();
     });
   }
 
