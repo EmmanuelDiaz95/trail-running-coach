@@ -8,9 +8,10 @@
 
 | File | Purpose |
 |------|---------|
-| `README.md` | This document — full design + post copy + screenshot guide |
-| `slide5.png` | Final slide 5 (stack list), 1080×1080, ready to drop into LinkedIn |
-| `slide5-generator.py` | Python script that generated slide5.png — re-run if you want to tweak |
+| `post.txt` | **The actual post copy.** Open it, select all, paste into LinkedIn. |
+| `slide5.png` | Final slide 5 (stack list), 1080×1080, drop into the carousel as slide 5. |
+| `slide5-generator.py` | Python script that made slide5.png — re-run if you want to tweak it. |
+| `README.md` | This document — design rationale + screenshot guide for slides 1–4. |
 
 ## TL;DR — what to do
 

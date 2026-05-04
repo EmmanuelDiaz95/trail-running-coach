@@ -1,0 +1,9 @@
+In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. I built my own training tracker to keep me honest.
+
+It syncs every workout from my Garmin, compares what I actually did against the 30-week plan, and gives me a weekly compliance score. Six rules watch for things like HR drift, volume spikes, or skipped long runs and call them out before things go sideways.
+
+The piece I'm most proud of is the AI coach. I fed it actual trail-running coaching material, professional nutrition guides, and my own Garmin health history. So when I ask it whether I should push my long run this Saturday or hold back, it pulls from my last few weeks of HR, sleep, and stress data and gives me an answer that fits my body, not the average runner. It's not just another chatbot.
+
+About 30 days from idea to production. Solo build. It tracks me every day until October 2.
+
+#UltraTrail #BuildInPublic
