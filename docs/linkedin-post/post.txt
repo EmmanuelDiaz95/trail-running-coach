@@ -8,4 +8,4 @@ The piece I'm most proud of is the AI coach. I fed it actual trail-running coach
 
 About 30 days from idea to production. Solo build. It tracks me every day until October 2.
 
-#UltraTrail #BuildInPublic
+#BuildInPublic #AI #Python #UltraTrail #ClaudeCode

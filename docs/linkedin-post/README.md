@@ -90,14 +90,27 @@ The piece I'm most proud of is the AI coach. I fed it actual trail-running coach
 
 About 30 days from idea to production. Solo build. It tracks me every day until October 2.
 
-#UltraTrail #BuildInPublic
+#BuildInPublic #AI #Python #UltraTrail #ClaudeCode
 ```
 
 Word count: ~205. The "firsts" opening sits above the LinkedIn "see more" fold and creates an immediate hook for the audience to swipe the carousel.
 
 ## Hashtags
 
-Two only: `#UltraTrail` and `#BuildInPublic`. Confident-builder tone does not chase reach.
+Five tags, mix of broad and niche per LinkedIn 2026 best practice (3–5 is the sweet spot; more triggers the spam filter):
+
+```
+#BuildInPublic #AI #Python #UltraTrail #ClaudeCode
+```
+
+Rationale:
+- `#BuildInPublic` — niche dev/founder community, recruiters and indie tech folks watch it
+- `#AI` — broad algorithm-categorization signal
+- `#Python` — searchable by tech recruiters scanning for stack
+- `#UltraTrail` — race-authenticity tag, keeps the post tonally honest
+- `#ClaudeCode` — niche but specific, surfaces to Anthropic-adjacent crowd
+
+PascalCase used throughout (2026 standard, screen-reader accessible). Tags placed at the end of the post, not inline.
 
 ## Production checklist
 
