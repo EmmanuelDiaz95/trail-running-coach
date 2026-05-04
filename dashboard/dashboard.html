@@ -82,34 +82,7 @@
   .container { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 0 40px 80px; }
 
   /* ── Hero Header ── */
-  .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; position: relative; }
-  /* Hero toggle (minimize / expand) */
-  .hero__toggle {
-    position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 0;
-    background: none; border: 1px solid var(--border); color: var(--text-muted);
-    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; transition: transform 0.3s ease, color 0.2s, border-color 0.2s;
-    z-index: 5;
-  }
-  .hero__toggle:hover { color: var(--text); border-color: var(--copper); }
-  .hero--collapsed .hero__toggle { transform: rotate(180deg); }
-  /* Compact view shown only when collapsed */
-  .hero__compact {
-    display: none; padding: 14px 36px 14px 0; gap: 14px;
-    align-items: center; flex-wrap: wrap;
-    font-size: 0.95rem; color: var(--text);
-    border-bottom: 1px solid var(--border);
-  }
-  .hero__compact-name { font-weight: 600; color: var(--copper-light); letter-spacing: 0.02em; }
-  .hero__compact-sep { color: var(--text-muted); }
-  .hero__compact-meta { color: var(--text-muted); font-size: 0.85rem; }
-  .hero--collapsed { padding-top: calc(16px + env(safe-area-inset-top, 0px)); margin-bottom: 18px; }
-  .hero--collapsed .hero__compact { display: flex; }
-  .hero--collapsed .profile-switcher,
-  .hero--collapsed .hero__top,
-  .hero--collapsed .progress-bar,
-  .hero--collapsed .progress-bar__label { display: none; }
+  .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; }
 
   .hero__top {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
@@ -224,12 +197,28 @@
   .month-summary__header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    gap: 12px;
   }
   .month-summary__title {
     font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
     color: var(--text-primary); display: flex; align-items: center; gap: 10px;
   }
   .month-summary__title-icon { font-size: 0.85rem; opacity: 0.7; }
+  .month-summary__header-right { display: flex; align-items: center; gap: 10px; }
+  .month-summary__toggle {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; padding: 0; line-height: 1;
+    transition: transform 0.3s ease, color 0.2s, border-color 0.2s;
+  }
+  .month-summary__toggle:hover { color: var(--text); border-color: var(--copper); }
+  .month-summary--collapsed .month-summary__toggle { transform: rotate(180deg); }
+  .month-summary--collapsed .month-summary__header {
+    margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+  }
+  .month-summary--collapsed .month-summary__grid { display: none; }
+  .month-summary--collapsed { padding-bottom: 14px; }
   .month-summary__badge {
     font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; font-weight: 600;
     letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
@@ -1231,15 +1220,7 @@ body.coach-collapsed { margin-right: 44px; }
 <div class="container">
 
   <!-- ═══════════ HERO (static) ═══════════ -->
-  <header class="hero" id="hero">
-    <button class="hero__toggle" id="heroToggle" aria-label="Minimize hero" title="Minimize">&#9650;</button>
-    <div class="hero__compact">
-      <span class="hero__compact-name">Ultra Trail Tarahumara</span>
-      <span class="hero__compact-sep">&middot;</span>
-      <span><span id="cd-days-compact">173</span>d left</span>
-      <span class="hero__compact-sep">&middot;</span>
-      <span class="hero__compact-meta" id="hero-compact-week">Week 1 of 30</span>
-    </div>
+  <header class="hero">
     <div class="profile-switcher" id="profileSwitcher">
       <span class="profile-switcher__label">Athlete:</span>
       <div class="profile-switcher__tabs" id="profileTabs"></div>
@@ -1938,7 +1919,10 @@ function renderMonthlySummary() {
 
   var html = '<div class="month-summary__header">'
     + '<div class="month-summary__title"><span class="month-summary__title-icon">&#9670;</span>' + monthName + ' ' + selYear + '</div>'
+    + '<div class="month-summary__header-right">'
     + '<span class="month-summary__badge ' + badgeClass + '">' + badgeText + '</span>'
+    + '<button class="month-summary__toggle" id="monthSummaryToggle" aria-label="Minimize" title="Minimize">&#9650;</button>'
+    + '</div>'
     + '</div><div class="month-summary__grid">';
 
   // Distance
@@ -1995,6 +1979,20 @@ function renderMonthlySummary() {
 
   html += '</div>';
   container.innerHTML = html;
+
+  // Restore minimize state from localStorage and wire up the toggle
+  var collapsed = false;
+  try { collapsed = localStorage.getItem('monthSummaryCollapsed') === '1'; } catch (e) {}
+  if (collapsed) container.classList.add('month-summary--collapsed');
+  var monthToggle = container.querySelector('.month-summary__toggle');
+  if (monthToggle) {
+    monthToggle.addEventListener('click', function() {
+      var nowCollapsed = container.classList.toggle('month-summary--collapsed');
+      monthToggle.setAttribute('title', nowCollapsed ? 'Expand' : 'Minimize');
+      monthToggle.setAttribute('aria-label', nowCollapsed ? 'Expand' : 'Minimize');
+      try { localStorage.setItem('monthSummaryCollapsed', nowCollapsed ? '1' : '0'); } catch (e) {}
+    });
+  }
 
   // Animate bars
   requestAnimationFrame(function() {
@@ -2074,35 +2072,9 @@ function updateCountdown() {
   document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
   document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
   document.getElementById('cd-secs').textContent = days;
-  const compact = document.getElementById('cd-days-compact');
-  if (compact) compact.textContent = days;
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
-
-// ═══════════════════════════════════════════════════════
-// HERO MINIMIZE TOGGLE
-// ═══════════════════════════════════════════════════════
-(function() {
-  const hero = document.getElementById('hero');
-  const toggle = document.getElementById('heroToggle');
-  if (!hero || !toggle) return;
-
-  function setCollapsed(collapsed) {
-    hero.classList.toggle('hero--collapsed', collapsed);
-    toggle.setAttribute('title', collapsed ? 'Expand' : 'Minimize');
-    toggle.setAttribute('aria-label', collapsed ? 'Expand hero' : 'Minimize hero');
-    try { localStorage.setItem('heroCollapsed', collapsed ? '1' : '0'); } catch (e) {}
-  }
-
-  toggle.addEventListener('click', function() {
-    setCollapsed(!hero.classList.contains('hero--collapsed'));
-  });
-
-  try {
-    if (localStorage.getItem('heroCollapsed') === '1') setCollapsed(true);
-  } catch (e) {}
-})();
 
 // ═══════════════════════════════════════════════════════
 // INITIAL LOAD — fetch all weeks from API, fallback to offline
@@ -2167,8 +2139,6 @@ async function loadWeeks() {
       document.documentElement.style.setProperty('--progress-pct', pct + '%');
       document.querySelector('.progress-bar__label span:first-child').textContent = 'Week ' + currentNum + ' of 30';
       document.querySelector('.progress-bar__label span:last-child').textContent = WEEKS[bestIdx].phase.charAt(0).toUpperCase() + WEEKS[bestIdx].phase.slice(1) + ' Phase';
-      const heroWeek = document.getElementById('hero-compact-week');
-      if (heroWeek) heroWeek.textContent = 'Week ' + currentNum + ' of 30 · ' + WEEKS[bestIdx].phase.charAt(0).toUpperCase() + WEEKS[bestIdx].phase.slice(1);
       renderAll();
       return;
     }
