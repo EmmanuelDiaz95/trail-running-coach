@@ -82,7 +82,34 @@
   .container { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 0 40px 80px; }
 
   /* ── Hero Header ── */
-  .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; }
+  .hero { padding: calc(48px + env(safe-area-inset-top, 0px)) 0 0; margin-bottom: 32px; position: relative; }
+  /* Hero toggle (minimize / expand) */
+  .hero__toggle {
+    position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 0;
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; transition: transform 0.3s ease, color 0.2s, border-color 0.2s;
+    z-index: 5;
+  }
+  .hero__toggle:hover { color: var(--text); border-color: var(--copper); }
+  .hero--collapsed .hero__toggle { transform: rotate(180deg); }
+  /* Compact view shown only when collapsed */
+  .hero__compact {
+    display: none; padding: 14px 36px 14px 0; gap: 14px;
+    align-items: center; flex-wrap: wrap;
+    font-size: 0.95rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero__compact-name { font-weight: 600; color: var(--copper-light); letter-spacing: 0.02em; }
+  .hero__compact-sep { color: var(--text-muted); }
+  .hero__compact-meta { color: var(--text-muted); font-size: 0.85rem; }
+  .hero--collapsed { padding-top: calc(16px + env(safe-area-inset-top, 0px)); margin-bottom: 18px; }
+  .hero--collapsed .hero__compact { display: flex; }
+  .hero--collapsed .profile-switcher,
+  .hero--collapsed .hero__top,
+  .hero--collapsed .progress-bar,
+  .hero--collapsed .progress-bar__label { display: none; }
 
   .hero__top {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
@@ -781,6 +808,8 @@
   .sync-btn--syncing .sync-btn__icon { animation: spin 1s linear infinite; }
   .sync-btn--cooldown { pointer-events: none; opacity: 0.35; }
   .sync-btn__icon { width: 26px; height: 26px; }
+  /* Track the coach drawer's collapsed/open state */
+  body.coach-collapsed .sync-btn { right: 72px; }
 
   /* Push to Garmin button */
   .push-btn {
@@ -1202,7 +1231,15 @@ body.coach-collapsed { margin-right: 44px; }
 <div class="container">
 
   <!-- ═══════════ HERO (static) ═══════════ -->
-  <header class="hero">
+  <header class="hero" id="hero">
+    <button class="hero__toggle" id="heroToggle" aria-label="Minimize hero" title="Minimize">&#9650;</button>
+    <div class="hero__compact">
+      <span class="hero__compact-name">Ultra Trail Tarahumara</span>
+      <span class="hero__compact-sep">&middot;</span>
+      <span><span id="cd-days-compact">173</span>d left</span>
+      <span class="hero__compact-sep">&middot;</span>
+      <span class="hero__compact-meta" id="hero-compact-week">Week 1 of 30</span>
+    </div>
     <div class="profile-switcher" id="profileSwitcher">
       <span class="profile-switcher__label">Athlete:</span>
       <div class="profile-switcher__tabs" id="profileTabs"></div>
@@ -1807,9 +1844,9 @@ function renderMonthlySummary() {
   var fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var startMonth = sw.start.split(' ')[0];
   var endMonth = sw.end.split(' ')[0];
-  var startDay = parseInt(sw.start.split(' ')[1], 10);
-  // When a week spans two months, pick the month with more days
-  var selMonth = (startMonth !== endMonth && startDay >= 29) ? endMonth : startMonth;
+  // When a week spans two months, prefer the end month — that's the
+  // calendar month the user has moved into, which matches "where am I now".
+  var selMonth = (startMonth !== endMonth) ? endMonth : startMonth;
   var selYear = sw.year;
   var monthIdx = months.indexOf(selMonth);
   var monthName = fullMonths[monthIdx];
@@ -2037,9 +2074,35 @@ function updateCountdown() {
   document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
   document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
   document.getElementById('cd-secs').textContent = days;
+  const compact = document.getElementById('cd-days-compact');
+  if (compact) compact.textContent = days;
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+
+// ═══════════════════════════════════════════════════════
+// HERO MINIMIZE TOGGLE
+// ═══════════════════════════════════════════════════════
+(function() {
+  const hero = document.getElementById('hero');
+  const toggle = document.getElementById('heroToggle');
+  if (!hero || !toggle) return;
+
+  function setCollapsed(collapsed) {
+    hero.classList.toggle('hero--collapsed', collapsed);
+    toggle.setAttribute('title', collapsed ? 'Expand' : 'Minimize');
+    toggle.setAttribute('aria-label', collapsed ? 'Expand hero' : 'Minimize hero');
+    try { localStorage.setItem('heroCollapsed', collapsed ? '1' : '0'); } catch (e) {}
+  }
+
+  toggle.addEventListener('click', function() {
+    setCollapsed(!hero.classList.contains('hero--collapsed'));
+  });
+
+  try {
+    if (localStorage.getItem('heroCollapsed') === '1') setCollapsed(true);
+  } catch (e) {}
+})();
 
 // ═══════════════════════════════════════════════════════
 // INITIAL LOAD — fetch all weeks from API, fallback to offline
@@ -2104,6 +2167,8 @@ async function loadWeeks() {
       document.documentElement.style.setProperty('--progress-pct', pct + '%');
       document.querySelector('.progress-bar__label span:first-child').textContent = 'Week ' + currentNum + ' of 30';
       document.querySelector('.progress-bar__label span:last-child').textContent = WEEKS[bestIdx].phase.charAt(0).toUpperCase() + WEEKS[bestIdx].phase.slice(1) + ' Phase';
+      const heroWeek = document.getElementById('hero-compact-week');
+      if (heroWeek) heroWeek.textContent = 'Week ' + currentNum + ' of 30 · ' + WEEKS[bestIdx].phase.charAt(0).toUpperCase() + WEEKS[bestIdx].phase.slice(1);
       renderAll();
       return;
     }
