@@ -1,8 +1,24 @@
-# LinkedIn Post Design — Ultra Trail Tarahumara Tracker
+# LinkedIn Post — Ultra Trail Tarahumara Tracker
 
 **Date:** 2026-05-03
-**Status:** Approved design
+**Status:** Ready to publish
 **Author:** Emmanuel Diaz
+
+## What's in this folder
+
+| File | Purpose |
+|------|---------|
+| `README.md` | This document — full design + post copy + screenshot guide |
+| `slide5.png` | Final slide 5 (stack list), 1080×1080, ready to drop into LinkedIn |
+| `slide5-generator.py` | Python script that generated slide5.png — re-run if you want to tweak |
+
+## TL;DR — what to do
+
+1. Capture screenshots for slides 1–4 from the live dashboard (see [Production checklist](#production-checklist))
+2. Crop each to 1080×1080 to match `slide5.png`
+3. Open LinkedIn, click "Start a post" → upload as 5-slide carousel in this order: 1, 2, 3, 4, slide5.png
+4. Paste the [post copy](#post-copy) below the carousel
+5. Publish
 
 ## Goal
 
@@ -80,13 +96,40 @@ Two only: `#UltraTrail` and `#BuildInPublic`. Confident-builder tone does not ch
 
 ## Production checklist
 
-Screenshots to capture from the live dashboard:
-- [ ] Slide 1: full dashboard view with coach drawer expanded
-- [ ] Slide 2: week detail page, ideally one with at least one active alert
-- [ ] Slide 3: activity feed view, with a trail run that has a visible route polyline
-- [ ] Slide 4: coach Q&A — pick a turn with a substantive, data-referenced answer
+### Slide 1 — Cover
+- [ ] Open the dashboard, click the coach drawer button to expand it.
+- [ ] Make sure the countdown widget (top right) is visible.
+- [ ] Use the current week (one with real synced activities) so the dashboard looks alive.
+- [ ] Capture: `Cmd+Shift+4`, then `Space`, then click the browser window to grab the whole canvas without browser chrome.
 
-Slide 5 can be built in any tool (Figma, Canva, Keynote). Background should match the dashboard's monochromatic dark palette to keep visual consistency across the carousel.
+### Slide 2 — Week detail
+- [ ] Drill into a single week's detail view (accordion expanded).
+- [ ] Pick a week with at least one active alert (HR drift, volume spike, etc.). Alerts are the visual hook.
+- [ ] Crop tightly to the week card; exclude the rest of the dashboard.
+
+### Slide 3 — Activity feed
+- [ ] Inside a week, capture the activity list with a visible route polyline.
+- [ ] Pick a week with at least one trail run (the curvy GPS line proves "real outdoor activity").
+- [ ] Bonus: a week that also has a strength activity, to show variety.
+
+### Slide 4 — Coach hero
+- [ ] Open the coach drawer. Ask something specific and data-grounded:
+  > "Should I push my long run this Saturday or hold back?"
+- [ ] Wait for the full reply. Crop to one Q&A turn (your question + the coach's answer).
+- [ ] The answer should reference real metrics (HR zones, sleep, recent workouts) — that's what sells "not just another chatbot."
+
+### Slide 5 — Stack
+Already done. Use `slide5.png` as-is. To regenerate or tweak:
+```bash
+cd /Users/emmanueldiaz/Documents/Main_Brain/personal_health/running
+source venv/bin/activate
+python docs/linkedin-post/slide5-generator.py
+```
+
+### General
+- [ ] Crop all 5 slides to **1080×1080** (square) for visual consistency.
+- [ ] Order the carousel: 1, 2, 3, 4, 5 (slide5.png last).
+- [ ] Paste the post copy from the [Post copy](#post-copy) section below the carousel.
 
 ## Race facts (for accuracy)
 

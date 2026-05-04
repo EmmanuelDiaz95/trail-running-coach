@@ -8,7 +8,7 @@ TEXT = (224, 220, 214)
 DIM = (140, 134, 128)
 ACCENT = (199, 114, 70)
 
-OUT = Path("/Users/emmanueldiaz/Documents/Main_Brain/personal_health/running/docs/superpowers/specs/linkedin-slide5.png")
+OUT = Path(__file__).parent / "slide5.png"
 
 mono_candidates = [
     "/Library/Fonts/IBM Plex Mono.ttf",
