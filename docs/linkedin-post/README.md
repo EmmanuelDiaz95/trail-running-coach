@@ -82,30 +82,33 @@ See `post.txt` in this folder for the canonical, copy-pasteable version. Reprodu
 ```
 First real web app I've built. First Garmin API integration. First time I've worked with an LLM.
 
-All in one project: a training tracker for my first ultra. In 5 months I'm running 59km through the Sierra Tarahumara, with 2,400m of vertical gain. Built it to keep me honest.
+All in one project: a training tracker for my first ultra trail marathon. Built it to keep me honest.
 
-It syncs every workout from my Garmin, compares what I actually did against the 30-week plan, and gives me a weekly compliance score. Six rules watch for things like HR drift, volume spikes, or skipped long runs and call them out before things go sideways.
+What it does:
 
-The piece I'm most proud of is the AI coach. I fed it actual trail-running coaching material, professional nutrition guides, and my own Garmin health history. So when I ask it whether I should push my long run this Saturday or hold back, it pulls from my last few weeks of HR, sleep, and stress data and gives me an answer that fits my body, not the average runner. It's not just another chatbot.
+• Auto-syncs every workout from my Garmin
+• Scores my weekly compliance against a 30-week plan
+• Flags HR drift, volume spikes, and skipped long runs before things go sideways
 
-About 30 days from idea to production. Solo build. It tracks me every day until October 2.
+The piece I'm most proud of is the AI coach. I fed it actual trail-running coaching material, professional nutrition guides, and my own Garmin health history. So when I ask whether I should push my long run this Saturday or hold back, it pulls from my last few weeks of HR, sleep, and stress data and gives me an answer that fits my body, not the average runner. Not just another chatbot.
 
-#BuildInPublic #AI #Python #UltraTrail #ClaudeCode
+About 30 days from idea to production. Solo build. It tracks me every day until the race.
+
+#AI #Python #UltraTrail #ClaudeCode
 ```
 
-Word count: ~205. The "firsts" opening sits above the LinkedIn "see more" fold and creates an immediate hook for the audience to swipe the carousel.
+Word count: ~170. ~1,050 characters — within the LinkedIn 700–1,500 sweet spot. The "firsts" opening sits above the "see more" fold; the bullets break up the dense feature list (per LinkedIn's 2026 mobile-readability guidance). The AI coach paragraph stays prose because it's narrative.
 
 ## Hashtags
 
-Five tags, mix of broad and niche per LinkedIn 2026 best practice (3–5 is the sweet spot; more triggers the spam filter):
+Four tags, mix of broad and niche per LinkedIn 2026 best practice (3–5 is the sweet spot; more triggers the spam filter):
 
 ```
-#BuildInPublic #AI #Python #UltraTrail #ClaudeCode
+#AI #Python #UltraTrail #ClaudeCode
 ```
 
 Rationale:
-- `#BuildInPublic` — niche dev/founder community, recruiters and indie tech folks watch it
-- `#AI` — broad algorithm-categorization signal
+- `#AI` — broad algorithm-categorization signal, high tech-recruiter visibility
 - `#Python` — searchable by tech recruiters scanning for stack
 - `#UltraTrail` — race-authenticity tag, keeps the post tonally honest
 - `#ClaudeCode` — niche but specific, surfaces to Anthropic-adjacent crowd
