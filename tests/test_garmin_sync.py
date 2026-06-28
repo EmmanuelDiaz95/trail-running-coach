@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -118,15 +120,86 @@ def test_clear_rate_limit_resets_memory_and_db():
     mock_clear.assert_called_once_with("default")
 
 
-def test_get_client_short_circuits_on_active_rate_limit():
-    """_get_client must raise without invoking _build_client when cooldown is active."""
+def test_get_client_attempts_build_even_during_cooldown():
+    """A healthy client with valid local tokens must be able to authenticate even when
+    a cooldown is active — otherwise one failing environment deadlocks every other.
+    _get_client delegates to _build_client; the cooldown is enforced only on the
+    password path (the endpoint Garmin actually rate-limits), not token-resume.
+    """
     garmin_sync._rate_limit_until["default"] = time.time() + 300
+    sentinel = object()
 
-    with patch("tracker.garmin_sync._build_client") as mock_build, \
-         patch("tracker.db.get_garmin_rate_limit_until", return_value=None):
+    with patch("tracker.garmin_sync._build_client", return_value=sentinel) as mock_build:
+        result = garmin_sync._get_client("default")
+
+    assert result is sentinel
+    mock_build.assert_called_once_with("default")
+
+
+def test_password_login_respects_cooldown():
+    """The password path (the rate-limited OAuth exchange) must honor an active cooldown
+    and NOT contact Garmin."""
+    garmin_sync._rate_limit_until["default"] = time.time() + 300
+    token_dir = Path("/tmp/nonexistent-garmin-tokens-cooldown")
+
+    with patch("tracker.garmin_sync.Garmin") as mock_garmin, \
+         patch("tracker.db.get_garmin_rate_limit_until", return_value=None), \
+         patch("tracker.db.get_garmin_rate_limit_state", return_value={"until": None, "failures": 1}):
         with pytest.raises(GarminRateLimited):
-            garmin_sync._get_client("default")
-        mock_build.assert_not_called()
+            garmin_sync._password_login("default", token_dir)
+        mock_garmin.assert_not_called()
+
+
+def test_password_login_circuit_opens_after_threshold():
+    """After too many consecutive failures, stop hitting Garmin entirely and require a
+    manual re-auth — prevents the silent daily-retry loop that flags the account."""
+    from tracker.garmin_sync import GarminAuthCircuitOpen, CIRCUIT_OPEN_THRESHOLD
+    token_dir = Path("/tmp/nonexistent-garmin-tokens-circuit")
+
+    with patch("tracker.garmin_sync.Garmin") as mock_garmin, \
+         patch("tracker.db.get_garmin_rate_limit_state",
+               return_value={"until": None, "failures": CIRCUIT_OPEN_THRESHOLD}):
+        with pytest.raises(GarminAuthCircuitOpen):
+            garmin_sync._password_login("default", token_dir)
+        mock_garmin.assert_not_called()
+
+
+def _oauth2_blob(expires_at: float, refresh_expires_at: float) -> str:
+    return json.dumps({
+        "access_token": "a", "refresh_token": "r",
+        "expires_at": int(expires_at), "refresh_token_expires_at": int(refresh_expires_at),
+    })
+
+
+def test_seed_tokens_keeps_fresher_local_tokens(tmp_path):
+    """_seed_tokens must NOT overwrite local tokens that are fresher than the DB copy.
+    Clobbering fresh local tokens with a stale DB copy is what kept the deadlock alive."""
+    now = time.time()
+    local = _oauth2_blob(now + 3600, now + 30 * 86400)   # fresh
+    stale_db = _oauth2_blob(now - 86400, now - 86400)     # expired
+    (tmp_path / "oauth1_token.json").write_text("oauth1-local")
+    (tmp_path / "oauth2_token.json").write_text(local)
+
+    with patch("tracker.db.get_garmin_tokens",
+               return_value={"oauth1": "oauth1-db", "oauth2": stale_db, "updated_at": None}):
+        garmin_sync._seed_tokens(tmp_path, "default")
+
+    assert (tmp_path / "oauth2_token.json").read_text() == local
+
+
+def test_seed_tokens_overwrites_when_db_fresher(tmp_path):
+    """When the DB copy is fresher (another environment refreshed it), seed it to disk."""
+    now = time.time()
+    stale_local = _oauth2_blob(now - 86400, now - 86400)
+    fresh_db = _oauth2_blob(now + 3600, now + 30 * 86400)
+    (tmp_path / "oauth1_token.json").write_text("oauth1-local")
+    (tmp_path / "oauth2_token.json").write_text(stale_local)
+
+    with patch("tracker.db.get_garmin_tokens",
+               return_value={"oauth1": "oauth1-db", "oauth2": fresh_db, "updated_at": None}):
+        garmin_sync._seed_tokens(tmp_path, "default")
+
+    assert (tmp_path / "oauth2_token.json").read_text() == fresh_db
 
 
 def test_garmin_rate_limited_exception_carries_retry_after():

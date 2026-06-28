@@ -31,6 +31,12 @@ _RATE_LIMIT_BASE_SECONDS = 15 * 60
 _RATE_LIMIT_MAX_SECONDS = 12 * 3600
 _rate_limit_until: dict[str, float] = {}  # profile_id -> epoch seconds
 
+# After this many consecutive failures, the password path stops auto-attempting
+# entirely ("circuit open") and requires a manual re-auth. Without this, a dead-token
+# environment retries password auth once per cooldown-expiry forever (auto-sync runs
+# every 24h while the cooldown caps at 12h), silently flagging the account.
+CIRCUIT_OPEN_THRESHOLD = 8
+
 
 def _backoff_seconds(failures: int) -> int:
     """Exponential backoff: 15m * 2^(failures-1), capped at 12h."""
@@ -49,6 +55,22 @@ class GarminRateLimited(RuntimeError):
         if original is not None:
             msg = f"{msg}: {original}"
         super().__init__(msg)
+
+
+class GarminAuthCircuitOpen(GarminRateLimited):
+    """Raised when password auth has failed too many times in a row.
+
+    Subclasses GarminRateLimited so existing ``except GarminRateLimited`` handlers
+    still stop, but signals that the fix is a manual re-auth (fresh tokens), not waiting.
+    """
+
+    def __init__(self, failures: int, original: Exception | None = None):
+        self.failures = failures
+        super().__init__(until_epoch=0.0, original=original)
+        self.args = (
+            f"Garmin auth circuit open after {failures} consecutive failures — "
+            "manual re-authentication required (tokens are likely expired).",
+        )
 
 
 def _load_env():
@@ -99,8 +121,25 @@ def _load_tokens_from_env(profile_id: str) -> tuple[str | None, str | None]:
         return None, None
 
 
+def _oauth2_expiry(token_json: str) -> float:
+    """Freshness of an oauth2 token blob: the later of access/refresh expiry (epoch).
+
+    Returns 0.0 if the blob can't be parsed, so anything parseable wins over garbage.
+    """
+    try:
+        d = json.loads(token_json)
+        return max(float(d.get("expires_at") or 0), float(d.get("refresh_token_expires_at") or 0))
+    except (ValueError, TypeError):
+        return 0.0
+
+
 def _seed_tokens(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
-    """Seed OAuth tokens to disk for garth to load. Priority: DB > env vars."""
+    """Seed OAuth tokens to disk for garth to load. Priority: DB > env vars.
+
+    Never overwrites local tokens that are fresher than the candidate: a successful
+    local token-resume refreshes the on-disk tokens, while the DB/env copy can lag.
+    Clobbering fresh local tokens with a stale copy is what sustained the auth deadlock.
+    """
     oauth1, oauth2 = _load_tokens_from_db(profile_id)
     source = "db"
     if not oauth1 or not oauth2:
@@ -114,6 +153,9 @@ def _seed_tokens(token_dir: Path, profile_id: str = DEFAULT_PROFILE):
     if (oauth1_path.exists() and oauth1_path.read_text() == oauth1
             and oauth2_path.exists() and oauth2_path.read_text() == oauth2):
         return  # disk already current
+    if (oauth1_path.exists() and oauth2_path.exists()
+            and _oauth2_expiry(oauth2_path.read_text()) >= _oauth2_expiry(oauth2)):
+        return  # local tokens are at least as fresh — keep them
     token_dir.mkdir(parents=True, exist_ok=True)
     oauth1_path.write_text(oauth1)
     oauth2_path.write_text(oauth2)
@@ -216,31 +258,67 @@ def _get_client(profile_id: str = DEFAULT_PROFILE) -> Garmin:
         cached = _client_cache.get(profile_id)
         if cached and (time.time() - cached[1]) < _CLIENT_TTL_SECONDS:
             return cached[0]
-        _check_rate_limit(profile_id)
         client = _build_client(profile_id)
         _client_cache[profile_id] = (client, time.time())
         return client
 
 
 def _build_client(profile_id: str) -> Garmin:
-    """Authenticate with Garmin. Caller must hold _cache_lock."""
+    """Authenticate with Garmin. Caller must hold _cache_lock.
+
+    Token-resume is tried first and is ALWAYS allowed — it does not hit the rate-limited
+    OAuth exchange, and a success clears the shared cooldown for every environment. Only
+    the password path (which Garmin actually rate-limits) honors the cooldown/circuit.
+    """
     _load_env()
     token_dir = _get_token_dir(profile_id)
     token_dir.mkdir(parents=True, exist_ok=True)
     _seed_tokens(token_dir, profile_id)
 
-    if (token_dir / "oauth1_token.json").exists():
-        try:
-            client = Garmin()
-            client.login(str(token_dir))
-            client.garth.dump(str(token_dir))
-            _persist_tokens_to_db(token_dir, profile_id)
-            _clear_rate_limit(profile_id)
-            return client
-        except Exception as e:
-            if _is_rate_limit_error(e):
-                raise _record_rate_limit(profile_id, e)
-            # tokens expired, fall through to password auth
+    client = _token_resume(profile_id, token_dir)
+    if client is not None:
+        return client
+    return _password_login(profile_id, token_dir)
+
+
+def _token_resume(profile_id: str, token_dir: Path) -> Garmin | None:
+    """Resume a session from existing tokens. Returns None if tokens are missing or
+    expired so the caller falls back to password auth. Raises GarminRateLimited only if
+    the token endpoint itself returns a 429 (rare).
+
+    Deliberately NOT gated on the cooldown: this is the safe path that lets a healthy
+    environment recover and clear the shared cooldown even while another environment's
+    dead tokens keep tripping the password path.
+    """
+    if not (token_dir / "oauth1_token.json").exists():
+        return None
+    try:
+        client = Garmin()
+        client.login(str(token_dir))
+        client.garth.dump(str(token_dir))
+        _persist_tokens_to_db(token_dir, profile_id)
+        _clear_rate_limit(profile_id)
+        return client
+    except Exception as e:
+        if _is_rate_limit_error(e):
+            raise _record_rate_limit(profile_id, e)
+        return None  # tokens expired/invalid — fall back to password auth
+
+
+def _password_login(profile_id: str, token_dir: Path) -> Garmin:
+    """Full credential login. Hits Garmin's aggressively rate-limited OAuth exchange, so
+    it honors the circuit breaker and the active cooldown BEFORE making any network call.
+    """
+    failures = 0
+    try:
+        from tracker import db
+        failures = db.get_garmin_rate_limit_state(profile_id)["failures"] or 0
+    except Exception as e:
+        print(f"[garmin] Warning: failed to read rate-limit state from DB: {e}")
+    if failures >= CIRCUIT_OPEN_THRESHOLD:
+        raise GarminAuthCircuitOpen(failures)
+
+    _check_rate_limit(profile_id)
 
     email = _profile_env("GARMIN_EMAIL", profile_id)
     password = _profile_env("GARMIN_PASSWORD", profile_id)
