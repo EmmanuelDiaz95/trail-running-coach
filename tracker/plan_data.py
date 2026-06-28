@@ -15,7 +15,11 @@ def load_plan() -> list[WeekPlan]:
         if rows:
             weeks = []
             for r in rows:
-                workouts_raw = r.get("workouts") or []
+                workouts_raw = r.get("workouts")
+                # Defensive: a malformed workouts value (e.g. a dict instead of a list)
+                # must not throw and discard the entire live DB plan via the fallback below.
+                if not isinstance(workouts_raw, list):
+                    workouts_raw = []
                 workouts = [
                     PlannedWorkout(
                         day=wo["day"], date=wo.get("date"), type=wo["type"],
@@ -34,8 +38,10 @@ def load_plan() -> list[WeekPlan]:
                     workouts=workouts,
                 ))
             return weeks
-    except Exception:
-        pass
+    except Exception as e:
+        # Don't silently mask DB failures — a silent fallback to plan.json served a
+        # stale plan in prod with zero signal. Log loudly so it's visible.
+        print(f"[plan] DB load failed, falling back to plan.json: {type(e).__name__}: {e}")
 
     # Fallback: load from plan.json (CLI without DATABASE_URL)
     with open(PLAN_FILE) as f:
