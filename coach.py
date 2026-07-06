@@ -9,13 +9,21 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+_DASHBOARD_DIR = Path(__file__).resolve().parent / "dashboard"
+if str(_DASHBOARD_DIR) not in sys.path:
+    sys.path.insert(0, str(_DASHBOARD_DIR))
+
+from datetime import date, timedelta
 from tracker.plan_data import get_current_week, get_week, get_week_dates, days_to_race
 from tracker.garmin_sync import load_cached_activities
 from tracker.analysis import build_week_actual
 from tracker.data_loader import load_week_range
+from tracker.db import get_daily_health
 from coach.engine import run_coaching
 from coach.classifier import classify_question
 from coach.narrator import Narrator
+from coach.refresh import refresh
+from coach.health_readiness import compute_health_readiness, merge_verdict
 
 
 def _get_narrator() -> Narrator | None:
@@ -185,7 +193,63 @@ def cmd_ask(question: str):
     print(f"\n{response}\n")
 
 
-_SUBCOMMANDS = {"status", "report", "ask", "-h", "--help"}
+def cmd_refresh(silent: bool = False):
+    """Self-healing data refresh: gap-fill activities + health, rebuild snapshots."""
+    if silent:
+        import contextlib
+        with open(os.devnull, "w") as _devnull, contextlib.redirect_stdout(_devnull):
+            summary = refresh()
+        return summary
+    summary = refresh()
+    print("=== REFRESH ===")
+    print(f"  Weeks synced:  {summary.weeks_synced or '—'}")
+    print(f"  Health days:   {len(summary.health_days_synced)}")
+    for w in summary.warnings:
+        print(f"  ⚠ {w}")
+    for e in summary.errors:
+        print(f"  ✗ {e}")
+    if summary.rate_limited:
+        print(f"  🔴 Garmin rate-limited; retry in ~{summary.retry_after}s. Partial refresh.")
+    return summary
+
+
+def cmd_checkin():
+    """Refresh, then print one merged readiness read (health + training load)."""
+    cmd_refresh()
+
+    today = date.today()
+    week_num = get_current_week()
+    coaching = None
+    if week_num is not None:
+        plan = get_week(week_num)
+        start, end = get_week_dates(week_num)
+        activities = load_cached_activities(start, end)
+        if plan is not None and activities:
+            current = build_week_actual(activities, week_num)
+            history = load_week_range(max(1, week_num - 3), week_num)
+            coaching = run_coaching(plan, current, history)
+
+    rows = get_daily_health(today - timedelta(days=37), today)
+    health = compute_health_readiness(rows, today)
+    verdict, advice, _level = merge_verdict(health, coaching)
+
+    print(f"\n=== CHECK-IN — {today} (semana {week_num or '—'}) ===")
+    for s, txt in health.checks:
+        print(f"  {s}  {txt}")
+    if coaching and coaching.readiness:
+        r = coaching.readiness
+        print(f"  📈 Carga: readiness {r.score}/10 ({r.acwr_zone}), ACWR {r.acwr}, {r.recommendation}")
+    print(f"\n  VEREDICTO: {verdict}")
+    print(f"  {advice}")
+    nxt = get_week((week_num or 0) + 1)
+    if nxt:
+        print(f"  Plan sem {(week_num or 0)+1}: {nxt.distance_km:.0f} km / larga {nxt.long_run_km:.0f} km")
+    if coaching and coaching.adjustments:
+        top = coaching.adjustments[0]
+        print(f"  Ajuste: [{top.priority.upper()}] {top.message}")
+
+
+_SUBCOMMANDS = {"status", "report", "ask", "checkin", "refresh", "-h", "--help"}
 
 
 def main():
@@ -210,6 +274,10 @@ def main():
     ask_parser = subparsers.add_parser("ask", help="Ask a coaching question")
     ask_parser.add_argument("question", nargs="+", help="Your question")
 
+    subparsers.add_parser("checkin", help="Refresh + merged readiness read")
+    refresh_parser = subparsers.add_parser("refresh", help="Self-healing data refresh")
+    refresh_parser.add_argument("--silent", action="store_true")
+
     args = parser.parse_args()
 
     if args.command == "status":
@@ -218,6 +286,10 @@ def main():
         cmd_report(args.week, regenerate=args.regenerate, raw_json=args.raw_json)
     elif args.command == "ask":
         cmd_ask(" ".join(args.question))
+    elif args.command == "checkin":
+        cmd_checkin()
+    elif args.command == "refresh":
+        cmd_refresh(silent=args.silent)
     else:
         parser.print_help()
 

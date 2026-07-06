@@ -518,34 +518,36 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
 
 def _auto_sync():
-    """Background thread: sync current week for all profiles on a daily interval."""
+    """Background thread: self-healing gap-fill refresh for all profiles on a
+    daily interval.
+
+    Delegates to coach.refresh.refresh() so missed days/weeks backfill instead
+    of only ever syncing the current week (the old behavior that let the
+    dashboard drift). Enabled on the deployed server via ENABLE_SERVER_AUTOSYNC=1.
+    """
+    from coach.refresh import refresh
     # Initial delay to let the server start up
     time.sleep(10)
     while True:
-        current_week = get_current_week()
-        if current_week is None:
-            print("[auto-sync] Not in training window, skipping")
-        else:
-            for profile in PROFILES:
-                pid = profile["id"]
-                print(f"[auto-sync] Syncing week {current_week} for '{pid}'...")
-                try:
-                    result = build_week_json(current_week, do_sync=True, profile_id=pid)
-                    if "error" in result:
-                        print(f"[auto-sync] Failed for '{pid}': {result['error']}")
-                    else:
-                        _update_weeks_cache(current_week, result, pid)
-                        print(f"[auto-sync] Week {current_week} [{pid}]: {result.get('compliance', '—')}% compliance, {len(result.get('activities', []))} activities")
-                except Exception as e:
-                    print(f"[auto-sync] Error for '{pid}': {e}")
-                # Sync daily health for today
-                try:
-                    from tracker.garmin_sync import sync_daily_health
-                    from datetime import date as date_type
-                    sync_daily_health(date_type.today(), profile_id=pid)
-                except Exception as e:
-                    print(f"[auto-sync] Health sync failed for '{pid}': {e}")
-        print(f"[auto-sync] Next sync in {AUTO_SYNC_INTERVAL}s")
+        for profile in PROFILES:
+            pid = profile["id"]
+            print(f"[auto-sync] Refreshing '{pid}'...")
+            try:
+                summary = refresh(profile_id=pid)
+                status = (
+                    f"weeks {summary.weeks_synced or '—'}, "
+                    f"health days {len(summary.health_days_synced)}"
+                )
+                if summary.rate_limited:
+                    status += f", RATE-LIMITED (retry ~{summary.retry_after}s)"
+                if summary.errors:
+                    status += f", {len(summary.errors)} errors"
+                print(f"[auto-sync] '{pid}': {status}")
+                for w in summary.warnings:
+                    print(f"[auto-sync] ⚠ {w}")
+            except Exception as e:
+                print(f"[auto-sync] Error for '{pid}': {e}")
+        print(f"[auto-sync] Next refresh in {AUTO_SYNC_INTERVAL}s")
         time.sleep(AUTO_SYNC_INTERVAL)
 
 
@@ -559,9 +561,14 @@ if __name__ == '__main__':
     print(f"  GET /api/sync?week=N  — sync specific week")
     print(f"  GET /api/weeks        — load all weeks (cached)")
     print()
-    # Start auto-sync background thread
-    sync_thread = threading.Thread(target=_auto_sync, daemon=True)
-    sync_thread.start()
+    # Auto-sync is retired in favor of the personal-coach cloud routine.
+    # Set ENABLE_SERVER_AUTOSYNC=1 to re-enable the in-server thread.
+    if os.environ.get("ENABLE_SERVER_AUTOSYNC") == "1":
+        sync_thread = threading.Thread(target=_auto_sync, daemon=True)
+        sync_thread.start()
+        print("  Server auto-sync ENABLED (ENABLE_SERVER_AUTOSYNC=1)")
+    else:
+        print("  Server auto-sync disabled — handled by personal-coach cloud routine")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
