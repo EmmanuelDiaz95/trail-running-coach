@@ -33,9 +33,12 @@ async def lifespan(app: FastAPI):
     from tracker import db
     db.init_db()
     print("[lifespan] Database initialized")
-    sync_thread = threading.Thread(target=_auto_sync, daemon=True)
-    sync_thread.start()
-    print("[lifespan] Auto-sync thread started")
+    if os.environ.get("ENABLE_SERVER_AUTOSYNC") == "1":
+        sync_thread = threading.Thread(target=_auto_sync, daemon=True)
+        sync_thread.start()
+        print("[lifespan] Auto-sync thread started (ENABLE_SERVER_AUTOSYNC=1)")
+    else:
+        print("[lifespan] Auto-sync disabled (set ENABLE_SERVER_AUTOSYNC=1 to enable)")
     yield
     print("[lifespan] Shutting down")
     db.close_pool()
