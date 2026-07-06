@@ -28,6 +28,21 @@ def test_cmd_refresh_prints_summary(capsys):
     assert "1" in out  # one health day
 
 
+def test_cmd_refresh_silent_suppresses_stdout(capsys):
+    mod = _load_coach_module()
+
+    def noisy_refresh(**k):
+        print("[cache] Updated week 18 snapshot in database")
+        print("[health] Saved health data for 2026-07-05")
+        return RefreshSummary(weeks_synced=[18], health_days_synced=["2026-07-05"])
+
+    with patch.object(mod, "refresh", noisy_refresh):
+        result = mod.cmd_refresh(silent=True)
+    out = capsys.readouterr().out
+    assert out == ""                       # nothing leaked to stdout
+    assert result.weeks_synced == [18]     # summary still returned
+
+
 def test_cmd_checkin_merges_and_prints(capsys):
     mod = _load_coach_module()
     summary = RefreshSummary(weeks_synced=[18], health_days_synced=[])

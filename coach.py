@@ -195,9 +195,12 @@ def cmd_ask(question: str):
 
 def cmd_refresh(silent: bool = False):
     """Self-healing data refresh: gap-fill activities + health, rebuild snapshots."""
-    summary = refresh()
     if silent:
+        import contextlib
+        with open(os.devnull, "w") as _devnull, contextlib.redirect_stdout(_devnull):
+            summary = refresh()
         return summary
+    summary = refresh()
     print("=== REFRESH ===")
     print(f"  Weeks synced:  {summary.weeks_synced or '—'}")
     print(f"  Health days:   {len(summary.health_days_synced)}")
