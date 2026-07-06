@@ -105,3 +105,10 @@ def test_merge_handles_missing_coaching():
     verdict, advice, level = merge_verdict(_health(1), None)
     assert level == 1
     assert "MANTENER" in verdict
+
+
+def test_merge_handles_null_readiness_attribute():
+    coaching_no_readiness = SimpleNamespace(readiness=None)
+    verdict, advice, level = merge_verdict(_health(1), coaching_no_readiness)
+    assert level == 1
+    assert "MANTENER" in verdict
