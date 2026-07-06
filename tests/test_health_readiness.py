@@ -68,3 +68,40 @@ def test_one_yellow_pair_returns_mantener():
     r = compute_health_readiness(rows, today)
     assert r.level == 1
     assert "MANTENER" in r.verdict
+
+
+from types import SimpleNamespace
+
+from coach.health_readiness import merge_verdict
+
+
+def _health(level):
+    return HealthReadiness(level=level, verdict="v", advice="a", has_data=True)
+
+
+def _coaching(rec):
+    return SimpleNamespace(readiness=SimpleNamespace(recommendation=rec))
+
+
+def test_merge_takes_max_severity_health_wins():
+    verdict, advice, level = merge_verdict(_health(2), _coaching("push"))
+    assert level == 2
+    assert "BAJAR" in verdict
+
+
+def test_merge_back_off_raises_from_green():
+    verdict, advice, level = merge_verdict(_health(0), _coaching("back_off"))
+    assert level == 2
+    assert "BAJAR" in verdict
+
+
+def test_merge_maintain_does_not_raise():
+    verdict, advice, level = merge_verdict(_health(0), _coaching("maintain"))
+    assert level == 0
+    assert "ADELANTE" in verdict
+
+
+def test_merge_handles_missing_coaching():
+    verdict, advice, level = merge_verdict(_health(1), None)
+    assert level == 1
+    assert "MANTENER" in verdict

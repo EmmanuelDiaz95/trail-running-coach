@@ -74,3 +74,23 @@ def compute_health_readiness(rows: list, today: date) -> HealthReadiness:
         checks=checks, verdict=verdict, advice=advice,
         level=level, days=len(rows), has_data=True,
     )
+
+
+_LEVEL_LABELS = {
+    0: ("🟢 ADELANTE", "Procede con el aumento planeado."),
+    1: ("🟡 MANTENER", "Repite el volumen de esta semana; NO subas. Prioriza dormir."),
+    2: ("🔴 BAJAR", "Reduce volumen / recuperación extra esta semana."),
+}
+
+
+def merge_verdict(health: HealthReadiness, coaching) -> tuple:
+    """Combine health readiness with training-load readiness. Only a training
+    recommendation of 'back_off' (ACWR danger) raises severity; health drives
+    the rest. Returns (verdict, advice, level)."""
+    training_level = 0
+    if coaching is not None and getattr(coaching, "readiness", None) is not None:
+        if coaching.readiness.recommendation == "back_off":
+            training_level = 2
+    level = max(health.level, training_level)
+    verdict, advice = _LEVEL_LABELS[level]
+    return verdict, advice, level
