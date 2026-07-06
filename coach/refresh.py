@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 
 _HEALTH_FIELDS = ("resting_hr", "hrv_last_night", "training_readiness",
@@ -48,9 +49,6 @@ def detect_health_gap(health_rows: list, today: date, max_days: int) -> tuple:
     return from_date, today, capped
 
 
-from dataclasses import dataclass, field
-
-
 @dataclass
 class RefreshSummary:
     weeks_synced: list = field(default_factory=list)
@@ -58,7 +56,7 @@ class RefreshSummary:
     errors: list = field(default_factory=list)
     warnings: list = field(default_factory=list)
     rate_limited: bool = False
-    retry_after: int = None
+    retry_after: int | None = None
 
 
 def refresh(profile_id: str = "default", today=None, max_weeks: int = 8,
