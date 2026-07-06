@@ -559,9 +559,14 @@ if __name__ == '__main__':
     print(f"  GET /api/sync?week=N  — sync specific week")
     print(f"  GET /api/weeks        — load all weeks (cached)")
     print()
-    # Start auto-sync background thread
-    sync_thread = threading.Thread(target=_auto_sync, daemon=True)
-    sync_thread.start()
+    # Auto-sync is retired in favor of the personal-coach cloud routine.
+    # Set ENABLE_SERVER_AUTOSYNC=1 to re-enable the in-server thread.
+    if os.environ.get("ENABLE_SERVER_AUTOSYNC") == "1":
+        sync_thread = threading.Thread(target=_auto_sync, daemon=True)
+        sync_thread.start()
+        print("  Server auto-sync ENABLED (ENABLE_SERVER_AUTOSYNC=1)")
+    else:
+        print("  Server auto-sync disabled — handled by personal-coach cloud routine")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
