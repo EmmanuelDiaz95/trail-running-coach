@@ -51,3 +51,22 @@ def test_load_plan_parses_well_formed_workouts():
     assert len(plan[0].workouts) == 2
     assert plan[0].workouts[0].distance_km == 16
     assert plan[0].workouts[1].day == "Sunday"
+
+
+from datetime import date as _date
+
+from tracker.plan_data import week_for_date
+
+
+def test_week_for_date_in_window():
+    # PLAN_START = 2026-03-02 (Monday of week 1)
+    assert week_for_date(_date(2026, 3, 2)) == 1
+    assert week_for_date(_date(2026, 3, 8)) == 1   # day 6 of week 1
+    assert week_for_date(_date(2026, 3, 9)) == 2   # first day of week 2
+    assert week_for_date(_date(2026, 6, 10)) == 15
+    assert week_for_date(_date(2026, 7, 11)) == 19
+
+
+def test_week_for_date_outside_window():
+    assert week_for_date(_date(2026, 3, 1)) == 0    # before PLAN_START
+    assert week_for_date(_date(2026, 10, 5)) == 0   # after week 30

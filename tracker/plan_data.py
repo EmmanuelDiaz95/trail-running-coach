@@ -90,6 +90,16 @@ def get_current_week() -> int | None:
     return week_num
 
 
+def week_for_date(d: date) -> int:
+    """Return the plan week (1..TOTAL_WEEKS) whose 7-day span contains d, or 0 if outside the window."""
+    if d < PLAN_START:
+        return 0
+    week_num = (d - PLAN_START).days // 7 + 1
+    if week_num > TOTAL_WEEKS:
+        return 0
+    return week_num
+
+
 def get_week_dates(week_number: int) -> tuple[date, date]:
     """Return (start_date, end_date) for a given week number."""
     start = PLAN_START + timedelta(weeks=week_number - 1)
