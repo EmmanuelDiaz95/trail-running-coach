@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import re
+from datetime import date
 
 from .plan_data import week_for_date
 
@@ -72,9 +73,11 @@ def parse_activity_row(row: dict) -> dict:
     """Normalize one Garmin CSV DictReader row into a db.save_activities dict."""
     fecha = (row.get("Fecha") or "").strip()
     activity_date = fecha.split(" ")[0]
+    week_number = week_for_date(date.fromisoformat(activity_date))
     return {
         "garmin_id": synthetic_garmin_id(fecha),
         "activity_date": activity_date,
+        "week_number": week_number,
         "activity_type": map_activity_type(row.get("Tipo de actividad")),
         "activity_name": (row.get("Título") or "").strip() or None,
         "distance_km": parse_number(row.get("Distancia")),
@@ -105,11 +108,8 @@ def parse_csv(path: str) -> tuple[list[dict], list[tuple[int, str]]]:
 
 
 def group_by_week(rows: list[dict]) -> dict[int, list[dict]]:
-    """Group normalized rows by the plan week containing their activity_date."""
-    from datetime import date as _date
-
+    """Group normalized rows by their precomputed plan week (week 0 = outside the plan window)."""
     grouped: dict[int, list[dict]] = {}
     for r in rows:
-        wk = week_for_date(_date.fromisoformat(r["activity_date"]))
-        grouped.setdefault(wk, []).append(r)
+        grouped.setdefault(r["week_number"], []).append(r)
     return grouped

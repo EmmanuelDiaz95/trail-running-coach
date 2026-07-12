@@ -73,6 +73,7 @@ def test_parse_activity_row_maps_all_fields():
     assert r["calories"] == 630.0
     assert r["sets"] is None and r["reps"] is None and r["route_svg"] is None
     assert r["raw_json"]["Título"] == "Metepec Carrera"  # full row preserved
+    assert r["week_number"] == 19
 
 
 def test_parse_csv_reads_file(tmp_path):
@@ -95,3 +96,17 @@ def test_group_by_week():
     grouped = group_by_week(rows)
     assert list(grouped.keys()) == [19]
     assert len(grouped[19]) == 1
+
+
+def test_parse_csv_reports_bad_date(tmp_path):
+    csv_text = (
+        "Tipo de actividad,Fecha,Título,Distancia,Calorías,Tiempo,"
+        "Frecuencia cardiaca media,Ritmo medio,Ascenso total\n"
+        'Carrera,11/07/2026 06:30:54,"Bad Date","8.68","630","01:06:47","124","7:42","230"\n'
+    )
+    p = tmp_path / "bad.csv"
+    p.write_text(csv_text, encoding="utf-8")
+    rows, errors = parse_csv(str(p))
+    assert rows == []
+    assert len(errors) == 1
+    assert errors[0][0] == 2  # line number
