@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import csv
 import re
+
+from .plan_data import week_for_date
 
 # Spanish Garmin activity labels -> canonical tracker types.
 TYPE_MAP = {
@@ -63,3 +66,50 @@ def synthetic_garmin_id(fecha: str) -> int:
     if len(digits) < 8:
         raise ValueError(f"Unparseable Fecha timestamp: {fecha!r}")
     return _GARMIN_ID_OFFSET + int(digits)
+
+
+def parse_activity_row(row: dict) -> dict:
+    """Normalize one Garmin CSV DictReader row into a db.save_activities dict."""
+    fecha = (row.get("Fecha") or "").strip()
+    activity_date = fecha.split(" ")[0]
+    return {
+        "garmin_id": synthetic_garmin_id(fecha),
+        "activity_date": activity_date,
+        "activity_type": map_activity_type(row.get("Tipo de actividad")),
+        "activity_name": (row.get("Título") or "").strip() or None,
+        "distance_km": parse_number(row.get("Distancia")),
+        "elevation_m": parse_number(row.get("Ascenso total")),
+        "duration_min": parse_duration_to_minutes(row.get("Tiempo")),
+        "avg_hr": parse_number(row.get("Frecuencia cardiaca media")),
+        "avg_pace": (row.get("Ritmo medio") or "").strip() or None,
+        "calories": parse_number(row.get("Calorías")),
+        "sets": None,
+        "reps": None,
+        "route_svg": None,
+        "raw_json": dict(row),
+    }
+
+
+def parse_csv(path: str) -> tuple[list[dict], list[tuple[int, str]]]:
+    """Read a Garmin CSV export. Returns (normalized_rows, errors[(line_no, msg)])."""
+    rows: list[dict] = []
+    errors: list[tuple[int, str]] = []
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader, start=2):  # line 1 is the header
+            try:
+                rows.append(parse_activity_row(row))
+            except Exception as e:  # noqa: BLE001 - record & continue, never abort import
+                errors.append((i, str(e)))
+    return rows, errors
+
+
+def group_by_week(rows: list[dict]) -> dict[int, list[dict]]:
+    """Group normalized rows by the plan week containing their activity_date."""
+    from datetime import date as _date
+
+    grouped: dict[int, list[dict]] = {}
+    for r in rows:
+        wk = week_for_date(_date.fromisoformat(r["activity_date"]))
+        grouped.setdefault(wk, []).append(r)
+    return grouped
