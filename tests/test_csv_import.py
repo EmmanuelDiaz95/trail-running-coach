@@ -14,12 +14,26 @@ from tracker.csv_import import (
 
 
 def test_parse_number():
+    # US format (dot decimal)
     assert parse_number("8.68") == pytest.approx(8.68)
-    assert parse_number("10,860") == pytest.approx(10860.0)  # thousands separator
-    assert parse_number('"124"') == pytest.approx(124.0)     # stray quotes
+    assert parse_number("38.07") == pytest.approx(38.07)
+    assert parse_number("320") == pytest.approx(320.0)         # plain integer
+    # both separators: rightmost is the decimal point
+    assert parse_number("1.234,56") == pytest.approx(1234.56)  # European grouping
+    assert parse_number("1,234.56") == pytest.approx(1234.56)  # US grouping
+    assert parse_number('"124"') == pytest.approx(124.0)       # stray quotes
     assert parse_number("") is None
     assert parse_number("--") is None
     assert parse_number(None) is None
+
+
+def test_parse_number_lone_comma_is_column_dependent():
+    # Distance column: lone comma is a European DECIMAL -> '8,670' == 8.670 km
+    assert parse_number("8,670", comma_decimal=True) == pytest.approx(8.670)
+    assert parse_number("21,710", comma_decimal=True) == pytest.approx(21.710)
+    # Elevation/calories column (default): lone comma is a US THOUSANDS sep -> '1,274' == 1274 m
+    assert parse_number("1,274") == pytest.approx(1274.0)
+    assert parse_number("1,126") == pytest.approx(1126.0)
 
 
 def test_parse_duration_to_minutes():
@@ -33,6 +47,10 @@ def test_parse_duration_to_minutes():
 def test_map_activity_type():
     assert map_activity_type("Carrera") == "running"
     assert map_activity_type("Entrenamiento de fuerza") == "strength_training"
+    assert map_activity_type("Entrenamiento en pista") == "running"    # track = running
+    assert map_activity_type("Entrenamiento en cinta") == "running"    # treadmill = running
+    assert map_activity_type("Senderismo") == "hiking"
+    assert map_activity_type("Ciclismo") == "cycling"
     assert map_activity_type("Algo Raro") == "algo_raro"  # unknown fallback
     assert map_activity_type(None) == ""
 

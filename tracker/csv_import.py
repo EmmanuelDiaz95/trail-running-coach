@@ -15,18 +15,46 @@ TYPE_MAP = {
     "entrenamiento de fuerza": "strength_training",
     "natación": "swimming",
     "caminata": "walking",
+    "senderismo": "hiking",
+    "entrenamiento en pista": "running",   # track session (intervals) — counts as running
+    "entrenamiento en cinta": "running",   # treadmill run — counts as running
 }
 
 _GARMIN_ID_OFFSET = 9_000_000_000_000_000
 
 
-def parse_number(v: str | None) -> float | None:
-    """Parse a numeric CSV cell; thousands ',' stripped, blanks/'--' -> None."""
+def parse_number(v: str | None, comma_decimal: bool = False) -> float | None:
+    """Parse a numeric CSV cell, locale-robust; blanks/'--' -> None.
+
+    Garmin exports MIX number formats across rows: US (dot decimal, comma
+    thousands, e.g. '38.07' / '1,274') and European (comma decimal, e.g.
+    '8,670' == 8.670). A lone comma is therefore ambiguous and must be
+    resolved by COLUMN semantics, which the caller signals via ``comma_decimal``:
+
+      - both '.' and ',': the RIGHTMOST separator is the decimal point, the
+        other is a thousands separator (handles '1.234,56' and '1,234.56').
+      - only ',':
+          * comma_decimal=True  (distance): decimal   -> '8,670'  = 8.670 km
+          * comma_decimal=False (elevation, calories): thousands -> '1,274' = 1274 m
+      - only '.' or none: parsed as-is.
+
+    Rationale: distances are never >=1000 km (so a lone comma is a European
+    decimal), whereas elevation/calories cross 1000 (so a lone comma is a US
+    thousands separator). Set comma_decimal=True only for the distance column.
+    """
     if v is None:
         return None
-    s = str(v).strip().strip('"').replace(",", "")
+    s = str(v).strip().strip('"')
     if s in ("", "--", "None"):
         return None
+    has_dot, has_comma = "." in s, "," in s
+    if has_dot and has_comma:
+        if s.rfind(",") > s.rfind("."):        # European: 1.234,56
+            s = s.replace(".", "").replace(",", ".")
+        else:                                    # US: 1,234.56
+            s = s.replace(",", "")
+    elif has_comma:
+        s = s.replace(",", ".") if comma_decimal else s.replace(",", "")
     try:
         return float(s)
     except ValueError:
@@ -80,7 +108,7 @@ def parse_activity_row(row: dict) -> dict:
         "week_number": week_number,
         "activity_type": map_activity_type(row.get("Tipo de actividad")),
         "activity_name": (row.get("Título") or "").strip() or None,
-        "distance_km": parse_number(row.get("Distancia")),
+        "distance_km": parse_number(row.get("Distancia"), comma_decimal=True),
         "elevation_m": parse_number(row.get("Ascenso total")),
         "duration_min": parse_duration_to_minutes(row.get("Tiempo")),
         "avg_hr": parse_number(row.get("Frecuencia cardiaca media")),
