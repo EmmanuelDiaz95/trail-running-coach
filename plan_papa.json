@@ -1,0 +1,1035 @@
+{
+  "race": {
+    "name": "Ultra Trail Tarahumara",
+    "date": "2026-10-02",
+    "distance_km": 59,
+    "vert_m": 2400,
+    "location": "Sierra Tarahumara, Chihuahua"
+  },
+  "athlete": "papa",
+  "goal": "finish safe & strong (run-hike, no time pressure)",
+  "plan_start": "2026-07-13",
+  "total_weeks": 12,
+  "weeks": [
+    {
+      "week_number": 1,
+      "start_date": "2026-07-13",
+      "end_date": "2026-07-19",
+      "phase": "base",
+      "is_recovery": false,
+      "distance_km": 38,
+      "vert_m": 1000,
+      "long_run_km": 20,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Re-establish rhythm. Ease into downhill repeats — short, controlled descents only.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-07-13",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-07-14",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 40,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-07-15",
+          "type": "run",
+          "description": "5 km downhill repeats (controlled descents)",
+          "distance_km": 5,
+          "vert_m": 300,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-07-16",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 40,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-07-17",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-07-18",
+          "type": "long_run",
+          "description": "20 km LONG RUN",
+          "distance_km": 20,
+          "vert_m": 550,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-07-19",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 70,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 2,
+      "start_date": "2026-07-20",
+      "end_date": "2026-07-26",
+      "phase": "base",
+      "is_recovery": true,
+      "distance_km": 30,
+      "vert_m": 800,
+      "long_run_km": 16,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "RECOVERY (synced with Emmanuel). Everything easy; let the legs absorb. Non-negotiable deload.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-07-20",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-07-21",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 32,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-07-22",
+          "type": "run",
+          "description": "4 km easy rolling",
+          "distance_km": 4,
+          "vert_m": 240,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-07-23",
+          "type": "run",
+          "description": "3 km easy aerobic",
+          "distance_km": 3,
+          "vert_m": 32,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-07-24",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-07-25",
+          "type": "long_run",
+          "description": "16 km LONG RUN (recovery, easy)",
+          "distance_km": 16,
+          "vert_m": 440,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-07-26",
+          "type": "run",
+          "description": "3 km easy second run (skip if tired)",
+          "distance_km": 3,
+          "vert_m": 56,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 3,
+      "start_date": "2026-07-27",
+      "end_date": "2026-08-02",
+      "phase": "build",
+      "is_recovery": false,
+      "distance_km": 42,
+      "vert_m": 1300,
+      "long_run_km": 24,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Build. Long run adds climbing. Keep easy runs truly easy (~125 bpm).",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-07-27",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-07-28",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 52,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-07-29",
+          "type": "run",
+          "description": "5 km downhill repeats (controlled descents)",
+          "distance_km": 5,
+          "vert_m": 390,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-07-30",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 52,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-07-31",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-08-01",
+          "type": "long_run",
+          "description": "24 km LONG RUN",
+          "distance_km": 24,
+          "vert_m": 715,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-08-02",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 91,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 4,
+      "start_date": "2026-08-03",
+      "end_date": "2026-08-09",
+      "phase": "build",
+      "is_recovery": false,
+      "distance_km": 46,
+      "vert_m": 1500,
+      "long_run_km": 27,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Build. First taste of sustained time-on-feet. Practice sipping fluids on the long run.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-08-03",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-08-04",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 60,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-08-05",
+          "type": "run",
+          "description": "6 km downhill repeats (controlled descents)",
+          "distance_km": 6,
+          "vert_m": 450,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-08-06",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 60,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-08-07",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-08-08",
+          "type": "long_run",
+          "description": "27 km LONG RUN",
+          "distance_km": 27,
+          "vert_m": 825,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-08-09",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 105,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 5,
+      "start_date": "2026-08-10",
+      "end_date": "2026-08-16",
+      "phase": "build",
+      "is_recovery": false,
+      "distance_km": 50,
+      "vert_m": 1800,
+      "long_run_km": 30,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Build. Bigger vert. Hike the steep climbs — don't force-run them.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-08-10",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-08-11",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 72,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-08-12",
+          "type": "run",
+          "description": "6 km downhill repeats (controlled descents)",
+          "distance_km": 6,
+          "vert_m": 540,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-08-13",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 72,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-08-14",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-08-15",
+          "type": "long_run",
+          "description": "30 km LONG RUN",
+          "distance_km": 30,
+          "vert_m": 990,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-08-16",
+          "type": "run",
+          "description": "4 km easy second run",
+          "distance_km": 4,
+          "vert_m": 126,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 6,
+      "start_date": "2026-08-17",
+      "end_date": "2026-08-23",
+      "phase": "base",
+      "is_recovery": true,
+      "distance_km": 36,
+      "vert_m": 1100,
+      "long_run_km": 20,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "RECOVERY (synced with Emmanuel). Cut volume ~30%. Prehab + easy running only.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-08-17",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-08-18",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 44,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-08-19",
+          "type": "run",
+          "description": "5 km easy rolling",
+          "distance_km": 5,
+          "vert_m": 330,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-08-20",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 44,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-08-21",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-08-22",
+          "type": "long_run",
+          "description": "20 km LONG RUN (recovery, easy)",
+          "distance_km": 20,
+          "vert_m": 605,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-08-23",
+          "type": "run",
+          "description": "3 km easy second run (skip if tired)",
+          "distance_km": 3,
+          "vert_m": 77,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 7,
+      "start_date": "2026-08-24",
+      "end_date": "2026-08-30",
+      "phase": "build",
+      "is_recovery": false,
+      "distance_km": 52,
+      "vert_m": 2100,
+      "long_run_km": 30,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Peak build begins. Big vert week — descent legs get tested. Fuel every 40-45 min on the long run.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-08-24",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-08-25",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 84,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-08-26",
+          "type": "run",
+          "description": "7 km downhill repeats (controlled descents)",
+          "distance_km": 7,
+          "vert_m": 630,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-08-27",
+          "type": "run",
+          "description": "5 km easy aerobic",
+          "distance_km": 5,
+          "vert_m": 84,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-08-28",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-08-29",
+          "type": "long_run",
+          "description": "30 km LONG RUN",
+          "distance_km": 30,
+          "vert_m": 1155,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-08-30",
+          "type": "run",
+          "description": "4 km easy second run",
+          "distance_km": 4,
+          "vert_m": 147,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 8,
+      "start_date": "2026-08-31",
+      "end_date": "2026-09-06",
+      "phase": "build",
+      "is_recovery": false,
+      "distance_km": 52,
+      "vert_m": 2200,
+      "long_run_km": 32,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "CATCH-UP WEEK: Emmanuel's peak long run is 32 km — run this one together, start to finish.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-08-31",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-09-01",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 88,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-09-02",
+          "type": "run",
+          "description": "6 km downhill repeats (controlled descents)",
+          "distance_km": 6,
+          "vert_m": 660,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-09-03",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 88,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-09-04",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-09-05",
+          "type": "long_run",
+          "description": "32 km LONG RUN — with Emmanuel (32 km together)",
+          "distance_km": 32,
+          "vert_m": 1210,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-09-06",
+          "type": "run",
+          "description": "4 km easy second run",
+          "distance_km": 4,
+          "vert_m": 154,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 9,
+      "start_date": "2026-09-07",
+      "end_date": "2026-09-13",
+      "phase": "peak",
+      "is_recovery": false,
+      "distance_km": 54,
+      "vert_m": 2400,
+      "long_run_km": 37,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "PEAK long run ~6.5-7 h, race simulation. Full fuel/kit rehearsal. This is the confidence day — run-hike easy, never race it.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-09-07",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-09-08",
+          "type": "run",
+          "description": "5 km easy aerobic",
+          "distance_km": 5,
+          "vert_m": 96,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-09-09",
+          "type": "run",
+          "description": "5 km downhill repeats (controlled descents)",
+          "distance_km": 5,
+          "vert_m": 720,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-09-10",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 96,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-09-11",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-09-12",
+          "type": "long_run",
+          "description": "37 km LONG RUN — PEAK / race sim",
+          "distance_km": 37,
+          "vert_m": 1320,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-09-13",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 168,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 10,
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-20",
+      "phase": "taper",
+      "is_recovery": false,
+      "distance_km": 42,
+      "vert_m": 1400,
+      "long_run_km": 24,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Taper begins. Volume down, keep some vert. Start heat prep (extra layer / midday exposure).",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-09-14",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-09-15",
+          "type": "run",
+          "description": "6 km easy aerobic",
+          "distance_km": 6,
+          "vert_m": 56,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-09-16",
+          "type": "run",
+          "description": "5 km downhill repeats (controlled descents)",
+          "distance_km": 5,
+          "vert_m": 420,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-09-17",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 56,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-09-18",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-09-19",
+          "type": "long_run",
+          "description": "24 km LONG RUN",
+          "distance_km": 24,
+          "vert_m": 770,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-09-20",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 98,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 11,
+      "start_date": "2026-09-21",
+      "end_date": "2026-09-27",
+      "phase": "taper",
+      "is_recovery": false,
+      "distance_km": 30,
+      "vert_m": 900,
+      "long_run_km": 16,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "Taper. Short and sharp. Sleep + protein (~1.8 g/kg). Continue heat prep.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-09-21",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min (single-leg step-downs, calf raises, hip/glute)",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-09-22",
+          "type": "run",
+          "description": "4 km easy aerobic",
+          "distance_km": 4,
+          "vert_m": 36,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-09-23",
+          "type": "run",
+          "description": "4 km downhill repeats (controlled descents)",
+          "distance_km": 4,
+          "vert_m": 270,
+          "target_pace": "climbs steady / descents relaxed",
+          "target_hr": "130-145 up, easy down"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-09-24",
+          "type": "run",
+          "description": "3 km easy aerobic",
+          "distance_km": 3,
+          "vert_m": 36,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        },
+        {
+          "day": "friday",
+          "date": "2026-09-25",
+          "type": "prehab",
+          "description": "Rest + prehab 10 min",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "saturday",
+          "date": "2026-09-26",
+          "type": "long_run",
+          "description": "16 km LONG RUN",
+          "distance_km": 16,
+          "vert_m": 495,
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
+        },
+        {
+          "day": "sunday",
+          "date": "2026-09-27",
+          "type": "run",
+          "description": "3 km easy second run",
+          "distance_km": 3,
+          "vert_m": 63,
+          "target_pace": "7:30-8:15",
+          "target_hr": "120-130"
+        }
+      ]
+    },
+    {
+      "week_number": 12,
+      "start_date": "2026-09-28",
+      "end_date": "2026-10-04",
+      "phase": "race",
+      "is_recovery": false,
+      "distance_km": 11,
+      "vert_m": 0,
+      "long_run_km": 0,
+      "gym_sessions": 0,
+      "series_type": null,
+      "notes": "RACE WEEK (11 km easy shakeout + the 59 km race). Legs fresh. Race is FRIDAY Oct 2 — 59 km, 2400 m. Run-hike, fuel early and often, protect the quads on descents.",
+      "workouts": [
+        {
+          "day": "monday",
+          "date": "2026-09-28",
+          "type": "rest",
+          "description": "Rest / gentle walk + prehab",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "tuesday",
+          "date": "2026-09-29",
+          "type": "run",
+          "description": "6 km easy shakeout",
+          "distance_km": 6,
+          "vert_m": 60,
+          "target_pace": "7:45-8:30",
+          "target_hr": "115-128"
+        },
+        {
+          "day": "wednesday",
+          "date": "2026-09-30",
+          "type": "run",
+          "description": "5 km easy + 4 short strides",
+          "distance_km": 5,
+          "vert_m": 40,
+          "target_pace": "7:45-8:30",
+          "target_hr": "115-130"
+        },
+        {
+          "day": "thursday",
+          "date": "2026-10-01",
+          "type": "rest",
+          "description": "Rest / 10-15 min legs-loose jog optional",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "friday",
+          "date": "2026-10-02",
+          "type": "race",
+          "description": "RACE — Ultra Trail Tarahumara 59 km / 2400 m",
+          "distance_km": 59,
+          "vert_m": 2400,
+          "target_pace": "run-hike, even effort",
+          "target_hr": "conversational early"
+        },
+        {
+          "day": "saturday",
+          "date": "2026-10-03",
+          "type": "rest",
+          "description": "Recover",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        },
+        {
+          "day": "sunday",
+          "date": "2026-10-04",
+          "type": "rest",
+          "description": "Recover",
+          "distance_km": null,
+          "vert_m": null,
+          "target_pace": null,
+          "target_hr": null
+        }
+      ]
+    }
+  ]
+}
