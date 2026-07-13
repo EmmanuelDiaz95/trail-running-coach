@@ -14,7 +14,7 @@
 | 4 | 08-03–08-09 | Build | 46 | 1500 | 27 | 21 | together + he continues +6 |
 | 5 | 08-10–08-16 | Build | 50 | 1800 | 30 | 24 | together + he continues +6 |
 | 6 | 08-17–08-23 | Recovery | 36 | 1100 | 20 | 16 | both easy together |
-| 7 | 08-24–08-30 | Build | 52 | 2100 | 30 | 28 | together + he continues +2 |
+| 7 | 08-24–08-30 | Build | 54 | 2100 | 30 | 28 | together + he continues +2 |
 | 8 | 08-31–09-06 | Build | 52 | 2200 | 32 | 32 | 🎯 **CATCH-UP — 32 km together** |
 | 9 | 09-07–09-13 | Peak | 54 | 2400 | 37 | 22 | together + he continues +15 |
 | 10 | 09-14–09-20 | Taper | 42 | 1400 | 24 | 14 | together + he continues +10 |

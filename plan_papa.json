@@ -527,12 +527,12 @@
       "end_date": "2026-08-30",
       "phase": "build",
       "is_recovery": false,
-      "distance_km": 52,
+      "distance_km": 54,
       "vert_m": 2100,
       "long_run_km": 30,
       "gym_sessions": 0,
       "series_type": null,
-      "notes": "Peak build begins. Big vert week — descent legs get tested. Fuel every 40-45 min on the long run.",
+      "notes": "BACK-TO-BACK long weekend (Sat 30 + Sun 16 on tired legs) — the key ultra-specific session: simulates the cumulative fatigue of the race's back half. Easy pace; weekdays kept short to protect the weekend.",
       "workouts": [
         {
           "day": "monday",
@@ -548,8 +548,8 @@
           "day": "tuesday",
           "date": "2026-08-25",
           "type": "run",
-          "description": "6 km easy aerobic",
-          "distance_km": 6,
+          "description": "3 km easy aerobic",
+          "distance_km": 3,
           "vert_m": 84,
           "target_pace": "7:30-8:15",
           "target_hr": "120-130"
@@ -558,8 +558,8 @@
           "day": "wednesday",
           "date": "2026-08-26",
           "type": "run",
-          "description": "7 km downhill repeats (controlled descents)",
-          "distance_km": 7,
+          "description": "3 km downhill repeats (controlled descents)",
+          "distance_km": 3,
           "vert_m": 630,
           "target_pace": "climbs steady / descents relaxed",
           "target_hr": "130-145 up, easy down"
@@ -568,8 +568,8 @@
           "day": "thursday",
           "date": "2026-08-27",
           "type": "run",
-          "description": "5 km easy aerobic",
-          "distance_km": 5,
+          "description": "2 km easy aerobic",
+          "distance_km": 2,
           "vert_m": 84,
           "target_pace": "7:30-8:15",
           "target_hr": "120-130"
@@ -597,12 +597,12 @@
         {
           "day": "sunday",
           "date": "2026-08-30",
-          "type": "run",
-          "description": "4 km easy second run",
-          "distance_km": 4,
+          "type": "long_run",
+          "description": "16 km MEDIUM-LONG — back-to-back on tired legs",
+          "distance_km": 16,
           "vert_m": 147,
-          "target_pace": "7:30-8:15",
-          "target_hr": "120-130"
+          "target_pace": "7:45-9:00 (hike climbs)",
+          "target_hr": "120-135"
         }
       ]
     },
